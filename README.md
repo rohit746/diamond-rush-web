@@ -221,6 +221,6 @@ how the synthesizer sounds to a human ear.
 
 ## License
 
-The code written for this project is [MIT](LICENSE). That covers `runtime/`, `web/`, `tools/`, `test/`,
+The code written for this project is [MIT](LICENSE) (see [NOTICE.md](NOTICE.md)). That covers `runtime/`, `web/`, `tools/`, `test/`,
 `mappings/` and the scripts. `game/src/` is Gameloft's code and is excluded. Diamond Rush and Gameloft are
 trademarks of their respective owners.
