@@ -1,0 +1,13 @@
+{
+  "name": "diamond-rush-web",
+  "private": true,
+  "description": "Gameloft's Diamond Rush (J2ME) running in the browser: MIDP runtime, build tools and tests",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "node test/smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

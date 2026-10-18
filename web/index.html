@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Gameloft's Diamond Rush (2006, Nokia J2ME build) running in the browser.">
+<title>Diamond Rush</title>
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --bg: #0e1116;
+    --bg-2: #161b23;
+    --bezel: #1f252e;
+    --bezel-edge: #2b333f;
+    --text: #e6e9ee;
+    --muted: #8b95a5;
+    --accent: #f2c14e;
+    --key-bg: #262d38;
+    --key-bg-down: #3a4452;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: radial-gradient(ellipse at top, var(--bg-2), var(--bg) 70%) fixed, var(--bg);
+    color: var(--text);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #app {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-areas: "stage" "pad";
+    grid-template-rows: 1fr auto;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+    gap: 12px;
+  }
+  #stage {
+    grid-area: stage;
+    min-height: 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #device {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    border-radius: 6px;
+    background: #000;
+    box-shadow: 0 0 0 10px var(--bezel), 0 0 0 11px var(--bezel-edge), 0 24px 60px rgba(0, 0, 0, 0.55);
+  }
+  #screen {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  #overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    border-radius: 6px;
+    background: rgba(8, 10, 14, 0.88);
+    cursor: pointer;
+  }
+  #overlay[hidden] { display: none; }
+  #overlay-title {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+  }
+  #overlay-text { margin: 0; max-width: 34em; color: var(--text); }
+  #overlay-action {
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 28px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #1a1406;
+    cursor: pointer;
+  }
+  #overlay-action[hidden] { display: none; }
+  #overlay-action:focus-visible, footer button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 18px;
+    padding: 6px 16px max(10px, env(safe-area-inset-bottom));
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer kbd {
+    font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+    padding: 1px 5px;
+    border: 1px solid var(--bezel-edge);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    color: var(--text);
+    background: var(--bezel);
+  }
+  footer .keys { display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; }
+  footer .actions { display: flex; gap: 8px; }
+  footer button {
+    font: inherit;
+    font-size: 12px;
+    padding: 4px 12px;
+    border: 1px solid var(--bezel-edge);
+    border-radius: 999px;
+    background: var(--bezel);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  /* On-screen keypad (shown on touch devices, or via the Keypad button). */
+  #pad { grid-area: pad; display: none; justify-content: space-between; align-items: center; gap: 16px; }
+  body.show-pad #pad { display: flex; }
+  .cluster { display: grid; gap: 8px; touch-action: none; }
+  .dpad { grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); }
+  .dpad [data-key="-1"] { grid-area: 1 / 2; }
+  .dpad [data-key="-3"] { grid-area: 2 / 1; }
+  .dpad [data-key="-5"] { grid-area: 2 / 2; }
+  .dpad [data-key="-4"] { grid-area: 2 / 3; }
+  .dpad [data-key="-2"] { grid-area: 3 / 2; }
+  .buttons { grid-template-columns: repeat(2, 64px); grid-template-rows: repeat(2, 52px); }
+  #pad button {
+    font: 600 15px system-ui, sans-serif;
+    border: 1px solid var(--bezel-edge);
+    border-radius: 12px;
+    background: var(--key-bg);
+    color: var(--text);
+    touch-action: none;
+  }
+  #pad button.down { background: var(--key-bg-down); transform: translateY(1px); }
+  #pad .fire { border-radius: 50%; background: #3b3220; color: var(--accent); }
+
+  @media (orientation: landscape) and (max-height: 520px) {
+    body.show-pad #app { grid-template-areas: "left stage right"; grid-template-columns: auto 1fr auto; grid-template-rows: 1fr; }
+    body.show-pad #pad { display: contents; }
+    body.show-pad .dpad { grid-area: left; align-self: center; }
+    body.show-pad .buttons { grid-area: right; align-self: center; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+<main id="app">
+  <div id="stage">
+    <div id="device">
+      <canvas id="screen" width="320" height="240" aria-label="Diamond Rush game screen"></canvas>
+      <div id="overlay" role="dialog" aria-live="polite">
+        <h1 id="overlay-title">Diamond Rush</h1>
+        <p id="overlay-text">Loading…</p>
+        <button id="overlay-action" type="button" hidden></button>
+      </div>
+    </div>
+  </div>
+  <div id="pad" aria-label="On-screen keypad">
+    <div class="cluster dpad">
+      <button type="button" data-key="-1" aria-label="Up">▲</button>
+      <button type="button" data-key="-3" aria-label="Left">◀</button>
+      <button type="button" data-key="-5" class="fire" aria-label="OK">OK</button>
+      <button type="button" data-key="-4" aria-label="Right">▶</button>
+      <button type="button" data-key="-2" aria-label="Down">▼</button>
+    </div>
+    <div class="cluster buttons">
+      <button type="button" data-key="-6" aria-label="Left soft key">L</button>
+      <button type="button" data-key="-7" aria-label="Right soft key">R</button>
+      <button type="button" data-key="42" aria-label="Star key">✱</button>
+      <button type="button" data-key="35" aria-label="Pound key">#</button>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="keys">
+    <span><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> / <kbd>WASD</kbd> move</span>
+    <span><kbd>Enter</kbd> / <kbd>Space</kbd> OK</span>
+    <span><kbd>Q</kbd> / <kbd>P</kbd> menu · pause</span>
+    <span><kbd>Esc</kbd> back</span>
+    <span><kbd>0</kbd>–<kbd>9</kbd> keypad</span>
+  </div>
+  <div class="actions">
+    <button id="mute" type="button" aria-pressed="false" title="Toggle sound (M)">Sound on</button>
+    <button id="fullscreen" type="button" title="Toggle fullscreen (F)">Fullscreen</button>
+    <button id="pad-toggle" type="button" title="Show or hide the on-screen keypad">Keypad</button>
+  </div>
+</footer>
+<script>
+  if (window.matchMedia('(pointer: coarse)').matches) document.body.classList.add('show-pad');
+</script>
+<script src="synth.js"></script>
+<script src="host.js"></script>
+<script src="classes.js"></script>
+<script>DRHost.boot();</script>
+</body>
+</html>

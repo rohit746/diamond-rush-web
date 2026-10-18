@@ -1,0 +1,689 @@
+# Diamond Rush (Gameloft, Nokia J2ME build 1.1.6) deobfuscation map.
+#
+#   class  <obf>                    <NewName>
+#   field  <obf-owner> <obf> <desc>   <newName>
+#   method <obf-owner> <obf> <desc>   <newName>
+#
+# Keys always use the obfuscated names and descriptors from Diamondrush.jar.
+# Apply with ./deobfuscate.sh. GloftDIRU keeps its name: the manifest launches it.
+
+class a  Constants
+class b  SpriteInstance
+class d  Text
+class e  Rand
+class f  Sprite
+class i  GameCanvas
+class j  SoundManager
+class k  PlatformRequestThread
+class c  Cutscene
+class g  TreasureRain
+class h  FontRenderer
+
+# ---------------------------------------------------------------------------------------------
+# Sprite (f): Gameloft "ASprite" format. A sprite sheet is cut into modules (rectangles), frames
+# place modules (or other frames) at offsets, animations sequence frames with durations/offsets.
+# Pixels are palette indexed; one Image is cached per module per palette.
+field f a [I        pixelBuffer             # shared ARGB scratch buffer for decoding a module
+field f f [B        moduleSizes             # module w,h pairs
+field f g [B        frameModuleCounts       # number of frame modules per frame
+field f b [S        frameModuleStarts       # first frame module of each frame
+field f a [B        frameRects              # 4 bytes per frame: x, y, w, h
+field f h [B        frameModules            # 4 bytes: module (or frame if flag 16), dx, dy, flags
+field f b [B        animFrameCounts         # number of animation frames per animation
+field f a [S        animFrameStarts         # first animation frame of each animation
+field f c [B        animFrames              # 5 bytes: frame, duration, dx, dy, flags
+field f a [[I       palettes
+field f b I         paletteCount
+field f a I         currentPalette
+field f a Z         hasTransparency
+field f a S         pixelFormat             # 0x27F1 RLE, 0x1600 4bpp, 0x0400 2bpp, 0x0200 1bpp, 0x5602 8bpp, 0x56F2 RLE runs
+field f d [B        moduleData              # encoded pixel data for all modules
+field f c [S        moduleDataOffsets
+field f a [[Ljavax/microedition/lcdui/Image;   moduleImages   # [palette][module]
+field f e [B        mcTableUnused           # 256 bytes read from /mc at startup, never used
+method f a ([BI)V                                          load
+method f a (IIII)V                                         buildModuleImages       # (palette, unused, lastModule or -1, unused)
+method f a (I)V                                            freeFirstPaletteImages
+method f a (II)I                                           getAnimFrameDuration    # (anim, frame)
+method f a (I)I                                            getAnimFrameCount       # (anim)
+method f a (Ljavax/microedition/lcdui/Graphics;IIIIIII)V   paintAnimFrame          # (g, anim, frame, x, y, flags, dx, dy)
+method f a (Ljavax/microedition/lcdui/Graphics;IIIIII)V    paintFrame              # (g, frame, x, y, flags, dx, dy)
+method f a (Ljavax/microedition/lcdui/Graphics;IIII)V      paintModule             # (g, module, x, y, flags)
+method f a (I)[I                                           decodeModule
+method f a (Z)V                                            unload                  # (alsoFreeImages)
+
+# ---------------------------------------------------------------------------------------------
+# SpriteInstance (b): a positioned, animated use of a Sprite, optionally relative to a parent.
+field b a I         x
+field b b I         y
+field b g I         stepX                   # current animation frame's dx (flip-adjusted)
+field b h I         stepY
+field b c I         flags                   # 1 = flip horizontally, 2 = flip vertically
+field b a Lf;       sprite
+field b d I         anim                    # animation; also the module when frameTimer < 0 and anim >= 0
+field b e I         animFrame
+field b f I         frameTimer              # ticks spent on animFrame; < 0 means "not animated"
+field b a Lb;       parent
+method b a (I)V                              setAnim
+method b a ()V                               applyFrameStep          # moves x,y by the animation frame offset
+method b a ()Z                               isAnimFinished
+method b a (Ljavax/microedition/lcdui/Graphics;)V   paint
+method b b ()V                               updateAnim
+
+# ---------------------------------------------------------------------------------------------
+# GloftDIRU: the MIDlet.
+field GloftDIRU a [B                    versionBytes            # "MIDlet-Version" as bytes
+field GloftDIRU a Li;                   canvas
+field GloftDIRU a Ljavax/microedition/lcdui/Display;   display
+field GloftDIRU a Ljava/lang/String;    exitUrl                 # opened with platformRequest on exit
+method GloftDIRU a ()V                  exitGame
+
+# PlatformRequestThread (k): opens a URL, or defers it to exit when the phone requires that.
+field k a Ljava/lang/String;            url
+
+# Rand (e)
+field e a Ljava/util/Random;            random
+method e a (II)I                        between                 # [min, max)
+
+# ---------------------------------------------------------------------------------------------
+# Text (d): localized strings from lang.<locale> (index of offsets + modified-UTF-8 strings), plus
+# the anti-piracy check that the phone matches the manifest's Nokia-Platform pattern.
+field d a Ld;                           instance
+field d a Ljava/io/DataInputStream;     stream
+field d a Ljava/lang/String;            locale
+method d a (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;   replaceAll
+method d a (I)Ljava/lang/String;        get
+method d a (I[Ljava/lang/String;)Ljava/lang/String;   read
+method d a (Ljava/lang/String;Ljava/lang/String;II)Z  matchesPattern       # '*' and '?' wildcards
+method d a (Ljava/io/InputStream;)Ljava/lang/StringBuffer;   readContinuation   # manifest continuation lines
+
+# ---------------------------------------------------------------------------------------------
+# FontRenderer (h): text drawn with the phone's bold system font.
+field h a I                             measuredWidth           # widest line of the last measure()
+field h b I                             measuredHeight
+field h e I                             fontSize
+field h c I                             textColor
+field h d I                             unusedSpacing           # set by the game, never read
+field h a [I                            unusedInts1
+field h b [I                            unusedInts2
+field h a [B                            mcTableUnused           # /mc again, never read
+field h a Ljavax/microedition/lcdui/Font;   font
+method h a ()I                          getFontSize
+method h a (Ljavax/microedition/lcdui/Graphics;Ljava/lang/String;III)V    drawLines       # (g, text, x, y, anchor)
+method h a (Ljava/util/Vector;)[Ljava/lang/String;    toTrimmedArray
+method h a (Ljava/lang/String;)[Ljava/lang/String;    splitLines
+method h a (Ljava/lang/String;)V         measure
+method h a (Ljavax/microedition/lcdui/Graphics;Ljava/lang/String;IIII)V   drawStringColored  # (g, text, x, y, color, unused)
+method h b (Ljavax/microedition/lcdui/Graphics;Ljava/lang/String;III)V    drawString      # (g, text, x, y, anchor: 1 center, 8 right)
+method h b ()I                          getHeight
+method h a ()V                          resetColor
+method h a (I)V                         setColor
+method h a (Ljava/lang/String;)I         getTextHeight
+
+# ---------------------------------------------------------------------------------------------
+# SoundManager (j): 21 MIDI clips from snd.f; one plays at a time, chosen by priority, on its own thread.
+field j a I                             playingSound
+field j b I                             requestedSound
+field j c I                             playingPriority
+field j d I                             requestedPriority
+field j e I                             prefetchedSound
+field j a J                             playStartTime
+field j a [Ljavax/microedition/media/Player;   players
+field j a Z                             enabled
+field j b Z                             shuttingDown
+field j c Z                             stopRequested
+field j a Ljava/io/ByteArrayInputStream;   clipStream
+field j a Ljava/io/InputStream;         packStream
+field j a [B                            packIndex               # 21 x (offset, length)
+field j a Ljava/lang/Thread;            thread
+method j a (I)V                         loadSound
+method j a ()V                          startThread
+method j b ()V                          openPack
+method j c ()V                          closePack
+method j d ()V                          shutdown
+method j a (I)I                         priorityOf
+method j b (I)V                         play
+method j e ()V                          stop
+method j a ()Z                          isPlaying
+
+# ---------------------------------------------------------------------------------------------
+# TreasureRain (g): the ending celebration, a 15x10 grid of falling animated treasure.
+field g a [[B                           grid
+field g a B                             scrollY
+field g b B                             scrollSpeed
+field g b I                             animFrame
+field g c B                             unusedC
+field g d B                             unusedD
+field g a Z                             unusedFlag
+field g a I                             animFrameCount
+method g a (I)V                         update                  # (itemsPerNewRow)
+method g b (I)V                         spawnRow
+method g a (Ljavax/microedition/lcdui/Graphics;)V   paint
+
+# ---------------------------------------------------------------------------------------------
+# Cutscene (c): scripted tutorial/story sequences from demo.f (sprites in demoSpr.bin). A script is a
+# list of steps; a step is one command or a group of commands that run together:
+#   1 camera pan, 2 dialog text, 4 sprite move, 5/9 set map tile, 6 wait, 7 wait for key,
+#   10 move player, 11 portrait face, 12/13 portrait box, 14/15 show/hide portrait,
+#   16-18 blinking key hint / flash, 25/26 edit level data, 27 titled dialog.
+field c a J                             startDelayMs
+field c a Ljava/lang/String;            spritesFile
+field c b Ljava/lang/String;            scriptsFile
+field c a [Lf;                          sprites
+field c a [[B                           steps
+field c a I                             nextStepIndex
+field c b J                             startTime
+field c a [B                            currentStep
+field c b I                             stepTick
+field c b Z                             portraitVisible
+field c c I                             portraitX
+field c d I                             portraitY
+field c e I                             portraitFrame
+field c f I                             portraitSprite
+field c g I                             keyHintFrame
+field c a Z                             skipping
+field c a Li;                           game
+field c a [S                            lineBreaks
+field c h I                             lineCount
+method c a (Ljavax/microedition/lcdui/Graphics;[BI)V   paintCommand
+method c a ([BI)V                        updateTextCommand
+method c a ()V                           updateText
+method c a (Ljavax/microedition/lcdui/Graphics;)V      paint
+method c a ()[B                          restart
+method c b ([BI)V                        resetCommand
+method c b ()[B                          nextStep
+method c b ()V                           update
+method c c ([BI)V                        updateCommand
+method c a ()Z                           isStepFinished
+method c a (I)V                          load
+method c a (Ljavax/microedition/lcdui/Graphics;Ljava/lang/String;III)I   drawWrappedCentered   # returns the y below the text
+method c a (Ljavax/microedition/lcdui/Graphics;Ljava/lang/String;III)V   drawWrapped
+method c a (Ljava/lang/String;I)[Ljava/lang/String;    wrapText
+method c b (Ljava/lang/String;I)[Ljava/lang/String;    breakWord
+method c a (Ljava/util/Vector;)[Ljava/lang/String;     toArray
+method c a (Ljava/lang/String;C)[Ljava/lang/String;    split
+method c a (Ljava/lang/String;I)V                       computeLineBreaks
+method c a ([BIS)V                                     putShort
+method c a ([BII)V                                     putInt
+
+# ---------------------------------------------------------------------------------------------
+# Constants (a): layout metrics and progression tables.
+field a a I         fontHeight
+field a b I         lineHeight
+field a a [I        armorDiamondThresholds  # total diamonds that unlock the 4 armors (150, 400, 1000, 3000)
+field a b [I        worldUnlockRedDiamonds  # red diamonds needed for Angkor, Bavaria, Siberia (0, 10, 25)
+field a c [I        endingCrystalOffsets    # x,y of the 4 crystals drawn around the seal in the ending
+field a d [I        sealLocationOffsets     # x,y of the 4 seal locations (3 worlds + shop)
+field a a [[B       sealNavigation          # [direction][location] -> location reached, or -1
+field a c I         checkpointTextY
+field a d I         menuRowHeight
+field a e I         loadingTextY
+field a f I         mapTitleBoxHeight
+field a g I         mapTitleBoxY
+field a h I         mapStatsBoxHeight
+field a i I         mapTitleTextY
+
+# ---------------------------------------------------------------------------------------------
+# GameCanvas (i): the whole game. One Canvas runs a 20 FPS loop (run -> update -> repaint) over a
+# state machine in gameState:
+#    0 boot              6 Gameloft logo        8 load sounds/sprites   9 loading screen
+#   30 title             4 main menu            33 help                31 new-game confirmation
+#   16 new game          5 load stage           11 restart stage        1 playing
+#    2 pause menu        7 yes/no dialog        12 game over            17 stage complete tally
+#   20 secret path msg   21 load world map      15 world map            28 load seal
+#   22 credits (cr.f)
+#   27 seal (world/shop) 18,25 shop             29 ending               3 quit
+#   24 cheat menu (type # 4 7 7 2 while playing or on the seal)        34 debug value editor
+#
+# Keys are a bitmask (keysDown) of: 1 up, 2 down, 4 left, 8 right, 16 fire, 32 left soft, 64 right
+# soft, 256 '*', 512 '#', 1024 '0', 2048..524288 '1'..'9'. Common masks: 4097 up|2, 262146 down|8,
+# 16388 left|4, 65544 right|6, 32784 fire|5, 32944 fire|5|left soft (select), 64 back.
+#
+# Save record "DiamondRush" (saveData):
+#   [0] red diamond goal  [2] flags (8 Bavaria, 16 Siberia unlocked, bits 5-7 armor level)
+#   [3] lives  [4..5] total diamonds  [6..7] total red diamonds  [8] max energy  [9] weapons
+#   [10] has potion  [11] ?  [13] game started  [14+2w] offset of world w's record:
+#     world: [0] stage count, [1] progress, [2] main stage count, [3+2s] offset of stage s:
+#     stage: [0] diamonds, [1] diamond total, [2] flags (2 done, 4 all diamonds, 64 unlocked),
+#            [3] treasures found, [4] treasure count, [5..] treasure x,y pairs (0,0 once taken)
+
+field i b B         gameState
+field i m B         stateBeforeCheats
+field i ah I        keysDown
+field i d Z         keyReleased
+field i a J         stateStartTime
+field i aS I        stateTicks
+field i g I         stateFrames
+field i B Z         quitRequested
+field i af Z        paused
+field i e J         frameStartTime
+field i f J         lastFrameMillis
+field i v Z         frameSkipped
+field i l J         pausedAt
+field i eq I        noticeMillis            # remaining time of the popup notice
+field i n J         inactivityClock
+field i a Ljava/lang/Thread;            gameThread
+field i a LGloftDIRU;                   midlet
+field i a Lj;                           sound
+field i a Ljavax/microedition/lcdui/Graphics;   screen
+field i b Lh;                           fontMedium
+field i a Lh;                           fontSmall
+field i a [Ljava/lang/String;           strings
+field i b [Ljava/lang/String;           tutorialStrings
+field i c [Ljava/lang/String;           stageNames
+field i b Z                             rightToLeft
+field i a [Lf;                          sprites
+field i a [Lb;                          spriteInstances     # [0] is the player
+field i b [[Ljavax/microedition/lcdui/Image;   imageSets
+field i a [[Ljavax/microedition/lcdui/Image;   demoUiImages
+field i a Ljavax/microedition/lcdui/Image;     splashTop
+field i b Ljavax/microedition/lcdui/Image;     splashMiddle
+field i c Ljavax/microedition/lcdui/Image;     splashBottom
+field i c Ljava/lang/StringBuffer;      textBuffer
+field i a Lc;                           activeCutscene
+field i a [Lc;                          cutscenes
+field i d Ljava/lang/String;            moreGamesUrl
+
+# save data and preferences
+field i i [B        saveData
+field i cw I        saveDataLength
+field i j [B        preferences
+field i cv I        preferencesLength
+
+# progression
+field i aA I        world                   # 0 Angkor Wat, 1 Bavaria, 2 Siberia
+field i aB I        stage
+field i az I        lives
+field i n B         energy
+field i aZ I        stageDiamonds
+field i aY I        stageDiamondTotal
+field i bb I        stageRedDiamonds
+field i ba I        stageRedDiamondTotal
+field i bc I        stageHits
+field i bd I        stageRetries
+field i u B         stageAwards             # 4 all diamonds, 8 all red diamonds, 16 no hits, 32 no retries
+field i t B         stageAwardsBefore
+field i aR I        subState                # tally row, dialog kind, ...
+field i U I         unlockedWorldNotice     # 1 Bavaria, 2 Siberia
+field i V I         unlockedArmorNotice     # 1..4
+field i de I        newDiamondTotal
+field i df I        newRedDiamondTotal
+field i dg I        newSaveFlags
+field i n I         armorLevel
+field i o I         nextArmorThreshold
+field i dZ I        unlockedStage
+field i dK I        firstSecretStage
+field i d [I        worldNameStrings
+field i g [[I       stageNumbers            # [world][stage] -> number shown for the stage
+
+# cheats (state 24)
+field i b [I        cheatCodeKeys           # # 4 7 7 2
+field i s B         cheatCodeProgress
+field i ab Z        cheatSkipStages         # 7/9 during play skip the stage
+field i S Z         cheatUnlockAllStages    # key 9
+field i T Z         cheatUnlockSecretStages # key 0
+field i cz I        cheatMaxEnergy
+field i cA I        cheatWeapons
+field i dd I        debugEditorRow
+field i a [I        debugEditorValues
+
+# menus
+field i a [[S       menus                   # pairs of (action, string id); 0 main, 1 pause, 2 worlds, 7 yes/no
+field i bo I        menu
+field i bp I        previousMenu
+field i bq I        menuSelection
+field i cX I        menuItemCount
+field i cY I        menuWidth
+field i dc I        menuHighlightedRow
+field i db I        menuAnimFrame
+field i g J         menuAnimTime
+field i br I        loadingStepCount
+field i bs I        loadingStep
+
+# world map (state 15)
+field i a [[J       mapNodes                # 12x12 packed node descriptors from map_<world>.out
+field i dV I        mapCursorX
+field i dW I        mapCursorY
+field i dX I        mapTargetX
+field i dY I        mapTargetY
+field i dM I        mapWalkX
+field i dN I        mapWalkY
+field i dO I        mapWalkError
+field i dP I        mapWalkDx
+field i dQ I        mapWalkDy
+field i dR I        mapWalkErrorStep
+field i dS I        mapWalkErrorInc
+field i dT I        mapWalkStepX
+field i dU I        mapWalkStepY
+field i f Ljavax/microedition/lcdui/Image;      mapPreview
+field i c Ljavax/microedition/lcdui/Graphics;   mapPreviewGraphics
+field i au Z        mapPreviewStale
+field i av Z        fullRedraw
+field i aw Z        mapCursorMoving
+
+# level (state 1)
+field i e I         mapWidth                # tiles; a tile is 24x24 pixels
+field i f I         mapHeight
+field i a I         cameraX
+field i b I         cameraY
+field i c I         cameraTargetX
+field i d I         cameraTargetY
+field i h I         playerX                 # tile coordinates
+field i i I         playerY
+field i k I         playerFlags             # low 3 bits: facing direction
+field i a B         playerAction            # 1 up, 2 right, 3 down, 4 left, 5 use weapon, 6 hook
+field i a [[B       objectMap               # object type per tile
+field i a [[I       tileMap                 # low byte terrain type, high bits data
+field i b [[I       objectState
+field i o Z         hudDirty
+
+method i a (B)V                     setEnergy
+method i a (I)V                     openMenu
+method i a (I)Z                     isKeyDown
+method i e ()V                      resetStateTimer
+method i a (J)V                     sleep
+method i f ()V                      update
+method i g ()V                      updateEnding
+method i b (I)V                     loadSealStep
+method i h ()V                      updateSealCaption
+method i b (I)Z                     isWorldUnlocked
+method i i ()V                      updateSeal
+method i a (I)[Ljava/lang/String;   loadStrings
+method i a ()[Ljava/lang/String;    loadTutorialStrings
+method i b ()[Ljava/lang/String;    loadStageNames
+method i j ()V                      loadStageStep
+method i a (Z)V                     loadObjectSprites
+method i a ()I                      selectedMenuAction
+method i k ()V                      openMoreGames
+method i l ()V                      startStage
+method i a ()Z                      isMoreGamesEnabled
+method i m ()V                      menuUp
+method i n ()V                      menuDown
+method i o ()V                      unloadCutscenes
+method i a (Lc;)V                    unloadCutscene
+method i a (Lf;Z)V                   unloadSprite
+method i p ()V                      freeStageResources
+method i q ()V                      invalidateHud
+method i r ()V                      freeWaterImages
+method i c (I)V                      loadBackgroundSprite
+method i d (I)V                      loadMapSprite
+method i b ()Z                      hasStartedGame
+method i b (Z)V                     markGameStarted
+method i s ()V                      saveStageResult
+method i c (Z)V                     saveProgress
+method i t ()V                      loadSave
+method i u ()V                      writeSave
+method i v ()V                      writePreferences
+method i e (I)V                     createSaveStep
+method i w ()V                      storeLives
+method i x ()V                      loadLives
+method i a (II)B                    getStageFlags
+method i a (IIB)V                   addStageFlags
+method i a (II)V                    raiseWorldProgress
+method i b (I)I                     getWorldProgress
+method i c (I)I                     worldRecordOffset
+method i d (I)I                     getStageCount
+method i e (I)I                     getMainStageCount
+method i a (II)I                    stageRecordOffset
+method i b (II)I                    getStageDiamonds
+method i c (II)I                    getStageDiamondTotal
+method i a (IIII)V                  markTreasureTaken
+method i a (IIII)Z                  isTreasureAvailable
+method i z ()V                      unlockNextStages
+method i f (I)V                     drawSeparator
+method i H ()V                      paintMenu
+method i I ()V                      drawSelectSoftKey
+method i J ()V                      drawBackSoftKey
+method i K ()V                      paintLoading
+method i c ()Z                      isPlayerInsideBorder
+method i f (I)I                     armorStatus             # 0 owned, -1 not affordable, 1 affordable
+method i S ()V                      startNewGame
+method i T ()V                      checkCheatCode
+method i U ()V                      closeCheatMenu
+method i V ()V                      updateMenu
+method i W ()V                      updatePlaying
+method i D ()V                      paintPlaying
+method i a (Ljava/lang/String;)Ljava/lang/String;   wrapForScreen
+method i b (Ljavax/microedition/lcdui/Graphics;Z)V   drawSplash
+method i A ()V                      paintEnding
+method i B ()V                      paintSeal
+method i R ()V                      updateShop
+method i a ([BI)I                   readShort               # little endian, unsigned
+method i b ([BI)I                   readInt                 # little endian
+method i e (II)I                    addToSaveShort          # (offset, delta) -> new value, clamped at 0
+method i g (I)I                     keyBit                  # MIDP key code -> keysDown bit
+
+# helpers: resources
+method i a (Ljava/lang/String;I)[B                                readPackEntry   # .f packs: count, (offset,len) table, data
+method i a (Ljava/lang/String;III)Lf;                             loadSprite      # (pack, entry, firstPalette, lastPalette)
+method i a (Ljava/lang/String;I)Lf;                               loadSprite
+method i a (Ljava/lang/String;II)Lf;                              loadSpriteDefaultPalette
+method i a (Ljava/lang/String;II)[Ljavax/microedition/lcdui/Image;   loadModuleImages
+method i a (Ljava/lang/String;I)Ljavax/microedition/lcdui/Image;  loadImage
+method i a (Ljava/io/InputStream;)I                                readShort
+method i aC ()V                                                   createFonts
+method i o (I)V                                                   loadTip
+field i f Ljava/lang/String;      tipText
+field i a Lf;                     tipSprite
+
+# helpers: bit fields. Tiles carry three 9-bit slots (tileSlots); actors and enemies are packed longs.
+method i a (IBBB)I        slotBits                # (value, slot, shift, count)
+method i a (IIBBBB)V      setSlotBits             # (x, y, slot, value, shift, count)
+method i c (IIB)V         clearTileSlot
+method i a (IBB)I         actorBits               # (actor 1-based, shift, count)
+method i a (IBBB)V        setActorBits
+method i f (B)V           clearActorSlot
+method i a (BBB)I         enemyBits               # (enemy, shift, count)
+method i a (BBBB)V        setEnemyBits            # (enemy, value, shift, count)
+method i a (BBBB)B        spawnEnemy              # (type, x, y, direction) -> slot or -1
+method i b (II)B          findEnemyAt
+method i at ()V           resetEnemies
+method i ah ()V           spawnEnemiesFromMap
+method i a (IBB)B         byteBits
+method i a (JBB)I         longBits
+method i a (IIIBB)V       setMapNodeBits
+field i e [[I             tileSlots
+field i a [J              actors
+field i b [J              enemies
+field i du I              enemyCount
+field i l Z               hasEnemies
+
+# helpers: drawing
+method i a (Ljavax/microedition/lcdui/Graphics;ZII)V                 drawSealBackground   # (g, withGrid, dx, dy)
+method i a (Ljavax/microedition/lcdui/Graphics;Z)V                   drawSealBackground
+method i a (Ljavax/microedition/lcdui/Graphics;IIII)V                blitBackgroundBuffer
+method i a (Ljavax/microedition/lcdui/Graphics;III[Ljavax/microedition/lcdui/Image;I)V   drawNumber   # right-aligned digits
+method i a (Ljavax/microedition/lcdui/Graphics;Lh;Ljava/lang/String;IIIIZ)V   drawMessageBox
+method i a (Ljavax/microedition/lcdui/Graphics;IIIIIIII)V            drawTitledBox
+method i a (Ljavax/microedition/lcdui/Graphics;I)V                    drawBossHealth
+method i a (Lh;Ljava/lang/String;I)I                                 measureFirstLine
+method i a (Lf;II)I          frameAtTime             # (sprite, anim, ticks) -> animation frame
+method i b (Lf;II)I          firstFrameDuration
+method i a (Lf;I)I           animLength
+method i b (Lf;I)I           frameHeight
+method i c (Lf;I)I           frameWidth
+method i b (II)V             refreshBackgroundTile
+method i c (II)V             redrawTile
+method i l (II)V             markAreaDirty           # 3x3 tiles around (x, y)
+method i C ()V               clipToPlayfield         # 320x178 above the HUD
+method i b (B)V              paintSideObject         # stage object 22 (facing left) / 23 (right)
+method i L ()V               paintBoss
+field i d Ljavax/microedition/lcdui/Image;      backgroundBuffer        # wrap-around tile buffer
+field i b Ljavax/microedition/lcdui/Graphics;   backgroundBufferGraphics
+field i cC I              backgroundBufferWidth
+field i cD I              backgroundBufferHeight
+field i c [[B             tileRedrawTimers
+field i a [B              effectPositions
+field i b [B              effectTimers
+field i c [B              effectTypes
+field i ae I              nextEffect
+method i c (III)V         addEffect               # (x, y, type) into an 8-entry ring buffer
+
+# helpers: notices, sound, misc
+method i a (Ljava/lang/String;IIIII)V   showNotice
+method i d (Z)V           dismissNotice
+field i h Ljava/lang/String;   noticeText
+field i et I              noticeColor
+method i p (I)V           playSound
+method i j (I)V           vibrate
+field i m Z               vibrationEnabled
+method i b ()V            requestQuit
+method i ag ()V           openPauseMenu
+method i c ()V            pauseGame               # hideNotify / pauseApp
+method i d ()V            resumeGame              # showNotify / startApp
+method i ax ()V           openWorldMap
+method i ay ()V           resetMapNodes
+method i aw ()V          unloadMapResources
+method i k (I)V           startCutscene
+field i p [B             cutsceneIds
+
+# helpers: stage logic
+method i Z ()V            loseLife
+method i Y ()V            commitTakenTreasures
+method i b ()I            bankStageDiamonds
+method i c ()I            hitRecoveryAnim
+method i c (II)Z          isPlayerAt
+method i g (II)V         hurtPlayerNear          # pixel position, 3x3 tiles
+method i i (I)V           closeGateById
+method i X ()V            updateCollapsingRows
+method i a (II)Z          collapseTile
+method i d (II)I          fallingVariant          # object type -> its falling form, or -1
+method i a (IIII)B        scanFallRun
+method i b (IIB)V         clearTileRegion         # flood fill of one terrain type
+method i a (IIIII)V       propagateTileFlag
+method i k (II)V          triggerTile
+method i d (II)Z          canHoldObject
+method i e (II)Z          isEmptyFloor
+method i f (II)Z          isFreeTile
+method i h (II)Z          isRestingOnSomething
+method i i (II)Z          isHeavyObject           # rock, diamond-like objects 0, 1, 8, 9
+method i a (SSBI)V        setObject               # used by cutscene scripts
+method i b (IIII)Z        within24
+method i a (IIIIIIII)Z    actorsTouch
+method i al ()V           spawnWindPod
+method i f ()Z            isBossStage
+method i af ()V           resetBoss
+method i d ()I            bossColumn
+method i e ()I            bossRow
+method i h (II)V          clearObjectPair
+method i i (II)V          fillObjectPair
+field i k B               stageKind               # 3..5 are boss stages
+field i aq I              bossHealth
+field i ao I              bossAnim
+field i at I              bossX
+field i d [B              takenTreasures          # x,y pairs collected this stage
+field i ai I              takenTreasureCount
+field i q [B              doorX
+field i r [B              doorY
+field i e [B              collapsingRows          # (start, end, row) triples
+field i g [B              directionOffsets        # dx for 8 directions, then dy
+field i aW I              deathTimer
+field i bx I              drawX                   # tile cursor while rendering
+field i by I              drawY
+field i l B               queuedAction
+
+# gameplay. Terrain types seen in tileMap (low byte): 2 crumbling floor, 3 spikes, 4 checkpoint (magic
+# circle), 6 pressure plate, 7 gate (data: switch count, bit 16 open), 14 water, 17 switch target, 26 switch
+# (activating one pans the camera to its target), 35 wind pod. Object types (objectMap): 0 rock, 1 diamond, 9 falling object, 28 hook target, ...
+method i a (III)V         hurtPlayer              # (damage, anim, push direction)
+method i h (I)V           activateGate            # one switch press; opens the gate when its count runs out
+method i f (II)V          closeGateAt             # crushes whatever is under the gate
+method i a (IIZ)Z         tryMovePlayer           # (dx, dy, dryRun)
+method i aa ()V           updatePlayer
+method i aj ()V           updateTilesNearPlayer   # 17x17 window of active tiles
+method i as ()V           updateObjectAtScan      # pickups, falling and pushed objects at (scanX, scanY)
+method i au ()V           updateEnemies
+method i aq ()V           saveCheckpoint
+method i ar ()V           restoreCheckpoint
+method i m (I)V          collectTreasure
+method i a ()V            updateCamera
+method i g ()Z            panCameraToTarget
+method i g (I)V          setPlayerAnim
+method i y ()V            initBossFight
+method i ad ()V           checkBossContact
+method i ae ()V           restoreArenaWalls
+method i b (II)Z         crushObjectsAt
+method i e ()Z           crushObjectsUnderBoss
+method i e (II)V         smashObject
+method i a (I)I          themedSpriteIndex       # sprite slot for the current world, palette selected
+method i a (IIIIZ)V      renderBackgroundArea
+method i E ()V           paintCollapsingRows
+method i d (II)V         paintTileSlots
+method i G ()V           paintHud
+method i M ()V           paintBossArena
+method i N ()V           paintBossParts
+method i O ()V           paintStageAnimations
+method i P ()V           paintPlayer
+method i Q ()V           computeObjectOffset
+method i c (B)V         selectRollingObjectSprite
+method i F ()V           adjustForWindPod
+
+# checkpoint snapshot (saveCheckpoint / restoreCheckpoint)
+field i bS I              checkpointX
+field i bT I              checkpointY
+field i bX I              checkpointDiamonds
+field i bY I              checkpointRedDiamonds
+field i j B               checkpointHasPotion
+field i aj I              checkpointTreasureCount
+field i c [[I             checkpointObjectState
+field i d [[B             checkpointObjectTimers
+field i e [[B             checkpointObjectMap
+field i d [[I             checkpointTileMap
+field i f [[I             checkpointTileSlots
+field i c [J              checkpointActors
+field i d [J              checkpointEnemies
+field i o [B              checkpointSwitchStates
+field i m [B              switchStates
+field i b [[B             objectTimers
+field i bE I              scanX                   # tile being updated by updateTilesNearPlayer
+field i bF I              scanY
+field i aa I              padlockGemsRemaining
+field i ab I              padlockX
+field i ac I              padlockY
+field i j I               moveProgress            # pixels moved into the next tile (0..24)
+field i ci I              cameraPanX
+field i cj I              cameraPanY
+field i ck I              cameraPanSpeed
+
+# player status and HUD
+field i b J               invulnerableTicks       # after a hit; the player blinks
+field i aT I              escapePressesLeft       # pinned under a rock: mash keys to get out
+field i au I              shakeX
+field i av I              shakeY
+field i co I              deathX
+field i cp I              deathY
+field i bm I              pendingHint
+field i aU I              goldKeys
+field i aV I              silverKeys
+field i an I              compassDirection        # needle points to the next magic circle
+method i ac ()V           updateCompass
+field i cP I              hudEnergy               # last drawn values, so the HUD redraws only on change
+field i cQ I              hudDiamonds
+field i cR I              hudRedDiamonds
+field i cS I              hudLives
+field i cT I              hudPadlockGems
+field i cU I              hudGoldKeys
+field i cV I              hudSilverKeys
+field i D Z               creatingNewGame
+field i a Ljava/io/InputStream;   stagePackStream
+field i e Ljava/lang/String;      hintText
+field i p I               sealLocation            # 0..2 worlds, 3 shop
+
+# remaining screens
+method i av ()V           paintTip                # loading-screen tip box (tips.f)
+method i aA ()V           paintShop
+method i aB ()V           paintCredits
+method i az ()V           paintMapNodes
+method i o (II)V          paintMapConnection
+method i h ()Z            animateMapUnlock        # true once the newly unlocked path has been drawn
+method i a (Ljava/lang/String;)V   loadMapFile    # map_<world>.out -> mapNodes
+method i a (Ljavax/microedition/lcdui/Graphics;IIIIII)V   drawFramedBox   # (g, x, y, w, h, color, style)
+method i a (Ljava/lang/String;I)Ljava/lang/String;      insertLineBreaks # (text, width)
+method i ai ()V           updateSwitchReveal      # camera pan to a switch's target, then back
+field i cl I              switchRevealPhase
+field i dj I              switchTargetX
+field i dk I              switchTargetY
+field i s [B              creditsText
+field i eo I              creditsScroll
+field i ep I              creditsFirstLine
+field i cm I              activeSwitchId
