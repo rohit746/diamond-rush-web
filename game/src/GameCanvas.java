@@ -7,68 +7,68 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.rms.RecordStore;
 
 public final class GameCanvas extends Canvas implements Runnable {
-   private int int_l = 40;
-   private int int_m;
-   private boolean bool_c = false;
+   private int crushTimer = 40;
+   private int turnCooldown;
+   private boolean underHeavyObject = false;
    private boolean keyReleased;
    private int armorLevel = 0;
    private int nextArmorThreshold = Constants.armorDiamondThresholds[this.armorLevel];
-   private String string_a = "";
-   private boolean bool_e = true;
+   private String shopMessage = "";
+   private boolean playerVisible = true;
    private int sealLocation = 0;
-   private int int_q = 0;
-   private int int_r = 0;
-   private int int_s = this.int_q;
-   private int int_t = this.int_r;
-   private String string_b = "";
-   private String string_c = "";
-   private int int_u = -1;
-   private boolean bool_f = false;
-   private boolean bool_g = true;
-   private byte byte_c = 0;
-   private int int_v = 0;
-   private int int_w = 0;
-   private int int_x = 0;
-   private int int_y = 0;
-   private int int_z = 0;
-   private int int_A = 0;
-   private int int_B = 0;
-   private static boolean[] boolArr_a = new boolean[]{true, false, false};
-   private int int_C = 0;
-   private static boolean[] boolArr_b = new boolean[]{false, false, false};
-   private boolean bool_h = false;
-   private int int_D = -1;
-   private int int_E = 10;
-   private int int_F = 10;
-   private int int_G = 0;
-   private int int_H = 0;
-   private int int_I = 0;
-   private int int_J = 0;
-   private int int_K = 0;
-   private boolean bool_i = false;
-   private int int_L = 0;
-   private int int_M = -1;
-   private int int_N = -1;
-   private int int_O = 0;
-   private int int_P = 0;
-   private int int_Q = 0;
-   private int int_R = 0;
-   private int int_S = 0;
-   private boolean bool_j = false;
-   private boolean bool_k = false;
-   private int int_T = 0;
+   private int sealCursorX = 0;
+   private int sealCursorY = 0;
+   private int sealCursorPrevX = this.sealCursorX;
+   private int sealCursorPrevY = this.sealCursorY;
+   private String sealCaption = "";
+   private String sealCaptionTarget = "";
+   private int sealInputDirection = -1;
+   private boolean sealCursorMoving = false;
+   private boolean sealDirty = true;
+   private byte sealCursorStep = 0;
+   private int sealCursorTargetX = 0;
+   private int sealCursorTargetY = 0;
+   private int cursorAnimLength = 0;
+   private int cursorAnimFrame = 0;
+   private int sealX = 0;
+   private int sealY = 0;
+   private int crystalsPlaced = 0;
+   private static boolean[] crystalInserted = new boolean[]{true, false, false};
+   private int crystalInsertTicks = 0;
+   private static boolean[] worldCrystalEarned = new boolean[]{false, false, false};
+   private boolean crystalExitPending = false;
+   private int flyingCrystal = -1;
+   private int flyingCrystalX = 10;
+   private int flyingCrystalY = 10;
+   private int crystalHalfWidth = 0;
+   private int crystalHalfHeight = 0;
+   private int sealFlashStep = 0;
+   private int crystalAnimLength = 0;
+   private int crystalAnimFrame = 0;
+   private boolean endingReached = false;
+   private int bossSlamTicks = 0;
+   private int bossHeldObjectX = -1;
+   private int bossHeldObjectY = -1;
+   private int arenaWallRow = 0;
+   private int arenaWallX1 = 0;
+   private int arenaWallX2 = 0;
+   private int arenaWallRow2 = 0;
+   private int bossPreviousAnim = 0;
+   private boolean bossSlamHitPlayer = false;
+   private boolean bossSlamVisible = false;
+   private int unusedBossValue = 0;
    private int unlockedWorldNotice = 0;
    private int unlockedArmorNotice = 0;
-   private int int_W = 0;
-   private int int_X = 0;
-   private int int_Y = 0;
-   private int int_Z = 0;
-   private byte byte_d = 1;
-   private byte byte_e = 1;
-   private byte byte_f = 3;
-   private byte byte_g = 3;
-   private byte byte_h = 2;
-   private byte byte_i = 0;
+   private int endingPhase = 0;
+   private int endingFlashColor = 0;
+   private int endingShakeX = 0;
+   private int endingShakeY = 0;
+   private byte endingShakeDirY = 1;
+   private byte endingShakeDirX = 1;
+   private byte endingShakeLimitY = 3;
+   private byte endingShakeLimitX = 3;
+   private byte endingShakeSpeed = 2;
+   private byte unusedByteI = 0;
    private boolean hasEnemies = false;
    private int padlockGemsRemaining;
    private int padlockX;
@@ -76,40 +76,40 @@ public final class GameCanvas extends Canvas implements Runnable {
    private static byte[] effectPositions = new byte[16];
    private static byte[] effectTimers = new byte[8];
    private static byte[] effectTypes = new byte[8];
-   private int int_ad;
+   private int drawnEffect;
    private int nextEffect;
    private byte checkpointHasPotion;
    private static boolean vibrationEnabled;
-   private int int_af;
-   private int int_ag = 0;
+   private int checkpointPadlockGems;
+   private int tipIndex = 0;
    private static int keysDown;
-   private boolean bool_n = true;
+   private boolean onSolidGround = true;
    private boolean hudDirty;
    private int takenTreasureCount;
    private int checkpointTreasureCount;
    private static byte[] takenTreasures;
    private byte stageKind = 0;
-   private int int_ak = 0;
-   private int int_al;
-   private int int_am;
+   private int checkpointBannerUntil = 0;
+   private int floodHeight;
+   private int floodSwitchPresses;
    private int compassDirection;
-   private boolean bool_p;
+   private boolean hasCompass;
    private int bossAnim;
-   private int int_ap;
+   private int bossTimer;
    private int bossHealth;
-   private int int_ar;
-   private int int_as;
+   private int bossPosition;
+   private int yetiX;
    private int bossX;
-   private boolean bool_q = false;
-   private boolean bool_r = false;
-   private boolean bool_s = false;
-   private boolean bool_t = false;
+   private boolean prologueSaw13 = false;
+   private boolean prologueSaw16 = false;
+   private boolean prologueMarkerReached = false;
+   private boolean prologueMarkerHint = false;
    private int shakeX;
    private int shakeY;
    private static byte[] collapsingRows;
-   private int int_aw;
-   private int int_ax;
-   private int int_ay;
+   private int collapsingRowCount;
+   private int idleAnimDelay;
+   private int entryWalkSteps;
    public byte playerAction = 0;
    private byte queuedAction = 0;
    private int lives;
@@ -121,25 +121,25 @@ public final class GameCanvas extends Canvas implements Runnable {
    public int cameraTargetY;
    public int mapWidth;
    public int mapHeight;
-   private int int_aC;
-   private int int_aD;
-   private int int_aE;
-   private int int_aF;
-   private int int_aG;
-   private int int_aH;
-   private int int_aI;
-   private int int_aJ;
-   private int int_aK;
-   private int int_aL;
-   private int int_aM;
-   private int int_aN;
-   private int int_aO;
-   private int int_aP;
-   private int int_aQ;
+   private int nextCompassTarget;
+   private int hintIconSet;
+   private int hintIconFrame;
+   private int pickupIconSet;
+   private int pickupIconFrame;
+   private int pickupValue;
+   private int pickupObject;
+   private int paintImageSet;
+   private int paintFrame;
+   private int paintOverlaySet;
+   private int paintOverlayFrame;
+   private int trapLengthA;
+   private int trapReachA;
+   private int trapLengthB;
+   private int trapReachB;
    public static byte gameState = 0;
    private int subState;
    private static byte stateBeforeCheats = 0;
-   private boolean bool_u = false;
+   private boolean resultsSkipped = false;
    private static int stateTicks;
    public static int stateFrames;
    private long stateStartTime;
@@ -149,85 +149,85 @@ public final class GameCanvas extends Canvas implements Runnable {
    public int moveProgress;
    public int playerFlags;
    private int escapePressesLeft;
-   private boolean bool_w;
+   private boolean checkpointReached;
    private int goldKeys;
    private int silverKeys;
-   private boolean bool_x;
+   private boolean cheatSkipWalking;
    private byte energy;
    private int deathTimer;
    private long invulnerableTicks;
-   private int int_aX;
+   private int moveSpeed;
    private int stageDiamondTotal = 0;
    private int stageDiamonds;
    private int stageRedDiamondTotal = 0;
    private int stageRedDiamonds;
    private int stageHits;
    private int stageRetries;
-   private int int_be;
-   private int int_bf;
-   private byte byte_o;
-   private int int_bg;
-   private int int_bh;
-   private int int_bi;
-   private int int_bj;
-   private int int_bk;
-   private int int_bl;
+   private int hookedObjectState;
+   private int hookRestoreState;
+   private byte hookPullDelay;
+   private int hookX;
+   private int hookY;
+   private int hookPullSteps;
+   private int screenShakeTicks;
+   private int screenShakeOffset;
+   private int fadeHeight;
    private int pendingHint = -1;
-   private boolean bool_y;
-   private int int_bn;
-   private boolean bool_z;
+   private boolean stuckWarning;
+   private int stageTitleUntil;
+   private boolean menuItemChosen;
    private int menu;
    private int previousMenu;
    private int menuSelection;
    private int loadingStepCount;
    private int loadingStep;
-   private int int_bt;
-   private int int_bu;
-   private int int_bv;
-   private int int_bw;
+   private int genPackNumber;
+   private int rollerVariants;
+   private int playerScreenX;
+   private int playerScreenY;
    private int drawX;
    private int drawY;
-   private int int_bz;
-   private int int_bA;
-   private int int_bB;
-   private int int_bC;
-   private boolean bool_A;
-   private int int_bD = 0;
+   private int overlayDx;
+   private int overlayDy;
+   private int overlayTileX;
+   private int overlayTileY;
+   private boolean overlayPending;
+   private int overlayModule = 0;
    private int scanX;
    private int scanY;
-   private int int_bG;
-   private int int_bH;
-   private int int_bI;
-   private int int_bJ;
-   private int int_bK;
-   private int int_bL;
-   private int int_bM;
-   private int int_bN;
-   private int int_bO;
-   private int int_bP;
-   private int int_bQ;
-   private int int_bR;
+   private int paintTileX;
+   private int paintTileY;
+   private int paintObject;
+   private int paintTerrain;
+   private int paintSpriteAnim;
+   private int paintSpriteFrame;
+   private int unusedPaintValue;
+   private int paintOffsetX;
+   private int paintOffsetY;
+   private int paintTransform;
+   private int paintPlayerDirection;
+   private int paintAnimPhase;
    private int checkpointX;
    private int checkpointY;
-   private int int_bU;
-   private int int_bV;
-   private int int_bW = 0;
+   private int checkpointGoldKeys;
+   private int checkpointSilverKeys;
+   private int checkpointEntryWalkSteps = 0;
    private int checkpointDiamonds = 0;
    private int checkpointRedDiamonds = 0;
-   private int int_bZ = 0;
-   private int int_ca = 0;
-   private int int_cb = 0;
+   private int checkpointNextCompassTarget = 0;
+   private int checkpointFloodSwitchPresses = 0;
+   private int checkpointFloodHeight = 0;
    private boolean quitRequested;
-   private int int_cc;
-   private int int_cd;
+   private int genPackEntryCount;
+   private int genPackSkipBytes;
    private InputStream stagePackStream;
-   private byte byte_p;
-   private byte byte_q;
-   private boolean bool_C = false;
-   private int int_ce;
-   private int int_cf;
-   private int int_cg;
-   private int int_ch;
+   private byte exitDirectionA;
+   private byte exitDirectionB;
+   private boolean cheatSkipExitB = false;
+   private int togglePhase;
+   private int toggleDirection;
+   private int checkpointTogglePhase;
+   private int checkpointToggleDirection;
    private Graphics screen;
    private static Image splashTop;
    private static Image splashMiddle;
@@ -238,13 +238,13 @@ public final class GameCanvas extends Canvas implements Runnable {
    private static FontRenderer fontMedium;
    public static FontRenderer fontSmall;
    private static Sprite tipSprite;
-   private static byte[] byteArr_f;
+   private static byte[] mapFileData;
    private static SpriteInstance[] spriteInstances;
-   private static Sprite sprite_b;
+   private static Sprite paintSprite;
    private static byte[] directionOffsets = new byte[]{0, 0, -1, 0, 1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0};
-   private static byte[] byteArr_h = new byte[]{0, 3, 4, 1, 2, 5, 6};
-   private long long_c;
-   private long long_d;
+   private static byte[] oppositeDirection = new byte[]{0, 3, 4, 1, 2, 5, 6};
+   private long neededGenSprites;
+   private long neededExtraSprites;
    private boolean creatingNewGame = false;
    private static byte[] saveData = null;
    private static byte[] preferences = null;
@@ -253,17 +253,17 @@ public final class GameCanvas extends Canvas implements Runnable {
    private static byte[][] objectMap;
    private static byte[][] objectTimers;
    private static byte[][] tileRedrawTimers;
-   private static byte[] byteArr_k;
-   private boolean bool_E;
+   private static byte[] compassTargets;
+   private boolean cameraPanToCheckpoint;
    private int cameraPanX;
    private int cameraPanY;
    private int cameraPanSpeed;
    private int switchRevealPhase;
-   private static byte[] byteArr_l;
+   private static byte[] switchTargetObjects;
    private static byte[] switchStates;
    private static int activeSwitchId;
-   private static int int_cn;
-   private static byte[] byteArr_n;
+   private static int checkpointActiveSwitchId;
+   private static byte[] genPackDirectory;
    private static int[][] checkpointObjectState;
    private static int[][] checkpointTileMap;
    private static byte[][] checkpointObjectTimers;
@@ -277,55 +277,55 @@ public final class GameCanvas extends Canvas implements Runnable {
    public static GloftDIRU midlet;
    private int deathX = -1;
    private int deathY = -1;
-   private int int_cq;
-   private int int_cr;
-   private int int_cs;
-   private static Sprite sprite_c;
-   private int int_ct;
-   private byte byte_r = 0;
-   public static boolean bool_a = false;
+   private int deferredY;
+   private int deferredX;
+   private int deferredFrame;
+   private static Sprite deferredSprite;
+   private int deferredAnim;
+   private byte checkpointBannerCount = 0;
+   public static boolean pickupAnimStarting = false;
    private static String moreGamesUrl = "more_games_url";
    private long frameStartTime;
    private long lastFrameMillis;
-   private boolean bool_F = false;
-   private boolean bool_G = false;
-   private boolean bool_H = false;
-   private boolean bool_I = false;
-   private boolean bool_J = false;
-   private boolean bool_K = false;
-   private boolean bool_L = false;
-   private boolean bool_M = false;
-   private boolean bool_N = false;
-   private int int_cu = -1;
+   private boolean titleShownOnce = false;
+   private boolean mapSpritesLoaded = false;
+   private boolean unloadMapOnLoad = false;
+   private boolean saveResultOnLoad = false;
+   private boolean freeStageOnLoad = false;
+   private boolean unloadCutscenesOnLoad = false;
+   private boolean gcOnLoad = false;
+   private boolean reloadLivesOnLoad = false;
+   private boolean writeSaveOnLoad = false;
+   private int armorPalette = -1;
    private int preferencesLength;
    private int saveDataLength;
-   private boolean bool_O;
-   private boolean bool_P = false;
-   private int int_cx;
-   private int int_cy;
-   private boolean bool_Q = false;
-   private boolean bool_R = false;
+   private boolean noSaveFound;
+   private boolean stageCompletedBefore = false;
+   private int unlockedNodeX;
+   private int unlockedNodeY;
+   private boolean blackScreenPending = false;
+   private boolean tipVisible = false;
    private int cheatMaxEnergy;
    private int cheatWeapons;
    private boolean cheatUnlockAllStages;
    private boolean cheatUnlockSecretStages;
-   private int int_cB;
+   private int slotFrameCycle;
    private static Image backgroundBuffer = null;
    private static Graphics backgroundBufferGraphics = null;
    private static int backgroundBufferWidth = 0;
    private static int backgroundBufferHeight = 0;
-   private static int int_cE = -1;
-   private static int int_cF = -1;
-   private static int int_cG = -1;
-   private static int int_cH = -1;
-   private int int_cI;
-   private int int_cJ;
-   private int int_cK;
-   private int int_cL;
-   private static Image image_e = null;
-   private static int int_cM = 0;
-   private static int int_cN = 0;
-   private static int int_cO = 0;
+   private static int bufferedLeft = -1;
+   private static int bufferedRight = -1;
+   private static int bufferedTop = -1;
+   private static int bufferedBottom = -1;
+   private int cameraTileX;
+   private int cameraTileY;
+   private int cameraTileOffsetX;
+   private int cameraTileOffsetY;
+   private static Image unusedImage = null;
+   private static int unusedIntCM = 0;
+   private static int unusedIntCN = 0;
+   private static int unusedIntCO = 0;
    private int hudEnergy = -1;
    private int hudDiamonds = -1;
    private int hudRedDiamonds = -1;
@@ -333,22 +333,22 @@ public final class GameCanvas extends Canvas implements Runnable {
    private int hudPadlockGems = -1;
    private int hudGoldKeys = -1;
    private int hudSilverKeys = -1;
-   private boolean bool_U = true;
-   private int int_cW;
+   private boolean hudPanelVisible = true;
+   private int menuTicks;
    private int menuItemCount;
    private int menuWidth;
-   private int int_cZ;
-   private int int_da = 3;
+   private int menuItemsRevealed;
+   private int menuRevealDelay = 3;
    private int menuAnimFrame = -1;
    private long menuAnimTime = 0L;
    private int menuHighlightedRow = -1;
-   private static boolean bool_V = false;
-   private static boolean bool_W = true;
-   private long long_h = 0L;
-   private boolean bool_X;
-   private boolean bool_Y;
-   private boolean bool_Z;
-   private boolean bool_aa;
+   private static boolean menuNeedsRedraw = false;
+   private static boolean pauseBackgroundStale = true;
+   private long unusedTimeH = 0L;
+   private boolean menuGameStarted;
+   private boolean menuGameStartedStale;
+   private boolean arenaWallsRestored;
+   private boolean shopTextChanged;
    private boolean cheatSkipStages = false;
    private int debugEditorRow = 0;
    private int[] debugEditorValues = new int[]{0, 0, 0, 0, 0};
@@ -359,75 +359,75 @@ public final class GameCanvas extends Canvas implements Runnable {
    private static int newSaveFlags = 0;
    private byte stageAwardsBefore;
    private byte stageAwards;
-   private boolean bool_ac = false;
+   private boolean stageJustUnlocked = false;
    private static byte[] doorX = new byte[16];
    private static byte[] doorY = new byte[16];
-   private long long_i = 0L;
-   private boolean bool_ad;
-   private int int_dh = 0;
-   private boolean bool_ae;
-   private long long_j = 0L;
-   private long long_k = 0L;
+   private long lastPickupTime = 0L;
+   private boolean knightCharging;
+   private int knightChargeOffset = 0;
+   private boolean knightTurning;
+   private long yetiNextRoar = 0L;
+   private long icicleDropTime = 0L;
    private boolean paused = false;
    private long pausedAt;
-   private boolean bool_ag;
-   private boolean bool_ah;
-   private boolean bool_ai;
-   private boolean bool_aj = false;
+   private boolean stageHasDoors9;
+   private boolean stageHasDoors8;
+   private boolean stageHasWindPods;
+   private boolean bossExitPending = false;
    private String hintText;
-   private int int_di = 0;
+   private int hintTextTicks = 0;
    private int switchTargetX;
    private int switchTargetY;
-   private int int_dl;
-   private static boolean bool_ak = false;
-   private static int int_dm;
-   private static int int_dn;
-   private static int int_do;
-   private static int int_dp;
-   private boolean bool_al = true;
-   private int int_dq = -1;
-   private int int_dr;
-   private int int_ds;
-   private byte byte_v;
-   private int int_dt;
+   private int switchRevealTimer;
+   private static boolean cameraHeldAfterReveal = false;
+   private static int actorAX;
+   private static int actorAY;
+   private static int actorBX;
+   private static int actorBY;
+   private boolean enemyRemovalPending = true;
+   private int enemyChaseTicks = -1;
+   private int enemyChaseSteps;
+   private int enemyUnusedS;
+   private byte enemyChaseDirection;
+   private int enemyRemovalIndex;
    private int enemyCount;
-   private int int_dv;
-   private int int_dw;
-   private int int_dx;
-   private byte byte_w;
-   private int int_dy;
-   private int int_dz = -1;
-   private byte byte_x = 3;
-   private byte byte_y;
-   private int int_dA;
-   private int int_dB;
-   private int int_dC;
-   private byte byte_z;
-   private int int_dD;
-   private int int_dE;
-   private int int_dF;
-   private byte byte_A;
-   private int int_dG;
-   private int int_dH;
-   private static Sprite sprite_d;
+   private int enemyTriggerX;
+   private int enemyTriggerY;
+   private int enemyTriggerSide;
+   private byte enemyActorSlot;
+   private int enemyTargetRow;
+   private int enemyStepTimer = -1;
+   private byte enemyPhase = 3;
+   private byte checkpointEnemyPhase;
+   private int checkpointEnemyChaseTicks;
+   private int checkpointEnemyChaseSteps;
+   private int checkpointEnemyUnusedS;
+   private byte checkpointEnemyChaseDirection;
+   private int checkpointEnemyTriggerX;
+   private int checkpointEnemyTriggerY;
+   private int checkpointEnemyTriggerSide;
+   private byte checkpointEnemyActorSlot;
+   private int checkpointEnemyTargetRow;
+   private int checkpointEnemyStepTimer;
+   private static Sprite slotSprite;
    private static int[][] tileSlots;
    private static long[] actors = new long[15];
    private static long[] enemies = new long[15];
    private static int[][] checkpointTileSlots;
    private static long[] checkpointActors;
    private static long[] checkpointEnemies;
-   private static boolean bool_am;
-   private int int_dI;
-   private int int_dJ;
+   private static boolean checkpointEnemyRemovalPending;
+   private int checkpointEnemyRemovalIndex;
+   private int checkpointEnemyCount;
    private static String tipText;
    private static long[][] mapNodes;
-   private static StringBuffer stringBuffer_a;
-   private static StringBuffer stringBuffer_b;
+   private static StringBuffer unusedBufferA;
+   private static StringBuffer unusedBufferB;
    private static StringBuffer textBuffer;
    private static Image mapPreview;
    private static Graphics mapPreviewGraphics;
    private int firstSecretStage = 100;
-   private int int_dL;
+   private int mapNodesDrawn;
    private int mapWalkX;
    private int mapWalkY;
    private int mapWalkError;
@@ -437,37 +437,37 @@ public final class GameCanvas extends Canvas implements Runnable {
    private int mapWalkErrorInc;
    private int mapWalkStepX;
    private int mapWalkStepY;
-   private boolean bool_an = true;
-   private boolean bool_ao;
+   private boolean mapWalkStarting = true;
+   private boolean mapWalkFacingLeft;
    private int mapCursorX;
    private int mapCursorY;
    private int mapTargetX;
    private int mapTargetY;
    private static int unlockedStage;
-   private int int_ea;
-   private int int_eb;
-   private int int_ec;
-   private int int_ed;
-   private int int_ee;
-   private int int_ef;
-   private int int_eg;
-   private int int_eh;
-   private boolean bool_ap = true;
-   private boolean bool_aq = true;
-   private boolean bool_ar = true;
-   private int[] intArr_c;
-   private int int_ei;
-   private int int_ej;
-   private int int_ek = 2;
-   private int int_el;
-   private int int_em = 2;
-   private boolean bool_as;
-   private boolean bool_at = true;
+   private int pathX;
+   private int pathY;
+   private int pathError;
+   private int pathDx;
+   private int pathDy;
+   private int pathErrorStepX;
+   private int pathErrorStepY;
+   private int pathSteps;
+   private boolean mapUnlockDone = true;
+   private boolean mapPathDotsVisible = true;
+   private boolean mapUnlockAnimDone = true;
+   private int[] mapPathPoints;
+   private int mapPathLength;
+   private int mapPathShown;
+   private int mapPathBlinkDelay = 2;
+   private int mapUnlockFrame;
+   private int mapWalkerBlinkDelay = 2;
+   private boolean mapPathReversed;
+   private boolean cheatSkipExitA = true;
    private boolean mapPreviewStale = true;
-   private long long_m = 0L;
-   private int int_en = -1;
-   private String string_g;
-   private StringBuffer stringBuffer_d = new StringBuffer();
+   private long unusedTimeM = 0L;
+   private int shownArmorLevel = -1;
+   private String shopDiamondsText;
+   private StringBuffer armorThresholdText = new StringBuffer();
    private boolean fullRedraw = true;
    private boolean mapCursorMoving = true;
    private int creditsScroll;
@@ -492,19 +492,19 @@ public final class GameCanvas extends Canvas implements Runnable {
    public static String[] tutorialStrings;
    public static boolean rightToLeft = false;
    private static byte[] creditsText = null;
-   private static String[] stringArr_d = new String[]{"/w0.bin", "/w1.bin", "/w2.bin"};
+   private static String[] stagePackFiles = new String[]{"/w0.bin", "/w1.bin", "/w2.bin"};
    private static int noticeMillis = 0;
    private long inactivityClock = System.currentTimeMillis();
    private String noticeText;
-   private int int_er;
-   private int int_es;
+   private int noticeX;
+   private int noticeY;
    private int noticeColor;
-   private int int_eu;
+   private int noticeStyle;
 
    public GameCanvas(GloftDIRU var1) {
-      this.int_aD = -1;
-      this.int_aF = -1;
-      this.int_aH = -1;
+      this.hintIconSet = -1;
+      this.pickupIconSet = -1;
+      this.pickupValue = -1;
       spriteInstances = new SpriteInstance[6];
       sprites = new Sprite[61];
       GameCanvas gamecanvas = this;
@@ -561,22 +561,22 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void hurtPlayer(int var1, int var2, int var3) {
-      this.int_aF = -1;
-      this.int_aI = -1;
-      this.int_aH = -1;
+      this.pickupIconSet = -1;
+      this.pickupObject = -1;
+      this.pickupValue = -1;
       int i = spriteInstances[(this.playerFlags & 16384) == 0 ? 0 : 3].anim;
       if (spriteInstances[(this.playerFlags & 16384) == 0 ? 0 : 3].anim != 40) {
          if (i != 48) {
             if (i != 47) {
-               if (this.invulnerableTicks <= 0L && this.deathTimer == 0 && this.int_bi == 0 && this.queuedAction != 6 && (this.playerFlags & 112) == 0
+               if (this.invulnerableTicks <= 0L && this.deathTimer == 0 && this.hookPullSteps == 0 && this.queuedAction != 6 && (this.playerFlags & 112) == 0
                   || this.escapePressesLeft > 0) {
                   this.stageHits++;
                   this.setEnergy((byte)(this.energy - var1));
-                  if (this.int_bl == 0 && this.energy == 0) {
-                     this.long_j = 0L;
+                  if (this.fadeHeight == 0 && this.energy == 0) {
+                     this.yetiNextRoar = 0L;
                      this.deathX = this.scanX;
                      this.deathY = this.scanY;
-                     sprite_c = null;
+                     deferredSprite = null;
                   }
 
                   this.playerFlags = this.playerFlags & -113 | var2;
@@ -643,10 +643,10 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void openMenu(int var1) {
       this.previousMenu = this.menu;
-      this.bool_z = false;
+      this.menuItemChosen = false;
       this.menuSelection = 0;
       this.menu = var1;
-      this.int_cW = 0;
+      this.menuTicks = 0;
       if (var1 >= 0) {
          GameCanvas gamecanvas;
          (gamecanvas = this).menuItemCount = menus[gamecanvas.menu].length >> 1;
@@ -659,8 +659,8 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
          }
 
-         gamecanvas.int_cZ = 0;
-         gamecanvas.int_cW = 0;
+         gamecanvas.menuItemsRevealed = 0;
+         gamecanvas.menuTicks = 0;
       }
    }
 
@@ -694,7 +694,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       this.stateStartTime = System.currentTimeMillis();
       stateTicks = 0;
       stateFrames = 0;
-      this.int_ak = 0;
+      this.checkpointBannerUntil = 0;
    }
 
    private static void sleep(long var0) {
@@ -812,7 +812,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             label1360: {
                switch (gameState) {
                   case 1:
-                     if (gamecanvas1.bool_h || gamecanvas1.bool_aj) {
+                     if (gamecanvas1.crystalExitPending || gamecanvas1.bossExitPending) {
                         keysDown = 0;
                      }
 
@@ -826,21 +826,21 @@ public final class GameCanvas extends Canvas implements Runnable {
                            gamecanvas11.playerX = 60;
                            gamecanvas11.playerY = 3;
                         } else {
-                           gamecanvas11.bool_at = isKeyDown(524288);
-                           gamecanvas11.bool_C = !gamecanvas11.bool_at;
+                           gamecanvas11.cheatSkipExitA = isKeyDown(524288);
+                           gamecanvas11.cheatSkipExitB = !gamecanvas11.cheatSkipExitA;
                            gamecanvas11.stageRetries = 0;
                            gamecanvas11.stageHits = 0;
-                           gamecanvas11.bool_x = true;
+                           gamecanvas11.cheatSkipWalking = true;
                            gamecanvas11.playerX = gamecanvas11.mapWidth + 5 + 1;
                         }
                      }
 
                      if ((gamecanvas10.switchRevealPhase == 0 || isKeyDown(32944))
-                        && gamecanvas10.int_ay == 0
-                        && !gamecanvas10.bool_x
+                        && gamecanvas10.entryWalkSteps == 0
+                        && !gamecanvas10.cheatSkipWalking
                         && gamecanvas10.energy > 0
                         && spriteInstances[0].anim != 19
-                        && !gamecanvas10.bool_E) {
+                        && !gamecanvas10.cameraPanToCheckpoint) {
                         if (gamecanvas10.activeCutscene != null) {
                            if (isKeyDown(32784)) {
                               gamecanvas10.activeCutscene.updateText();
@@ -1147,13 +1147,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  if (gamecanvas10.playerAction == 6
                                     && (tileMap[gamecanvas10.playerX][gamecanvas10.playerY] & 0xFF) == 2
                                     && tileMap[gamecanvas10.playerX][gamecanvas10.playerY] >> 8 == 1) {
-                                    gamecanvas10.int_aD = -1;
+                                    gamecanvas10.hintIconSet = -1;
                                     gamecanvas10.clearTileRegion(gamecanvas10.playerX, gamecanvas10.playerY, (byte)2);
                                  }
                               }
                            }
                         } else if (isKeyDown(256)) {
-                           gamecanvas10.int_aD = -1;
+                           gamecanvas10.hintIconSet = -1;
                            int j5 = spriteInstances[0].anim;
                            if (spriteInstances[0].anim == 36 + (gamecanvas10.playerFlags & 7) - 1) {
                               if ((tileMap[gamecanvas10.playerX][gamecanvas10.playerY] & 0xFF) == 4) {
@@ -1185,7 +1185,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                         if (gamecanvas10.playerAction != 5
                            && gamecanvas10.queuedAction == 0
-                           && gamecanvas10.int_m == 0
+                           && gamecanvas10.turnCooldown == 0
                            && gamecanvas10.playerAction != (gamecanvas10.playerFlags & 7)) {
                            gamecanvas10.playerFlags |= 4096;
                         }
@@ -1231,8 +1231,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                            addToSaveShort(4, -500);
                            gamecanvas9.writeSave();
                            gameState = 15;
-                           gamecanvas9.bool_J = true;
-                           gamecanvas9.bool_H = true;
+                           gamecanvas9.freeStageOnLoad = true;
+                           gamecanvas9.unloadMapOnLoad = true;
                            gamecanvas9.openWorldMap();
                         }
                      }
@@ -1267,9 +1267,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
 
                         if (isKeyDown(64)) {
-                           gamecanvas8.bool_J = true;
-                           gamecanvas8.bool_H = true;
-                           gamecanvas8.bool_L = true;
+                           gamecanvas8.freeStageOnLoad = true;
+                           gamecanvas8.unloadMapOnLoad = true;
+                           gamecanvas8.gcOnLoad = true;
                            gamecanvas8.loadingStep = 0;
                            gameState = 28;
                            keysDown = 0;
@@ -1432,7 +1432,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         gamecanvas1.freeStageResources();
                      }
 
-                     gamecanvas1.bool_u = true;
+                     gamecanvas1.resultsSkipped = true;
                      break;
                   case 24:
                      GameCanvas gamecanvas6 = gamecanvas1;
@@ -1549,7 +1549,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      stateBeforeCheats = gameState;
                      gamecanvas1.checkCheatCode();
                      GameCanvas gamecanvas4 = gamecanvas1;
-                     if (gamecanvas1.int_D == -1 && gamecanvas4.int_B == 0) {
+                     if (gamecanvas1.flyingCrystal == -1 && gamecanvas4.crystalsPlaced == 0) {
                         label1078: {
                            GameCanvas gamecanvas15;
                            byte b14;
@@ -1585,7 +1585,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
                            }
 
-                           gamecanvas15.int_u = b14;
+                           gamecanvas15.sealInputDirection = b14;
                         }
 
                         keysDown = 0;
@@ -1629,7 +1629,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                         if (gamecanvas3.menu == 1) {
                            gameState = 2;
-                           bool_V = true;
+                           menuNeedsRedraw = true;
                            gamecanvas3.hudDirty = true;
                            gamecanvas3.openMenu(1);
                         }
@@ -1700,7 +1700,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          if (!gamecanvas1.keyReleased && (gamecanvas1.playerFlags & 7) != 0) {
-            gamecanvas1.int_m = 10;
+            gamecanvas1.turnCooldown = 10;
          }
       }
 
@@ -1741,18 +1741,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                this.createSaveStep(this.loadingStep++);
 
                for (int k4 = 0; k4 < 3; k4++) {
-                  boolArr_b[k4] = false;
+                  worldCrystalEarned[k4] = false;
                }
 
                for (int l4 = 1; l4 < 3; l4++) {
-                  boolArr_a[l4] = false;
+                  crystalInserted[l4] = false;
                }
 
                this.resetStateTimer();
                if (this.loadingStep == 5) {
-                  this.bool_N = true;
-                  this.bool_M = true;
-                  this.bool_L = true;
+                  this.writeSaveOnLoad = true;
+                  this.reloadLivesOnLoad = true;
+                  this.gcOnLoad = true;
                   this.world = 0;
                   this.stage = 13;
                   keysDown = 0;
@@ -1789,7 +1789,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.loadingStepCount = 32;
             return;
          case 7:
-            if (this.bool_z) {
+            if (this.menuItemChosen) {
                gameState = 8;
                this.loadingStep = 0;
                this.loadingStepCount = 32;
@@ -1826,8 +1826,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas1.sound.startThread();
                      gameState = 9;
                      gamecanvas1.openMenu(-1);
-                     (stringBuffer_a = new StringBuffer(stageNames[0])).delete(stringBuffer_a.length() - 1, stringBuffer_a.length());
-                     (stringBuffer_b = new StringBuffer(stageNames[11])).delete(stringBuffer_b.length() - 1, stringBuffer_b.length());
+                     (unusedBufferA = new StringBuffer(stageNames[0])).delete(unusedBufferA.length() - 1, unusedBufferA.length());
+                     (unusedBufferB = new StringBuffer(stageNames[11])).delete(unusedBufferB.length() - 1, unusedBufferB.length());
                      textBuffer = new StringBuffer("1");
                }
             }
@@ -1870,9 +1870,9 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                i4++;
                this.loadingStep++;
-               this.bool_Y = true;
+               this.menuGameStartedStale = true;
                if (i4 == 8) {
-                  if (this.bool_F) {
+                  if (this.titleShownOnce) {
                      gameState = 4;
                      if (this.menu == -1) {
                         this.subState = 0;
@@ -1882,7 +1882,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                   } else {
                      gameState = 30;
-                     this.bool_F = true;
+                     this.titleShownOnce = true;
                   }
 
                   this.sound.play(19);
@@ -1893,10 +1893,10 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.resetStateTimer();
             return;
          case 11:
-            this.bool_J = true;
-            this.bool_H = true;
+            this.freeStageOnLoad = true;
+            this.unloadMapOnLoad = true;
             gameState = 5;
-            this.bool_R = true;
+            this.tipVisible = true;
             this.resetStateTimer();
             return;
          case 15:
@@ -1961,38 +1961,38 @@ public final class GameCanvas extends Canvas implements Runnable {
             gamecanvas1 = this;
             switch (this.subState) {
                case 0:
-                  if (stateTicks > 40 || gamecanvas1.bool_u) {
+                  if (stateTicks > 40 || gamecanvas1.resultsSkipped) {
                      gamecanvas1.subState++;
                      gamecanvas1.resetStateTimer();
                      return;
                   }
                   break;
                case 1:
-                  if (stateTicks > gamecanvas1.stageDiamonds << 1 && stateTicks > 40 || gamecanvas1.bool_u) {
+                  if (stateTicks > gamecanvas1.stageDiamonds << 1 && stateTicks > 40 || gamecanvas1.resultsSkipped) {
                      gamecanvas1.subState++;
                      gamecanvas1.resetStateTimer();
                      return;
                   }
                   break;
                case 2:
-                  if (stateTicks > 40 || gamecanvas1.bool_u) {
+                  if (stateTicks > 40 || gamecanvas1.resultsSkipped) {
                      gamecanvas1.subState++;
                      gamecanvas1.resetStateTimer();
                      return;
                   }
                   break;
                case 3:
-                  if (stateTicks > 10 || gamecanvas1.bool_u) {
+                  if (stateTicks > 10 || gamecanvas1.resultsSkipped) {
                      gamecanvas1.subState++;
                      gamecanvas1.resetStateTimer();
                      return;
                   }
                   break;
                case 4:
-                  if (stateTicks > 10 || gamecanvas1.bool_u) {
+                  if (stateTicks > 10 || gamecanvas1.resultsSkipped) {
                      gamecanvas1.subState++;
                      gamecanvas1.resetStateTimer();
-                     gamecanvas1.bool_u = false;
+                     gamecanvas1.resultsSkipped = false;
                   }
                case 5:
             }
@@ -2000,9 +2000,9 @@ public final class GameCanvas extends Canvas implements Runnable {
             return;
          case 20:
             if (stateTicks > 30) {
-               this.bool_C = true;
-               this.bool_J = true;
-               this.bool_H = true;
+               this.cheatSkipExitB = true;
+               this.freeStageOnLoad = true;
+               this.unloadMapOnLoad = true;
                this.openWorldMap();
                return;
             }
@@ -2015,18 +2015,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                label920:
                switch (l3) {
                   case 0:
-                     if (gamecanvas1.bool_I) {
+                     if (gamecanvas1.saveResultOnLoad) {
                         gamecanvas1.saveStageResult();
                      }
                      break;
                   case 1:
-                     if (gamecanvas1.bool_J) {
+                     if (gamecanvas1.freeStageOnLoad) {
                         gamecanvas1.freeStageResources();
                      }
                      break;
                   case 2:
-                     if (gamecanvas1.bool_G) {
-                        gamecanvas1.bool_G = false;
+                     if (gamecanvas1.mapSpritesLoaded) {
+                        gamecanvas1.mapSpritesLoaded = false;
                         unloadSprite(sprites[17], true);
                         sprites[17] = null;
                         unloadSprite(sprites[10], true);
@@ -2044,7 +2044,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break;
                   case 3:
-                     if (gamecanvas1.bool_H) {
+                     if (gamecanvas1.unloadMapOnLoad) {
                         gamecanvas1.unloadMapResources();
                      }
                      break;
@@ -2063,7 +2063,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
 
                      mapNodes = new long[12][12];
-                     gamecanvas1.intArr_c = new int[20];
+                     gamecanvas1.mapPathPoints = new int[20];
                      gamecanvas1.loadMapFile(textBuffer.toString());
                      break;
                   case 5:
@@ -2105,8 +2105,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                         sprites[54] = loadSprite("/mmv.f", 1);
                      }
 
-                     gamecanvas1.int_G = frameWidth(sprites[54], 0) >> 1;
-                     gamecanvas1.int_H = frameHeight(sprites[54], 0) >> 1;
+                     gamecanvas1.crystalHalfWidth = frameWidth(sprites[54], 0) >> 1;
+                     gamecanvas1.crystalHalfHeight = frameHeight(sprites[54], 0) >> 1;
                      break;
                   case 8:
                      if (sprites[53] == null) {
@@ -2119,17 +2119,17 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break;
                   case 10:
-                     if (gamecanvas1.bool_ac) {
+                     if (gamecanvas1.stageJustUnlocked) {
                         GameCanvas gamecanvas13 = gamecanvas1;
-                        gamecanvas1.int_el = 0;
-                        gamecanvas13.int_ei = 0;
-                        gamecanvas13.int_ej = 0;
-                        gamecanvas13.bool_ar = false;
-                        gamecanvas13.bool_aq = true;
-                        gamecanvas13.bool_ap = false;
-                        gamecanvas13.int_ek = 2;
-                        gamecanvas13.int_em = 2;
-                        gamecanvas13.bool_as = false;
+                        gamecanvas1.mapUnlockFrame = 0;
+                        gamecanvas13.mapPathLength = 0;
+                        gamecanvas13.mapPathShown = 0;
+                        gamecanvas13.mapUnlockAnimDone = false;
+                        gamecanvas13.mapPathDotsVisible = true;
+                        gamecanvas13.mapUnlockDone = false;
+                        gamecanvas13.mapPathBlinkDelay = 2;
+                        gamecanvas13.mapWalkerBlinkDelay = 2;
+                        gamecanvas13.mapPathReversed = false;
                      }
                   case 11:
                   case 12:
@@ -2137,17 +2137,17 @@ public final class GameCanvas extends Canvas implements Runnable {
                   default:
                      break;
                   case 14:
-                     if (gamecanvas1.bool_C) {
-                        gamecanvas1.bool_C = false;
+                     if (gamecanvas1.cheatSkipExitB) {
+                        gamecanvas1.cheatSkipExitB = false;
                      }
 
                      GameCanvas gamecanvas12 = gamecanvas1;
                      gamecanvas1.mapCursorX = -1;
-                     if (!gamecanvas12.bool_ac) {
+                     if (!gamecanvas12.stageJustUnlocked) {
                         gamecanvas12.stage = unlockedStage;
                      }
 
-                     gamecanvas12.bool_ac = false;
+                     gamecanvas12.stageJustUnlocked = false;
 
                      for (int j8 = 0; j8 < 12; j8++) {
                         for (int j10 = 0; j10 < 12; j10++) {
@@ -2178,7 +2178,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  gamecanvas12.mapTargetY = j10;
                               }
 
-                              gamecanvas12.bool_ao = false;
+                              gamecanvas12.mapWalkFacingLeft = false;
                            }
                         }
                      }
@@ -2251,11 +2251,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
 
                               if (isKeyDown(64)) {
-                                 if (gamecanvas1.bool_i) {
+                                 if (gamecanvas1.endingReached) {
                                     gamecanvas1.loadingStep = 0;
                                     gamecanvas1.loadingStepCount = 8;
                                     gameState = 9;
-                                    gamecanvas1.bool_i = false;
+                                    gamecanvas1.endingReached = false;
                                  } else {
                                     gamecanvas1.subState = 3;
                                  }
@@ -2333,7 +2333,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   break;
                case 1:
                   newDiamondTotal = (newDiamondTotal = readShort(saveData, 4)) + gamecanvas1.stageDiamonds;
-                  gamecanvas1.bool_u = false;
+                  gamecanvas1.resultsSkipped = false;
                   break;
                case 2:
                   saveData[4] = (byte)newDiamondTotal;
@@ -2442,15 +2442,15 @@ public final class GameCanvas extends Canvas implements Runnable {
                      && (gamecanvas14.getStageFlags(gamecanvas14.world, gamecanvas14.stage + 1) & 64) == 0) {
                      unlockedStage = gamecanvas14.stage + 1;
                      gamecanvas14.addStageFlags(gamecanvas14.world, unlockedStage, (byte)64);
-                     gamecanvas14.bool_ac = true;
+                     gamecanvas14.stageJustUnlocked = true;
                   } else {
                      unlockedStage = gamecanvas14.stage;
                   }
 
                   gamecanvas14.saveProgress(false);
                   gamecanvas1.saveStageResult();
-                  gamecanvas1.bool_I = false;
-                  gamecanvas1.bool_H = true;
+                  gamecanvas1.saveResultOnLoad = false;
+                  gamecanvas1.unloadMapOnLoad = true;
             }
 
             this.resetStateTimer();
@@ -2464,10 +2464,10 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void updateEnding() {
-      switch (this.int_W) {
+      switch (this.endingPhase) {
          case 0:
             if (System.currentTimeMillis() - this.stateStartTime >= 3000L) {
-               this.int_W++;
+               this.endingPhase++;
                this.resetStateTimer();
                return;
             }
@@ -2476,7 +2476,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             GameCanvas gamecanvas2;
             boolean flag;
             if (stateTicks % 6 >= 3) {
-               this.int_X += 1677721;
+               this.endingFlashColor += 1677721;
                gamecanvas2 = this;
                flag = false;
             } else {
@@ -2486,7 +2486,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
             gamecanvas2.fullRedraw = flag;
             if (System.currentTimeMillis() - this.stateStartTime >= 5000L) {
-               this.int_W++;
+               this.endingPhase++;
                this.fullRedraw = true;
                this.resetStateTimer();
                return;
@@ -2498,11 +2498,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                gamecanvas = this;
                GameCanvas gamecanvas3;
                byte b1;
-               if (this.int_Z >= gamecanvas.byte_f) {
+               if (this.endingShakeY >= gamecanvas.endingShakeLimitY) {
                   gamecanvas3 = gamecanvas;
                   b1 = -1;
                } else {
-                  if (gamecanvas.int_Z > -gamecanvas.byte_f) {
+                  if (gamecanvas.endingShakeY > -gamecanvas.endingShakeLimitY) {
                      break label62;
                   }
 
@@ -2510,18 +2510,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                   b1 = 1;
                }
 
-               gamecanvas3.byte_d = b1;
+               gamecanvas3.endingShakeDirY = b1;
             }
 
             label56: {
-               gamecanvas.int_Z = gamecanvas.int_Z + gamecanvas.byte_d * gamecanvas.byte_h;
+               gamecanvas.endingShakeY = gamecanvas.endingShakeY + gamecanvas.endingShakeDirY * gamecanvas.endingShakeSpeed;
                GameCanvas gamecanvas1;
                byte b0;
-               if (gamecanvas.int_Y >= gamecanvas.byte_g) {
+               if (gamecanvas.endingShakeX >= gamecanvas.endingShakeLimitX) {
                   gamecanvas1 = gamecanvas;
                   b0 = -1;
                } else {
-                  if (gamecanvas.int_Z > -gamecanvas.byte_g) {
+                  if (gamecanvas.endingShakeY > -gamecanvas.endingShakeLimitX) {
                      break label56;
                   }
 
@@ -2529,39 +2529,39 @@ public final class GameCanvas extends Canvas implements Runnable {
                   b0 = 1;
                }
 
-               gamecanvas1.byte_e = b0;
+               gamecanvas1.endingShakeDirX = b0;
             }
 
-            gamecanvas.int_Y += 0;
+            gamecanvas.endingShakeX += 0;
             if (System.currentTimeMillis() - this.stateStartTime >= 10000L) {
-               this.int_Y = 0;
-               this.int_Z = 0;
+               this.endingShakeX = 0;
+               this.endingShakeY = 0;
                this.resetStateTimer();
-               this.int_W++;
+               this.endingPhase++;
                return;
             }
             break;
          case 3:
             if (System.currentTimeMillis() - this.stateStartTime >= 1000L) {
-               this.int_W++;
+               this.endingPhase++;
                return;
             }
             break;
          case 4:
             if (System.currentTimeMillis() - this.stateStartTime >= 1000L) {
-               this.int_W++;
+               this.endingPhase++;
                return;
             }
             break;
          case 5:
             if (System.currentTimeMillis() - this.stateStartTime >= 1000L) {
-               this.int_W++;
+               this.endingPhase++;
                return;
             }
             break;
          case 6:
             if (System.currentTimeMillis() - this.stateStartTime >= 1000L) {
-               this.int_W++;
+               this.endingPhase++;
                this.resetStateTimer();
                return;
             }
@@ -2569,7 +2569,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          case 7:
             if (System.currentTimeMillis() - this.stateStartTime >= 1000L) {
                TreasureRain.grid = new byte[15][10];
-               this.int_W++;
+               this.endingPhase++;
                TreasureRain.spawnRow(3);
                this.sound.play(19);
                this.resetStateTimer();
@@ -2580,7 +2580,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             TreasureRain.update(3);
             this.fullRedraw = true;
             if (System.currentTimeMillis() - this.stateStartTime >= 15000L) {
-               this.int_W++;
+               this.endingPhase++;
                this.resetStateTimer();
                return;
             }
@@ -2589,7 +2589,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.fullRedraw = true;
             TreasureRain.update(3);
             if (System.currentTimeMillis() - this.stateStartTime >= 12000L) {
-               this.int_W++;
+               this.endingPhase++;
                this.resetStateTimer();
                return;
             }
@@ -2606,27 +2606,27 @@ public final class GameCanvas extends Canvas implements Runnable {
    private void loadSealStep(int var1) {
       switch (var1) {
          case 0:
-            if (this.bool_K) {
+            if (this.unloadCutscenesOnLoad) {
                this.unloadCutscenes();
                return;
             }
             break;
          case 1:
-            if (this.bool_H) {
+            if (this.unloadMapOnLoad) {
                this.unloadMapResources();
                return;
             }
             break;
          case 2:
-            if (this.bool_M) {
+            if (this.reloadLivesOnLoad) {
                this.loadLives();
                return;
             }
             break;
          case 3:
-            if (this.bool_L) {
+            if (this.gcOnLoad) {
                System.gc();
-               this.bool_L = false;
+               this.gcOnLoad = false;
                return;
             }
             break;
@@ -2650,8 +2650,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                sprites[46] = loadSprite("/mmv.f", b9, 0, 0);
             }
 
-            this.int_z = 320 - frameWidth(sprites[10], 0) >> 1;
-            this.int_A = (240 - frameHeight(sprites[10], 0) - 48 >> 1) - 20;
+            this.sealX = 320 - frameWidth(sprites[10], 0) >> 1;
+            this.sealY = (240 - frameHeight(sprites[10], 0) - 48 >> 1) - 20;
             return;
          case 5:
             if (sprites[55] == null) {
@@ -2661,8 +2661,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                b6 = b6;
                String s12 = "/mmv.f";
                sprites[55] = loadSprite("/mmv.f", b6, 0, 0);
-               this.int_x = animLength(sprites[55], 0);
-               sprite_b = sprites[55];
+               this.cursorAnimLength = animLength(sprites[55], 0);
+               paintSprite = sprites[55];
             }
 
             if (sprites[18] == null) {
@@ -2685,8 +2685,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                sprites[54] = loadSprite("/mmv.f", b5, 0, 0);
             }
 
-            this.int_G = frameWidth(sprites[54], 0) >> 1;
-            this.int_H = (frameHeight(sprites[54], 0) >> 1) - 20;
+            this.crystalHalfWidth = frameWidth(sprites[54], 0) >> 1;
+            this.crystalHalfHeight = (frameHeight(sprites[54], 0) >> 1) - 20;
             return;
          case 7:
             if (sprites[53] == null) {
@@ -2749,35 +2749,35 @@ public final class GameCanvas extends Canvas implements Runnable {
                sprites[9] = loadSprite("/cm.f", b0, 0, 0);
             }
 
-            this.int_J = animLength(sprites[9], 5);
+            this.crystalAnimLength = animLength(sprites[9], 5);
             byte b1 = saveData[2];
 
             for (int i = 0; i < 3; i++) {
                if ((b1 & 1 << i) != 0) {
-                  boolArr_b[i] = true;
+                  worldCrystalEarned[i] = true;
                }
             }
 
             label88: {
-               this.int_E = 10;
-               this.int_F = 10;
+               this.flyingCrystalX = 10;
+               this.flyingCrystalY = 10;
                boolean[] aboolean1;
                byte b11;
                boolean flag10;
                if (((b1 = saveData[1]) & 1) != 0) {
-                  aboolean1 = boolArr_a;
+                  aboolean1 = crystalInserted;
                   b11 = 1;
                   flag10 = true;
                } else {
                   if (readShort(saveData, 6) >= Constants.worldUnlockRedDiamonds[1]) {
                      saveData[1] = (byte)(saveData[1] | 1);
                      this.writeSave();
-                     this.int_B = 1;
+                     this.crystalsPlaced = 1;
                      this.sealLocation = 1;
                      break label88;
                   }
 
-                  aboolean1 = boolArr_a;
+                  aboolean1 = crystalInserted;
                   b11 = 1;
                   flag10 = false;
                }
@@ -2790,19 +2790,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                byte b10;
                boolean flag9;
                if ((b1 & 2) != 0) {
-                  aboolean = boolArr_a;
+                  aboolean = crystalInserted;
                   b10 = 2;
                   flag9 = true;
                } else {
                   if (readShort(saveData, 6) >= Constants.worldUnlockRedDiamonds[2]) {
                      saveData[1] = (byte)(saveData[1] | 2);
                      this.writeSave();
-                     this.int_B = 2;
+                     this.crystalsPlaced = 2;
                      this.sealLocation = 2;
                      break label82;
                   }
 
-                  aboolean = boolArr_a;
+                  aboolean = crystalInserted;
                   b10 = 2;
                   flag9 = false;
                }
@@ -2810,12 +2810,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                aboolean[b10] = flag9;
             }
 
-            this.int_q = Constants.sealLocationOffsets[this.sealLocation << 1];
-            this.int_r = Constants.sealLocationOffsets[(this.sealLocation << 1) + 1] - 20;
-            this.int_s = this.int_q;
-            this.int_t = this.int_r;
+            this.sealCursorX = Constants.sealLocationOffsets[this.sealLocation << 1];
+            this.sealCursorY = Constants.sealLocationOffsets[(this.sealLocation << 1) + 1] - 20;
+            this.sealCursorPrevX = this.sealCursorX;
+            this.sealCursorPrevY = this.sealCursorY;
             this.updateSealCaption();
-            this.bool_g = true;
+            this.sealDirty = true;
             this.fullRedraw = true;
       }
    }
@@ -2838,7 +2838,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          s = strings[48].toLowerCase();
       }
 
-      gamecanvas.string_b = stringbuffer.append(s).append(" ").append(strings[77]).toString();
+      gamecanvas.sealCaption = stringbuffer.append(s).append(" ").append(strings[77]).toString();
       String[] astring;
       byte b0;
       switch (this.sealLocation) {
@@ -2866,7 +2866,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             return;
       }
 
-      gamecanvas.string_c = astring[b0];
+      gamecanvas.sealCaptionTarget = astring[b0];
    }
 
    private static boolean isWorldUnlocked(int var0) {
@@ -2875,36 +2875,36 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void updateSeal() {
       if (!this.frameSkipped) {
-         this.int_s = this.int_q;
-         this.int_t = this.int_r;
+         this.sealCursorPrevX = this.sealCursorX;
+         this.sealCursorPrevY = this.sealCursorY;
       }
 
-      if (this.bool_f) {
+      if (this.sealCursorMoving) {
          keysDown = 0;
-         int i = this.int_v - this.int_q;
-         int j = this.int_w - this.int_r;
-         this.int_q = this.int_q + i / (8 - this.byte_c);
-         this.int_r = this.int_r + j / (8 - this.byte_c);
-         this.byte_c++;
-         if (this.byte_c == 8) {
-            this.int_q = this.int_v;
-            this.int_r = this.int_w;
-            this.bool_f = false;
-            this.byte_c = 0;
-            this.bool_g = true;
+         int i = this.sealCursorTargetX - this.sealCursorX;
+         int j = this.sealCursorTargetY - this.sealCursorY;
+         this.sealCursorX = this.sealCursorX + i / (8 - this.sealCursorStep);
+         this.sealCursorY = this.sealCursorY + j / (8 - this.sealCursorStep);
+         this.sealCursorStep++;
+         if (this.sealCursorStep == 8) {
+            this.sealCursorX = this.sealCursorTargetX;
+            this.sealCursorY = this.sealCursorTargetY;
+            this.sealCursorMoving = false;
+            this.sealCursorStep = 0;
+            this.sealDirty = true;
             this.updateSealCaption();
             return;
          }
       } else {
          label32:
-         switch (this.int_u) {
+         switch (this.sealInputDirection) {
             case -1:
                break;
             case 4:
                switch (this.sealLocation) {
                   case 0:
-                     this.bool_G = true;
-                     this.bool_H = true;
+                     this.mapSpritesLoaded = true;
+                     this.unloadMapOnLoad = true;
                      this.sound.stop();
                      this.world = 0;
                      this.hasEnemies = false;
@@ -2914,15 +2914,15 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label32;
                   case 1:
                      if (isWorldUnlocked(this.sealLocation)) {
-                        this.bool_G = true;
-                        this.bool_H = true;
+                        this.mapSpritesLoaded = true;
+                        this.unloadMapOnLoad = true;
                         this.sound.stop();
                         this.world = 1;
                         this.stage = 0;
                         gameState = 15;
                         unlockedStage = getWorldProgress(this.world);
                         this.openWorldMap();
-                        this.bool_p = true;
+                        this.hasCompass = true;
                         this.hasEnemies = false;
                         if (saveData[9] < 1) {
                            saveData[9] = 1;
@@ -2931,8 +2931,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label32;
                   case 2:
                      if (isWorldUnlocked(this.sealLocation)) {
-                        this.bool_G = true;
-                        this.bool_H = true;
+                        this.mapSpritesLoaded = true;
+                        this.unloadMapOnLoad = true;
                         this.sound.stop();
                         this.world = 2;
                         this.stage = 0;
@@ -2940,7 +2940,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         gameState = 15;
                         unlockedStage = getWorldProgress(this.world);
                         this.openWorldMap();
-                        this.bool_p = true;
+                        this.hasCompass = true;
                         if (saveData[9] < 2) {
                            saveData[9] = 2;
                         }
@@ -2953,15 +2953,15 @@ public final class GameCanvas extends Canvas implements Runnable {
                }
             default:
                byte b0;
-               if ((b0 = Constants.sealNavigation[this.int_u][this.sealLocation]) != -1) {
+               if ((b0 = Constants.sealNavigation[this.sealInputDirection][this.sealLocation]) != -1) {
                   this.sealLocation = b0;
-                  this.bool_f = true;
-                  this.int_v = Constants.sealLocationOffsets[this.sealLocation << 1];
-                  this.int_w = Constants.sealLocationOffsets[(this.sealLocation << 1) + 1] - 20;
+                  this.sealCursorMoving = true;
+                  this.sealCursorTargetX = Constants.sealLocationOffsets[this.sealLocation << 1];
+                  this.sealCursorTargetY = Constants.sealLocationOffsets[(this.sealLocation << 1) + 1] - 20;
                }
          }
 
-         this.int_u = -1;
+         this.sealInputDirection = -1;
       }
    }
 
@@ -3132,7 +3132,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        this.loadingStep++;
                                        switch (i) {
                                           case 0:
-                                             if (this.bool_N) {
+                                             if (this.writeSaveOnLoad) {
                                                 this.writeSave();
                                              }
 
@@ -3168,7 +3168,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           label793: {
                                              int j3 = i;
                                              GameCanvas gamecanvas3 = this;
-                                             byte[] abyte2 = new byte[readInt(byteArr_n, (j3 << 3) + 4)];
+                                             byte[] abyte2 = new byte[readInt(genPackDirectory, (j3 << 3) + 4)];
                                              gamecanvas3.stagePackStream.read(abyte2);
                                              (sprite5 = new Sprite()).load(abyte2, 0);
                                              sprite5.buildModuleImages(0, 0, -1, -1);
@@ -3177,7 +3177,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              Object object1;
                                              switch (j3) {
                                                 case 0:
-                                                   if ((gamecanvas3.long_d & 1L) == 0L) {
+                                                   if ((gamecanvas3.neededExtraSprites & 1L) == 0L) {
                                                       break label793;
                                                    }
 
@@ -3186,7 +3186,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                    object1 = sprite5;
                                                    break;
                                                 case 1:
-                                                   if ((gamecanvas3.long_d & 2L) == 0L) {
+                                                   if ((gamecanvas3.neededExtraSprites & 2L) == 0L) {
                                                       break label793;
                                                    }
 
@@ -3213,7 +3213,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           }
 
                                           sprite5.moduleData = null;
-                                          this.int_bt = 0;
+                                          this.genPackNumber = 0;
                                           return;
                                        }
                                     } catch (Exception exception13) {
@@ -3230,28 +3230,28 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              if (i3 % 10 == 0) {
                                                 gamecanvas2.stagePackStream.close();
                                                 gamecanvas2.stagePackStream = null;
-                                                StringBuffer stringbuffer = new StringBuffer("/gen").append(gamecanvas2.int_bt).append(".f");
+                                                StringBuffer stringbuffer = new StringBuffer("/gen").append(gamecanvas2.genPackNumber).append(".f");
                                                 gamecanvas2.stagePackStream = gamecanvas2.getClass().getResourceAsStream(stringbuffer.toString());
-                                                gamecanvas2.int_cc = gamecanvas2.stagePackStream.read();
-                                                byteArr_n = new byte[gamecanvas2.int_cc << 3];
-                                                gamecanvas2.stagePackStream.read(byteArr_n);
-                                                gamecanvas2.int_cd = 0;
-                                                gamecanvas2.int_bt++;
+                                                gamecanvas2.genPackEntryCount = gamecanvas2.stagePackStream.read();
+                                                genPackDirectory = new byte[gamecanvas2.genPackEntryCount << 3];
+                                                gamecanvas2.stagePackStream.read(genPackDirectory);
+                                                gamecanvas2.genPackSkipBytes = 0;
+                                                gamecanvas2.genPackNumber++;
                                              }
 
-                                             int l1 = i3 - (gamecanvas2.int_bt - 1) * 10;
-                                             int k3 = readInt(byteArr_n, (l1 << 3) + 4);
-                                             if ((gamecanvas2.long_c & 1L << i3) != 0L) {
-                                                if (gamecanvas2.int_cd != 0) {
-                                                   gamecanvas2.stagePackStream.skip(gamecanvas2.int_cd);
-                                                   gamecanvas2.int_cd = 0;
+                                             int l1 = i3 - (gamecanvas2.genPackNumber - 1) * 10;
+                                             int k3 = readInt(genPackDirectory, (l1 << 3) + 4);
+                                             if ((gamecanvas2.neededGenSprites & 1L << i3) != 0L) {
+                                                if (gamecanvas2.genPackSkipBytes != 0) {
+                                                   gamecanvas2.stagePackStream.skip(gamecanvas2.genPackSkipBytes);
+                                                   gamecanvas2.genPackSkipBytes = 0;
                                                 }
 
                                                 byte[] abyte3 = new byte[k3];
                                                 gamecanvas2.stagePackStream.read(abyte3);
                                                 Sprite sprite1;
                                                 (sprite1 = new Sprite()).load(abyte3, 0);
-                                                if ((i3 != 28 || gamecanvas2.bool_ag) && (i3 != 24 || gamecanvas2.bool_ai)) {
+                                                if ((i3 != 28 || gamecanvas2.stageHasDoors9) && (i3 != 24 || gamecanvas2.stageHasWindPods)) {
                                                    sprite1.buildModuleImages(0, 0, -1, -1);
                                                 }
 
@@ -3269,11 +3269,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                          b0 = 34;
                                                          break label800;
                                                       case 2:
-                                                         if (gamecanvas2.bool_ag) {
+                                                         if (gamecanvas2.stageHasDoors9) {
                                                             imageSets[24] = sprite1.moduleImages[0];
                                                          }
 
-                                                         if (gamecanvas2.bool_ah) {
+                                                         if (gamecanvas2.stageHasDoors8) {
                                                             sprite1.buildModuleImages(1, 0, -1, -1);
                                                             imageSets[25] = sprite1.moduleImages[1];
                                                          }
@@ -3326,7 +3326,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                          break;
                                                       case 15:
                                                       case 17:
-                                                         if ((gamecanvas2.int_bu & 2) != 0) {
+                                                         if ((gamecanvas2.rollerVariants & 2) != 0) {
                                                             if (gamecanvas2.world == 2) {
                                                                sprite1.moduleImages = null;
                                                                sprite1.buildModuleImages(2, 0, -1, -1);
@@ -3336,7 +3336,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                             b0 = 4;
                                                          }
 
-                                                         if ((gamecanvas2.int_bu & 1) != 0) {
+                                                         if ((gamecanvas2.rollerVariants & 1) != 0) {
                                                             sprites[21] = new Sprite();
                                                             sprites[21].load(abyte3, 0);
                                                             sprites[21].buildModuleImages(1, 0, -1, -1);
@@ -3370,13 +3370,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                          b5 = 17;
                                                          break;
                                                       case 26:
-                                                         sprite_d = sprite1;
+                                                         slotSprite = sprite1;
                                                          break label800;
                                                       case 27:
                                                          b5 = 19;
                                                          break;
                                                       case 28:
-                                                         if (gamecanvas2.bool_ah) {
+                                                         if (gamecanvas2.stageHasDoors8) {
                                                             sprite1.buildModuleImages(1, 0, -1, -1);
                                                          }
 
@@ -3442,7 +3442,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 return;
                                              }
 
-                                             gamecanvas2.int_cd += k3;
+                                             gamecanvas2.genPackSkipBytes += k3;
                                              return;
                                           } catch (IOException ioexception) {
                                              return;
@@ -3464,9 +3464,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 gamecanvas1.stagePackStream = null;
                                                 System.gc();
                                                 gamecanvas1.stagePackStream = gamecanvas1.getClass().getResourceAsStream("/cm.f");
-                                                gamecanvas1.int_cc = gamecanvas1.stagePackStream.read();
-                                                byteArr_n = new byte[gamecanvas1.int_cc << 3];
-                                                gamecanvas1.stagePackStream.read(byteArr_n);
+                                                gamecanvas1.genPackEntryCount = gamecanvas1.stagePackStream.read();
+                                                genPackDirectory = new byte[gamecanvas1.genPackEntryCount << 3];
+                                                gamecanvas1.stagePackStream.read(genPackDirectory);
                                              }
 
                                              Sprite sprite;
@@ -3475,7 +3475,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 byte b11;
                                                 Object object3;
                                                 label827: {
-                                                   byte[] abyte = new byte[readInt(byteArr_n, (j << 3) + 4)];
+                                                   byte[] abyte = new byte[readInt(genPackDirectory, (j << 3) + 4)];
                                                    gamecanvas1.stagePackStream.read(abyte);
                                                    (sprite = new Sprite()).load(abyte, 0);
                                                    sprite.buildModuleImages(0, 0, -1, -1);
@@ -3604,7 +3604,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 i -= 3;
                                                 switch (i) {
                                                    case 0:
-                                                      byteArr_n = null;
+                                                      genPackDirectory = null;
                                                       this.loadObjectSprites(
                                                          sprites[12] != null
                                                             || imageSets[6] != null
@@ -3615,11 +3615,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                       );
                                                       return;
                                                    case 1:
-                                                      this.long_c = 0L;
-                                                      this.long_d = 0L;
-                                                      this.int_bu = 0;
-                                                      this.int_ag++;
-                                                      int k2 = this.int_ag < 3 ? this.int_ag : 3;
+                                                      this.neededGenSprites = 0L;
+                                                      this.neededExtraSprites = 0L;
+                                                      this.rollerVariants = 0;
+                                                      this.tipIndex++;
+                                                      int k2 = this.tipIndex < 3 ? this.tipIndex : 3;
                                                       saveData[12] = (byte)k2;
                                                       this.writeSave();
                                                       return;
@@ -3643,12 +3643,12 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                                                       return;
                                                    case 4:
-                                                      this.int_bl = 0;
-                                                      this.int_ad = this.nextEffect = 0;
+                                                      this.fadeHeight = 0;
+                                                      this.drawnEffect = this.nextEffect = 0;
                                                       this.saveCheckpoint();
                                                       return;
                                                    case 5:
-                                                      this.int_bn = stateTicks + 60;
+                                                      this.stageTitleUntil = stateTicks + 60;
                                                       this.invalidateHud();
                                                       return;
                                                    case 6:
@@ -3658,7 +3658,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                       return;
                                                    case 7:
                                                       this.creatingNewGame = false;
-                                                      byteArr_f = null;
+                                                      mapFileData = null;
                                                       System.gc();
                                                       this.sound.play(16 + this.world);
                                                       gameState = 1;
@@ -3726,7 +3726,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           gamecanvas8 = this;
                                           b7 = b4;
                                        } else {
-                                          if ((this.int_ag + 8) % 8 >= 1) {
+                                          if ((this.tipIndex + 8) % 8 >= 1) {
                                              break label783;
                                           }
 
@@ -3734,10 +3734,10 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           b7 = 1;
                                        }
 
-                                       gamecanvas8.int_ag = b7;
+                                       gamecanvas8.tipIndex = b7;
                                     }
 
-                                    loadTip(this.int_ag % 8);
+                                    loadTip(this.tipIndex % 8);
                                     return;
                                  } catch (Exception exception12) {
                                     return;
@@ -3749,40 +3749,40 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  backgroundBufferHeight = 216;
                                  backgroundBufferGraphics = (backgroundBuffer = Image.createImage(backgroundBufferWidth, backgroundBufferHeight)).getGraphics();
                                  GameCanvas gamecanvas5 = this;
-                                 int_cE = -1;
-                                 bool_a = false;
-                                 gamecanvas5.bool_e = true;
-                                 gamecanvas5.int_aC = 0;
-                                 gamecanvas5.int_bj = 0;
-                                 gamecanvas5.long_c = 0L;
-                                 gamecanvas5.long_d = 0L;
+                                 bufferedLeft = -1;
+                                 pickupAnimStarting = false;
+                                 gamecanvas5.playerVisible = true;
+                                 gamecanvas5.nextCompassTarget = 0;
+                                 gamecanvas5.screenShakeTicks = 0;
+                                 gamecanvas5.neededGenSprites = 0L;
+                                 gamecanvas5.neededExtraSprites = 0L;
                                  gamecanvas5.padlockX = 0;
                                  gamecanvas5.padlockY = 0;
                                  gamecanvas5.stageKind = 0;
-                                 gamecanvas5.bool_P = (gamecanvas5.getStageFlags(gamecanvas5.world, gamecanvas5.stage) & 2) != 0;
+                                 gamecanvas5.stageCompletedBefore = (gamecanvas5.getStageFlags(gamecanvas5.world, gamecanvas5.stage) & 2) != 0;
                                  gamecanvas5.switchRevealPhase = 0;
                                  switch (gamecanvas5.world) {
                                     case 0:
                                        if (gamecanvas5.stage == 5) {
                                           gamecanvas5.stageKind = 1;
-                                          gamecanvas5.int_al = 816;
-                                          gamecanvas5.int_am = 0;
+                                          gamecanvas5.floodHeight = 816;
+                                          gamecanvas5.floodSwitchPresses = 0;
                                        } else if (gamecanvas5.stage == 13) {
                                           gamecanvas5.stageKind = 2;
-                                          gamecanvas5.bool_t = false;
+                                          gamecanvas5.prologueMarkerHint = false;
                                        } else if (gamecanvas5.stage == 8) {
                                           gamecanvas5.stageKind = 4;
                                           gamecanvas5.bossAnim = 0;
                                           gamecanvas5.bossHealth = 3;
-                                          gamecanvas5.int_ar = 0;
-                                          gamecanvas5.int_ap = 0;
-                                          gamecanvas5.bool_k = false;
-                                          gamecanvas5.long_c |= 8L;
-                                          gamecanvas5.long_c |= 1024L;
-                                          gamecanvas5.int_O = 2;
-                                          gamecanvas5.int_P = 12;
-                                          gamecanvas5.int_Q = 15;
-                                          gamecanvas5.int_R = 5;
+                                          gamecanvas5.bossPosition = 0;
+                                          gamecanvas5.bossTimer = 0;
+                                          gamecanvas5.bossSlamVisible = false;
+                                          gamecanvas5.neededGenSprites |= 8L;
+                                          gamecanvas5.neededGenSprites |= 1024L;
+                                          gamecanvas5.arenaWallRow = 2;
+                                          gamecanvas5.arenaWallX1 = 12;
+                                          gamecanvas5.arenaWallX2 = 15;
+                                          gamecanvas5.arenaWallRow2 = 5;
                                        }
                                        break;
                                     case 1:
@@ -3793,24 +3793,24 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     case 2:
                                        if (gamecanvas5.stage == 10) {
                                           gamecanvas5.resetBoss();
-                                          gamecanvas5.int_as = 360;
+                                          gamecanvas5.yetiX = 360;
                                           gamecanvas5.stageKind = 3;
-                                          gamecanvas5.long_c |= 128L;
-                                          gamecanvas5.long_c |= 8L;
+                                          gamecanvas5.neededGenSprites |= 128L;
+                                          gamecanvas5.neededGenSprites |= 8L;
                                        }
                                  }
 
-                                 gamecanvas5.bool_q = false;
-                                 gamecanvas5.bool_r = false;
-                                 gamecanvas5.bool_s = false;
+                                 gamecanvas5.prologueSaw13 = false;
+                                 gamecanvas5.prologueSaw16 = false;
+                                 gamecanvas5.prologueMarkerReached = false;
                                  gamecanvas5.padlockGemsRemaining = 0;
-                                 gamecanvas5.int_be = -1;
-                                 gamecanvas5.int_bf = -1;
-                                 gamecanvas5.byte_o = 0;
-                                 gamecanvas5.int_bg = 0;
-                                 gamecanvas5.int_bh = 0;
-                                 gamecanvas5.int_bi = 0;
-                                 gamecanvas5.int_ax = 70;
+                                 gamecanvas5.hookedObjectState = -1;
+                                 gamecanvas5.hookRestoreState = -1;
+                                 gamecanvas5.hookPullDelay = 0;
+                                 gamecanvas5.hookX = 0;
+                                 gamecanvas5.hookY = 0;
+                                 gamecanvas5.hookPullSteps = 0;
+                                 gamecanvas5.idleAnimDelay = 70;
                                  gamecanvas5.energy = saveData[8];
                                  gamecanvas5.queuedAction = 0;
                                  gamecanvas5.stageDiamonds = 0;
@@ -3824,8 +3824,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  gamecanvas5.silverKeys = 0;
                                  activeSwitchId = -1;
                                  switchStates = null;
-                                 byteArr_l = null;
-                                 gamecanvas5.stagePackStream = gamecanvas5.getClass().getResourceAsStream(stringArr_d[gamecanvas5.world]);
+                                 switchTargetObjects = null;
+                                 gamecanvas5.stagePackStream = gamecanvas5.getClass().getResourceAsStream(stagePackFiles[gamecanvas5.world]);
                                  gamecanvas5.stagePackStream.read();
                                  boolean flag = false;
 
@@ -3906,13 +3906,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                               gamecanvas4.checkpointTreasureCount = 0;
                               int i4 = 0;
                               gamecanvas4.stageDiamondTotal = 0;
-                              gamecanvas4.int_bu = 0;
+                              gamecanvas4.rollerVariants = 0;
                               int i2 = 0;
                               int k4 = 0;
-                              gamecanvas4.bool_ag = false;
-                              gamecanvas4.bool_ah = false;
-                              gamecanvas4.bool_ai = false;
-                              gamecanvas4.int_aw = 0;
+                              gamecanvas4.stageHasDoors9 = false;
+                              gamecanvas4.stageHasDoors8 = false;
+                              gamecanvas4.stageHasWindPods = false;
+                              gamecanvas4.collapsingRowCount = 0;
                               int i5 = 0;
 
                               for (int k = 0; k < gamecanvas4.mapWidth; k++) {
@@ -3930,11 +3930,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              tileMap[k][l] = j1 << 8 | i1 & 0xFF;
                                              break;
                                           case 2:
-                                             gamecanvas4.long_c |= 1048576L;
+                                             gamecanvas4.neededGenSprites |= 1048576L;
                                              switch (j1) {
                                                 case 0:
                                                 case 1:
-                                                   gamecanvas4.long_c |= 524288L;
+                                                   gamecanvas4.neededGenSprites |= 524288L;
                                                 default:
                                                    tileMap[k][l] = j1 << 8 | 2;
                                                    break label725;
@@ -3947,18 +3947,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              break;
                                           case 4:
                                              i2++;
-                                             gamecanvas4.long_c |= 16L;
+                                             gamecanvas4.neededGenSprites |= 16L;
                                              tileMap[k][l] = j1 << 8 | i1 & 0xFF;
                                              break;
                                           case 5:
-                                             gamecanvas4.byte_p = (byte)j1;
+                                             gamecanvas4.exitDirectionA = (byte)j1;
                                              break;
                                           case 6:
                                              Integer integer6 = new Integer(j1);
                                              Integer integer9;
                                              integer9 = (integer9 = (Integer)hashtable1.get(integer6)) == null ? new Integer(1) : new Integer(integer9 + 1);
                                              hashtable1.put(integer6, integer9);
-                                             gamecanvas4.long_c |= 536870912L;
+                                             gamecanvas4.neededGenSprites |= 536870912L;
                                              tileMap[k][l] = j1 << 8 | 6;
                                              break;
                                           case 7:
@@ -3970,13 +3970,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              tileMap[k][l] = j1 << 8 | i1;
                                              break;
                                           case 8:
-                                             gamecanvas4.bool_ah = true;
+                                             gamecanvas4.stageHasDoors8 = true;
                                           case 9:
                                              if ((i1 & 0xFF) != 8) {
-                                                gamecanvas4.bool_ag = true;
+                                                gamecanvas4.stageHasDoors9 = true;
                                              }
 
-                                             gamecanvas4.long_c |= 268435456L;
+                                             gamecanvas4.neededGenSprites |= 268435456L;
                                              Integer integer5 = new Integer(j1);
                                              Integer integer8;
                                              integer8 = (integer8 = (Integer)hashtable1.get(integer5)) == null ? new Integer(1) : new Integer(integer8 + 1);
@@ -4008,19 +4008,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 switch (gamecanvas4.world) {
                                                    case 0:
                                                       gamecanvas7 = gamecanvas4;
-                                                      k9 = gamecanvas4.long_c;
+                                                      k9 = gamecanvas4.neededGenSprites;
                                                       k10 = 16L;
                                                       break;
                                                    case 1:
                                                       gamecanvas7 = gamecanvas4;
-                                                      k9 = gamecanvas4.long_c;
+                                                      k9 = gamecanvas4.neededGenSprites;
                                                       k10 = 2097152L;
                                                       break;
                                                    default:
                                                       break label725;
                                                 }
 
-                                                gamecanvas7.long_c = k9 | k10;
+                                                gamecanvas7.neededGenSprites = k9 | k10;
                                              } else if (i1 < 80 && i1 > -1) {
                                                 tileMap[k][l] = -1;
                                              }
@@ -4031,7 +4031,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 tileMap[k][l] = 33;
                                              }
 
-                                             gamecanvas4.long_c = gamecanvas4.long_c | 1L << ((tileMap[k][l] & 0xFF) == 14 ? 22 : 33);
+                                             gamecanvas4.neededGenSprites = gamecanvas4.neededGenSprites | 1L << ((tileMap[k][l] & 0xFF) == 14 ? 22 : 33);
                                              if (gamecanvas4.isTreasureAvailable(gamecanvas4.world, gamecanvas4.stage, k, l)) {
                                                 if (gamecanvas4.isBossStage()) {
                                                    objectMap[k][l] = 41;
@@ -4087,23 +4087,23 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              }
                                              break;
                                           case 28:
-                                             gamecanvas4.byte_q = (byte)j1;
+                                             gamecanvas4.exitDirectionB = (byte)j1;
                                              break;
                                           case 30:
-                                             gamecanvas4.long_c |= 1073741824L;
+                                             gamecanvas4.neededGenSprites |= 1073741824L;
                                              i5++;
                                           case 1:
                                           case 26:
                                              tileMap[k][l] = j1 << 8 | i1 & 0xFF;
                                              break;
                                           case 31:
-                                             gamecanvas4.long_c |= 1073741824L;
+                                             gamecanvas4.neededGenSprites |= 1073741824L;
                                              tileMap[k][l] = j1 << 8 | 31;
                                           case 19:
                                              tileMap[k][l] = j1 << 8 | 19;
                                              break;
                                           case 34:
-                                             gamecanvas4.long_c |= 17179869184L;
+                                             gamecanvas4.neededGenSprites |= 17179869184L;
                                        }
                                     }
 
@@ -4163,35 +4163,35 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           break;
                                        case 6:
                                           i4++;
-                                          gamecanvas4.j_void(k, l);
+                                          gamecanvas4.placeItemChest(k, l);
                                        case 7:
-                                          gamecanvas4.long_c |= 16L;
+                                          gamecanvas4.neededGenSprites |= 16L;
                                           objectState[k][l] = 0;
                                           continue;
                                        case 8:
-                                          gamecanvas4.long_c |= 32L;
-                                          gamecanvas4.long_c |= 8L;
+                                          gamecanvas4.neededGenSprites |= 32L;
+                                          gamecanvas4.neededGenSprites |= 8L;
                                        case 4:
                                           if (b2 != 8) {
-                                             gamecanvas4.j_void(k, l);
+                                             gamecanvas4.placeItemChest(k, l);
                                           }
                                        case 5:
-                                          gamecanvas4.long_c |= 4L;
+                                          gamecanvas4.neededGenSprites |= 4L;
                                        case 2:
                                           i4++;
                                        case 0:
                                           tileRedrawTimers[k][l] = 48;
                                           objectState[k][l] = 0;
-                                          gamecanvas4.long_d |= 1L;
+                                          gamecanvas4.neededExtraSprites |= 1L;
                                           continue;
                                        case 10:
                                           objectState[k][l] = 0;
-                                          gamecanvas4.long_d |= 2L;
+                                          gamecanvas4.neededExtraSprites |= 2L;
                                           continue;
                                        case 11:
                                           objectState[k][l] = j1 == 1 ? 16 : 0;
                                           tileRedrawTimers[k][l] = 48;
-                                          gamecanvas4.long_c |= 16384L;
+                                          gamecanvas4.neededGenSprites |= 16384L;
                                           continue;
                                        case 12:
                                           objectMap[k][l] = -1;
@@ -4200,7 +4200,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           gamecanvas4.padlockGemsRemaining = j1;
                                           continue;
                                        case 14:
-                                          gamecanvas4.long_c |= 4096L;
+                                          gamecanvas4.neededGenSprites |= 4096L;
                                           objectState[k][l] = objectState[k][l] == 4 ? 8 : 0;
                                           abyte4 = tileRedrawTimers[k];
                                           l9 = l;
@@ -4212,41 +4212,41 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              objectState[k][l - 1] = j1;
                                           }
 
-                                          gamecanvas4.long_c |= 8192L;
+                                          gamecanvas4.neededGenSprites |= 8192L;
                                           continue;
                                        case 18:
-                                          gamecanvas4.int_ce = 0;
-                                          gamecanvas4.int_cf = 0;
-                                          gamecanvas4.long_c |= 549755813888L;
-                                          gamecanvas4.long_c |= 128L;
+                                          gamecanvas4.togglePhase = 0;
+                                          gamecanvas4.toggleDirection = 0;
+                                          gamecanvas4.neededGenSprites |= 549755813888L;
+                                          gamecanvas4.neededGenSprites |= 128L;
                                           continue;
                                        case 19:
-                                          gamecanvas4.long_c = gamecanvas4.long_c | 1L << (gamecanvas4.world == 1 ? 17 : 15);
-                                          gamecanvas4.int_bu |= 2;
+                                          gamecanvas4.neededGenSprites = gamecanvas4.neededGenSprites | 1L << (gamecanvas4.world == 1 ? 17 : 15);
+                                          gamecanvas4.rollerVariants |= 2;
                                           abyte4 = tileRedrawTimers[k];
                                           l9 = l;
                                           b8 = 48;
                                           break;
                                        case 22:
                                        case 23:
-                                          gamecanvas4.long_c |= 512L;
-                                          gamecanvas4.long_c |= 1024L;
+                                          gamecanvas4.neededGenSprites |= 512L;
+                                          gamecanvas4.neededGenSprites |= 1024L;
                                           abyte4 = tileRedrawTimers[k];
                                           l9 = l;
                                           b8 = 48;
                                           break;
                                        case 26:
-                                          gamecanvas4.long_c |= 1099511627776L;
+                                          gamecanvas4.neededGenSprites |= 1099511627776L;
                                        case 24:
                                        case 27:
                                           i5++;
                                           i4++;
-                                          gamecanvas4.long_c |= 1073741824L;
-                                          gamecanvas4.long_c |= 524288L;
-                                          gamecanvas4.j_void(k, l);
+                                          gamecanvas4.neededGenSprites |= 1073741824L;
+                                          gamecanvas4.neededGenSprites |= 524288L;
+                                          gamecanvas4.placeItemChest(k, l);
                                           continue;
                                        case 28:
-                                          gamecanvas4.long_c |= 2048L;
+                                          gamecanvas4.neededGenSprites |= 2048L;
                                           if (j1 > 10) {
                                              objectState[k][l] = objectState[k][l] / 11;
                                              objectState[k][l] = objectState[k][l] | 8;
@@ -4257,7 +4257,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           b8 = 24;
                                           break;
                                        case 30:
-                                          gamecanvas4.long_c |= 128L;
+                                          gamecanvas4.neededGenSprites |= 128L;
                                           objectState[k][l] = 0;
                                        case 31:
                                        case 33:
@@ -4268,41 +4268,41 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        case 34:
                                           objectMap[k][l] = -1;
                                           tileMap[k][l] = 15;
-                                          gamecanvas4.long_c |= 16777216L;
+                                          gamecanvas4.neededGenSprites |= 16777216L;
                                           continue;
                                        case 35:
                                           objectMap[k][l] = 35;
                                           tileMap[k][l] = -1;
-                                          gamecanvas4.long_c |= 16777216L;
-                                          gamecanvas4.bool_ai = true;
+                                          gamecanvas4.neededGenSprites |= 16777216L;
+                                          gamecanvas4.stageHasWindPods = true;
                                           continue;
                                        case 36:
                                           if (objectState[k][l] != 1) {
                                              objectState[k][l] = 0;
                                           }
 
-                                          gamecanvas4.long_c |= 256L;
+                                          gamecanvas4.neededGenSprites |= 256L;
                                           continue;
                                        case 37:
-                                          gamecanvas4.long_c |= 33554432L;
+                                          gamecanvas4.neededGenSprites |= 33554432L;
                                           objectState[k][l] = 0;
                                           continue;
                                        case 38:
                                           gamecanvas4.hasEnemies = true;
-                                          gamecanvas4.long_c |= 67108864L;
+                                          gamecanvas4.neededGenSprites |= 67108864L;
                                           tileMap[k][l] = 27;
-                                          gamecanvas4.long_c |= 64L;
+                                          gamecanvas4.neededGenSprites |= 64L;
                                           continue;
                                        case 39:
                                           gamecanvas4.hasEnemies = true;
-                                          gamecanvas4.long_c |= 67108864L;
+                                          gamecanvas4.neededGenSprites |= 67108864L;
                                           continue;
                                        case 40:
-                                          gamecanvas4.long_c |= 1073741824L;
+                                          gamecanvas4.neededGenSprites |= 1073741824L;
                                           i5++;
                                           gamecanvas4.hasEnemies = true;
-                                          gamecanvas4.long_c |= 134217728L;
-                                          gamecanvas4.j_void(k, l);
+                                          gamecanvas4.neededGenSprites |= 134217728L;
+                                          gamecanvas4.placeItemChest(k, l);
                                           i4++;
                                           continue;
                                        case 41:
@@ -4315,13 +4315,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        case 42:
                                           i5++;
                                           i4++;
-                                          gamecanvas4.long_c |= 2147483648L;
-                                          gamecanvas4.long_c |= 1073741824L;
-                                          gamecanvas4.j_void(k, l);
+                                          gamecanvas4.neededGenSprites |= 2147483648L;
+                                          gamecanvas4.neededGenSprites |= 1073741824L;
+                                          gamecanvas4.placeItemChest(k, l);
                                           continue;
                                        case 43:
-                                          gamecanvas4.long_c = gamecanvas4.long_c | 1L << (gamecanvas4.world == 1 ? 17 : 15);
-                                          gamecanvas4.int_bu |= 1;
+                                          gamecanvas4.neededGenSprites = gamecanvas4.neededGenSprites | 1L << (gamecanvas4.world == 1 ? 17 : 15);
+                                          gamecanvas4.rollerVariants |= 1;
                                           objectState[k][l] = j1 & -98305 | 65536;
                                           abyte4 = tileRedrawTimers[k];
                                           l9 = l;
@@ -4330,36 +4330,36 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        case 44:
                                           tileRedrawTimers[k][l] = 24;
                                           objectState[k][l] = 0;
-                                          gamecanvas4.long_c |= 17179869184L;
+                                          gamecanvas4.neededGenSprites |= 17179869184L;
                                           continue;
                                        case 45:
                                           objectState[k][l] = 0;
                                           tileRedrawTimers[k][l] = 24;
-                                          gamecanvas4.long_c |= 34359738368L;
+                                          gamecanvas4.neededGenSprites |= 34359738368L;
                                           continue;
                                        case 46:
                                           objectState[k][l] = 0;
                                           tileRedrawTimers[k][l] = 24;
                                           objectTimers[k][l] = 0;
-                                          gamecanvas4.long_c |= 137438953472L;
+                                          gamecanvas4.neededGenSprites |= 137438953472L;
                                           continue;
                                        case 47:
                                           tileRedrawTimers[k][l] = 48;
                                           objectState[k][l] = 0;
-                                          gamecanvas4.long_c |= 8388608L;
+                                          gamecanvas4.neededGenSprites |= 8388608L;
                                           continue;
                                        case 48:
                                           objectState[k][l] = (j1 & 7) == 4 ? 16 : 0;
-                                          gamecanvas4.int_aw++;
-                                          gamecanvas4.long_c |= 1099511627776L;
-                                          gamecanvas4.long_c |= 4294967296L;
+                                          gamecanvas4.collapsingRowCount++;
+                                          gamecanvas4.neededGenSprites |= 1099511627776L;
+                                          gamecanvas4.neededGenSprites |= 4294967296L;
                                           int j8 = l - 1;
                                           objectMap[k][j8] = 48;
                                           objectState[k][j8] = 8;
                                           markAreaDirty(k, j8);
                                           continue;
                                        case 49:
-                                          gamecanvas4.long_c |= 2199023255552L;
+                                          gamecanvas4.neededGenSprites |= 2199023255552L;
                                           abyte4 = tileRedrawTimers[k];
                                           l9 = l;
                                           b8 = 48;
@@ -4367,7 +4367,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        case 79:
                                           gamecanvas4.playerX = 0;
                                           gamecanvas4.playerY = l;
-                                          gamecanvas4.int_ay = k;
+                                          gamecanvas4.entryWalkSteps = k;
                                           objectMap[k][l] = -1;
                                           gamecanvas4.cameraX = gamecanvas4.cameraTargetX = 0;
                                           gamecanvas4.cameraY = gamecanvas4.cameraTargetY = gamecanvas4.playerY * 24 - 120;
@@ -4387,7 +4387,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               cutscenes = new Cutscene[i5];
                               cutsceneIds = new byte[i5];
                               int j6 = 0;
-                              byteArr_k = new byte[i2 + 1 << 1];
+                              compassTargets = new byte[i2 + 1 << 1];
                               int j7 = 31;
 
                               while (j7 >= 0 && (k4 & 1 << j7) == 0) {
@@ -4396,11 +4396,11 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                               if (++j7 > 0) {
                                  switchStates = new byte[j7];
-                                 byteArr_l = new byte[j7];
+                                 switchTargetObjects = new byte[j7];
                               }
 
-                              if (gamecanvas4.int_aw > 0) {
-                                 collapsingRows = new byte[gamecanvas4.int_aw * 3];
+                              if (gamecanvas4.collapsingRowCount > 0) {
+                                 collapsingRows = new byte[gamecanvas4.collapsingRowCount * 3];
                               }
 
                               int k7 = 0;
@@ -4422,14 +4422,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              break;
                                           case 4:
                                              i4 = l8;
-                                             byteArr_k[i4 << 1] = (byte)i8;
-                                             abyte5 = byteArr_k;
+                                             compassTargets[i4 << 1] = (byte)i8;
+                                             abyte5 = compassTargets;
                                              i10 = (i4 << 1) + 1;
                                              b9 = (byte)l7;
                                              break;
                                           case 5:
-                                             byteArr_k[i2 << 1] = (byte)i8;
-                                             abyte5 = byteArr_k;
+                                             compassTargets[i2 << 1] = (byte)i8;
+                                             abyte5 = compassTargets;
                                              i10 = (i2 << 1) + 1;
                                              b9 = (byte)l7;
                                              break;
@@ -4467,7 +4467,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                    integer3 = new Integer(57);
                                                 }
 
-                                                abyte5 = byteArr_l;
+                                                abyte5 = switchTargetObjects;
                                                 i10 = l8;
                                                 b9 = integer3.byteValue();
                                                 break;
@@ -4536,29 +4536,29 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  }
                               }
 
-                              tileMap[gamecanvas4.int_ay - 2][gamecanvas4.playerY] = -193 << 8 | 7;
-                              if ((gamecanvas4.long_c & 4294967296L) != 0L || saveData[9] >= 8) {
-                                 gamecanvas4.long_c |= 1099511627776L;
-                                 gamecanvas4.long_c |= 2L;
-                                 gamecanvas4.long_c |= 1L;
-                                 if ((gamecanvas4.long_c & 131072L) != 0L) {
-                                    gamecanvas4.long_c |= 262144L;
+                              tileMap[gamecanvas4.entryWalkSteps - 2][gamecanvas4.playerY] = -193 << 8 | 7;
+                              if ((gamecanvas4.neededGenSprites & 4294967296L) != 0L || saveData[9] >= 8) {
+                                 gamecanvas4.neededGenSprites |= 1099511627776L;
+                                 gamecanvas4.neededGenSprites |= 2L;
+                                 gamecanvas4.neededGenSprites |= 1L;
+                                 if ((gamecanvas4.neededGenSprites & 131072L) != 0L) {
+                                    gamecanvas4.neededGenSprites |= 262144L;
                                  }
 
-                                 if ((gamecanvas4.long_c & 32768L) != 0L) {
-                                    gamecanvas4.long_c |= 65536L;
+                                 if ((gamecanvas4.neededGenSprites & 32768L) != 0L) {
+                                    gamecanvas4.neededGenSprites |= 65536L;
                                  }
 
-                                 if ((gamecanvas4.long_c & 34359738368L) != 0L) {
-                                    gamecanvas4.long_c |= 68719476736L;
+                                 if ((gamecanvas4.neededGenSprites & 34359738368L) != 0L) {
+                                    gamecanvas4.neededGenSprites |= 68719476736L;
                                  }
 
-                                 if ((gamecanvas4.long_c & 137438953472L) != 0L) {
-                                    gamecanvas4.long_c |= 274877906944L;
+                                 if ((gamecanvas4.neededGenSprites & 137438953472L) != 0L) {
+                                    gamecanvas4.neededGenSprites |= 274877906944L;
                                  }
 
-                                 if ((gamecanvas4.long_c & 2199023255552L) != 0L) {
-                                    gamecanvas4.long_c |= 4398046511104L;
+                                 if ((gamecanvas4.neededGenSprites & 2199023255552L) != 0L) {
+                                    gamecanvas4.neededGenSprites |= 4398046511104L;
                                  }
                               }
 
@@ -4569,7 +4569,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
 
                         try {
-                           if (this.bool_M) {
+                           if (this.reloadLivesOnLoad) {
                               this.loadLives();
                            }
 
@@ -4580,9 +4580,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
 
                      try {
-                        if (this.bool_L) {
+                        if (this.gcOnLoad) {
                            System.gc();
-                           this.bool_L = false;
+                           this.gcOnLoad = false;
                         }
 
                         return;
@@ -4601,7 +4601,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                }
 
                try {
-                  if (this.bool_J) {
+                  if (this.freeStageOnLoad) {
                      this.freeStageResources();
                   }
 
@@ -4612,7 +4612,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
 
             try {
-               if (this.bool_H) {
+               if (this.unloadMapOnLoad) {
                   this.unloadMapResources();
                }
 
@@ -4634,9 +4634,9 @@ public final class GameCanvas extends Canvas implements Runnable {
       try {
          String s = "/" + this.world + ".f";
          this.stagePackStream = this.getClass().getResourceAsStream(s);
-         this.int_cc = this.stagePackStream.read();
-         byteArr_n = new byte[this.int_cc << 3];
-         this.stagePackStream.read(byteArr_n);
+         this.genPackEntryCount = this.stagePackStream.read();
+         genPackDirectory = new byte[this.genPackEntryCount << 3];
+         this.stagePackStream.read(genPackDirectory);
       } catch (Exception exception) {
       }
    }
@@ -4656,9 +4656,9 @@ public final class GameCanvas extends Canvas implements Runnable {
 
          Sprite sprite;
          (sprite = new Sprite()).load(abyte1, 0);
-         this.int_cu = saveData[8] - 4;
-         sprite.buildModuleImages(this.int_cu, 0, -1, -1);
-         sprite.currentPalette = this.int_cu;
+         this.armorPalette = saveData[8] - 4;
+         sprite.buildModuleImages(this.armorPalette, 0, -1, -1);
+         sprite.currentPalette = this.armorPalette;
          sprite.moduleData = null;
          spriteInstances[0] = new SpriteInstance(sprite, 0, 0, null);
          System.gc();
@@ -4708,14 +4708,14 @@ public final class GameCanvas extends Canvas implements Runnable {
       gamecanvas.loadingStepCount = b0;
       this.loadingStep = 0;
       if (!hasStartedGame()) {
-         this.bool_p = false;
+         this.hasCompass = false;
       }
 
-      this.bool_J = true;
-      this.bool_x = false;
+      this.freeStageOnLoad = true;
+      this.cheatSkipWalking = false;
       gameState = 11;
       this.playerFlags = this.queuedAction = this.playerAction = 0;
-      this.int_aF = this.int_aG = -1;
+      this.pickupIconSet = this.pickupIconFrame = -1;
       this.invulnerableTicks = 0L;
    }
 
@@ -4742,7 +4742,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void unloadCutscenes() {
-      this.bool_K = false;
+      this.unloadCutscenesOnLoad = false;
       if (cutscenes != null) {
          int j = cutscenes.length;
 
@@ -4786,25 +4786,25 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void freeStageResources() {
-      this.bool_J = false;
+      this.freeStageOnLoad = false;
       this.hudDirty = true;
-      this.bool_E = false;
-      this.int_di = 0;
+      this.cameraPanToCheckpoint = false;
+      this.hintTextTicks = 0;
       this.hintText = null;
       switchStates = null;
-      byteArr_l = null;
+      switchTargetObjects = null;
       this.takenTreasureCount = 0;
       this.checkpointTreasureCount = 0;
       takenTreasures = null;
       collapsingRows = null;
       this.stagePackStream = null;
-      byteArr_n = null;
+      genPackDirectory = null;
       mapPreview = null;
       mapPreviewGraphics = null;
       backgroundBufferGraphics = null;
       backgroundBuffer = null;
       cutsceneIds = null;
-      byteArr_k = null;
+      compassTargets = null;
       if (cutscenes != null) {
          int i = cutscenes.length;
 
@@ -4834,7 +4834,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      unloadSprite(sprite_d, true);
+      unloadSprite(slotSprite, true);
       System.gc();
       if (sprites != null) {
          for (int i1 = 0; i1 < 61; i1++) {
@@ -4865,32 +4865,32 @@ public final class GameCanvas extends Canvas implements Runnable {
       checkpointObjectTimers = null;
       checkpointObjectMap = null;
       checkpointSwitchStates = null;
-      this.long_c = 0L;
-      this.int_bu = 0;
-      this.int_aD = -1;
-      this.int_aF = -1;
-      this.int_aH = -1;
-      this.int_aI = -1;
-      sprite_b = null;
-      this.int_bK = -1;
-      this.byte_x = 3;
+      this.neededGenSprites = 0L;
+      this.rollerVariants = 0;
+      this.hintIconSet = -1;
+      this.pickupIconSet = -1;
+      this.pickupValue = -1;
+      this.pickupObject = -1;
+      paintSprite = null;
+      this.paintSpriteAnim = -1;
+      this.enemyPhase = 3;
       tileSlots = null;
       checkpointTileSlots = null;
       actors = null;
       checkpointActors = null;
       enemies = null;
       checkpointEnemies = null;
-      this.bool_al = false;
-      this.int_dq = -1;
-      this.int_dr = 0;
-      this.int_ds = 0;
-      this.byte_v = 0;
-      this.int_dv = 0;
-      this.int_dw = 0;
-      this.int_dx = 0;
-      this.byte_w = 0;
-      this.int_dy = 0;
-      this.int_dz = -1;
+      this.enemyRemovalPending = false;
+      this.enemyChaseTicks = -1;
+      this.enemyChaseSteps = 0;
+      this.enemyUnusedS = 0;
+      this.enemyChaseDirection = 0;
+      this.enemyTriggerX = 0;
+      this.enemyTriggerY = 0;
+      this.enemyTriggerSide = 0;
+      this.enemyActorSlot = 0;
+      this.enemyTargetRow = 0;
+      this.enemyStepTimer = -1;
       this.hasEnemies = false;
       collapsingRows = null;
       splashTop = null;
@@ -4907,7 +4907,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void freeWaterImages() {
-      if ((this.long_d & 1L) == 0L) {
+      if ((this.neededExtraSprites & 1L) == 0L) {
          for (int i = 0; i < 5; i++) {
             sprites[13].moduleImages[0][i] = null;
          }
@@ -4918,12 +4918,12 @@ public final class GameCanvas extends Canvas implements Runnable {
       try {
          if (var1 == 0) {
             this.stagePackStream = this.getClass().getResourceAsStream("/b0.f");
-            this.int_cc = this.stagePackStream.read();
-            byteArr_n = new byte[this.int_cc << 3];
-            this.stagePackStream.read(byteArr_n);
+            this.genPackEntryCount = this.stagePackStream.read();
+            genPackDirectory = new byte[this.genPackEntryCount << 3];
+            this.stagePackStream.read(genPackDirectory);
          }
 
-         byte[] abyte = new byte[readInt(byteArr_n, (var1 << 3) + 4)];
+         byte[] abyte = new byte[readInt(genPackDirectory, (var1 << 3) + 4)];
          this.stagePackStream.read(abyte);
          Sprite sprite;
          (sprite = new Sprite()).load(abyte, 0);
@@ -4944,12 +4944,12 @@ public final class GameCanvas extends Canvas implements Runnable {
       try {
          if (var1 == 0) {
             this.stagePackStream = this.getClass().getResourceAsStream("/mm0.f");
-            this.int_cc = this.stagePackStream.read();
-            byteArr_n = new byte[this.int_cc << 3];
-            this.stagePackStream.read(byteArr_n);
+            this.genPackEntryCount = this.stagePackStream.read();
+            genPackDirectory = new byte[this.genPackEntryCount << 3];
+            this.stagePackStream.read(genPackDirectory);
          }
 
-         byte[] abyte = new byte[readInt(byteArr_n, (var1 << 3) + 4)];
+         byte[] abyte = new byte[readInt(genPackDirectory, (var1 << 3) + 4)];
          this.stagePackStream.read(abyte);
          Sprite sprite;
          (sprite = new Sprite()).load(abyte, 0);
@@ -4986,7 +4986,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void saveProgress(boolean var1) {
-      this.bool_I = false;
+      this.saveResultOnLoad = false;
       this.markGameStarted(true);
       this.storeLives();
       this.writePreferences();
@@ -5023,7 +5023,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void writeSave() {
-      this.bool_N = false;
+      this.writeSaveOnLoad = false;
       RecordStore recordstore = null;
 
       try {
@@ -5093,7 +5093,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   flag = false;
                }
 
-               gamecanvas.bool_O = flag;
+               gamecanvas.noSaveFound = flag;
                recordstore.closeRecordStore();
                if (var1 != 0) {
                   (saveData = new byte[1001])[3] = 5;
@@ -5116,7 +5116,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   s = "/map_tibet.out";
                }
 
-               this.stagePackStream = this.getClass().getResourceAsStream(stringArr_d[var1 - 2]);
+               this.stagePackStream = this.getClass().getResourceAsStream(stagePackFiles[var1 - 2]);
                this.stagePackStream.read();
                var1 -= 2;
                int i = this.saveDataLength;
@@ -5194,13 +5194,13 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void storeLives() {
       saveData[3] = (byte)this.lives;
-      saveData[11] = this.byte_r;
+      saveData[11] = this.checkpointBannerCount;
    }
 
    private void loadLives() {
-      this.bool_M = false;
+      this.reloadLivesOnLoad = false;
       this.lives = saveData[3];
-      this.byte_r = saveData[11];
+      this.checkpointBannerCount = saveData[11];
       this.stageDiamonds = readShort(saveData, 4);
    }
 
@@ -5298,13 +5298,13 @@ public final class GameCanvas extends Canvas implements Runnable {
       this.bossHealth = 4;
       this.bossX = 408;
       this.stageKind = 5;
-      this.long_c |= 128L;
-      this.long_c |= 8L;
-      this.bool_ae = false;
-      this.int_O = 16;
-      this.int_P = 16;
-      this.int_Q = 19;
-      this.int_R = 18;
+      this.neededGenSprites |= 128L;
+      this.neededGenSprites |= 8L;
+      this.knightTurning = false;
+      this.arenaWallRow = 16;
+      this.arenaWallX1 = 16;
+      this.arenaWallX2 = 19;
+      this.arenaWallRow2 = 18;
    }
 
    private void unlockNextStages() {
@@ -5328,10 +5328,10 @@ public final class GameCanvas extends Canvas implements Runnable {
             long j2;
             if (longBits(j2 = mapNodes[l1][i2], (byte)3, (byte)3) == 1 && (l1 = longBits(j2, (byte)6, (byte)5)) > l) {
                unlockedStage = l1;
-               this.int_cx = i;
-               this.int_cy = j;
+               this.unlockedNodeX = i;
+               this.unlockedNodeY = j;
                this.addStageFlags(this.world, unlockedStage, (byte)64);
-               this.bool_ac = true;
+               this.stageJustUnlocked = true;
             }
 
             k1++;
@@ -5394,7 +5394,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      this.paintMenu();
                      break;
                   case 5:
-                     if (!this.bool_R) {
+                     if (!this.tipVisible) {
                         this.screen.setClip(0, Constants.loadingTextY, 320, 240 - Constants.loadingTextY);
                         this.paintLoading();
                         this.screen.setClip(0, 0, 320, 240);
@@ -5402,7 +5402,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         this.paintLoading();
                      }
 
-                     if (tipText != null && this.bool_R) {
+                     if (tipText != null && this.tipVisible) {
                         this.paintTip();
                      }
                      break;
@@ -5625,12 +5625,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                            int j7 = 33 + gamecanvas11.mapTargetY * 13 + 6;
                            if ((gamecanvas11.getStageFlags(gamecanvas11.world, gamecanvas11.stage + 1) & 2) != 0 && gamecanvas11.stage + 1 == unlockedStage
                               || gamecanvas11.stage == unlockedStage) {
-                              gamecanvas11.bool_ap = true;
+                              gamecanvas11.mapUnlockDone = true;
                            }
 
-                           if (!gamecanvas11.bool_ap) {
-                              gamecanvas11.bool_ap = gamecanvas11.animateMapUnlock();
-                              if (gamecanvas11.bool_ap) {
+                           if (!gamecanvas11.mapUnlockDone) {
+                              gamecanvas11.mapUnlockDone = gamecanvas11.animateMapUnlock();
+                              if (gamecanvas11.mapUnlockDone) {
                                  gamecanvas11.fullRedraw = true;
                               }
                            } else {
@@ -5639,8 +5639,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                               int k1 = j2;
                               j5 = j1;
                               GameCanvas gamecanvas12 = gamecanvas11;
-                              if (gamecanvas11.bool_an) {
-                                 gamecanvas12.bool_an = false;
+                              if (gamecanvas11.mapWalkStarting) {
+                                 gamecanvas12.mapWalkStarting = false;
                                  gamecanvas12.mapWalkX = j5;
                                  gamecanvas12.mapWalkY = k1;
                                  gamecanvas12.mapWalkError = 0;
@@ -5665,8 +5665,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                               boolean flag1;
                               label441: {
                                  label440: {
-                                    gamecanvas12.bool_ao = gamecanvas12.mapWalkStepX <= 0;
-                                    j1 = gamecanvas12.bool_ao ? 7 : 6;
+                                    gamecanvas12.mapWalkFacingLeft = gamecanvas12.mapWalkStepX <= 0;
+                                    j1 = gamecanvas12.mapWalkFacingLeft ? 7 : 6;
                                     if (gamecanvas12.mapWalkDy <= gamecanvas12.mapWalkDx) {
                                        gamecanvas12.mapWalkErrorStep = 2 * gamecanvas12.mapWalkDx;
                                        gamecanvas12.mapWalkErrorInc = 2 * gamecanvas12.mapWalkDy;
@@ -5675,7 +5675,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           j2 = 77 + gamecanvas12.mapTargetX * 13 + 6;
                                           k = 33 + gamecanvas12.mapTargetY * 13 + 6;
                                           sprites[17].paintFrame(gamecanvas12.screen, j1, j2, k, 0, 0, 0);
-                                          gamecanvas12.bool_an = true;
+                                          gamecanvas12.mapWalkStarting = true;
                                           flag1 = true;
                                           break label441;
                                        }
@@ -5696,7 +5696,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                           j2 = 77 + gamecanvas12.mapTargetX * 13 + 6;
                                           k = 33 + gamecanvas12.mapTargetY * 13 + 6;
                                           sprites[17].paintFrame(gamecanvas12.screen, j1, j2, k, 0, 0, 0);
-                                          gamecanvas12.bool_an = true;
+                                          gamecanvas12.mapWalkStarting = true;
                                           flag1 = true;
                                           break label441;
                                        }
@@ -5723,7 +5723,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
                            }
                         } else if (gamecanvas11.mapCursorMoving) {
-                           int i5 = gamecanvas11.bool_ao ? 7 : 6;
+                           int i5 = gamecanvas11.mapWalkFacingLeft ? 7 : 6;
                            sprites[17].paintFrame(gamecanvas11.screen, i5, j1, j2, 0, 0, 0);
                         }
 
@@ -5989,8 +5989,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas3.updateShop();
                      this.fullRedraw = true;
                      gameState = 25;
-                     this.int_en = this.armorLevel;
-                     this.string_g = strings[125] + " " + readShort(saveData, 4) + " " + strings[19];
+                     this.shownArmorLevel = this.armorLevel;
+                     this.shopDiamondsText = strings[125] + " " + readShort(saveData, 4) + " " + strings[19];
                   case 25:
                      this.paintShop();
                      break;
@@ -6113,11 +6113,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break;
                   case 31:
-                     if (this.bool_Q) {
-                        this.bool_Q = false;
+                     if (this.blackScreenPending) {
+                        this.blackScreenPending = false;
                         this.screen.setColor(0);
                         this.screen.fillRect(0, 0, 320, 240);
-                        fontSmall.drawLines(this.screen, wrapForScreen(strings[this.bool_O ? 39 : 21]), 160, 120, 3);
+                        fontSmall.drawLines(this.screen, wrapForScreen(strings[this.noSaveFound ? 39 : 21]), 160, 120, 3);
                         this.drawBackSoftKey();
                         this.drawSelectSoftKey();
                      }
@@ -6182,19 +6182,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                   fontrenderer2.measure(gamecanvas8.noticeText);
                   int i3 = FontRenderer.measuredHeight;
                   int j6 = FontRenderer.measuredWidth;
-                  if (gamecanvas8.int_er == -1) {
-                     gamecanvas8.int_er = 320 - j6 >> 1;
+                  if (gamecanvas8.noticeX == -1) {
+                     gamecanvas8.noticeX = 320 - j6 >> 1;
                   }
 
-                  if (gamecanvas8.int_es == -1) {
-                     gamecanvas8.int_es = 240 - i3 >> 1;
+                  if (gamecanvas8.noticeY == -1) {
+                     gamecanvas8.noticeY = 240 - i3 >> 1;
                   }
 
-                  gamecanvas8.screen.setClip(gamecanvas8.int_er - 6, gamecanvas8.int_es - 3, j6 + 12, i3 + 26 + 6);
+                  gamecanvas8.screen.setClip(gamecanvas8.noticeX - 6, gamecanvas8.noticeY - 3, j6 + 12, i3 + 26 + 6);
                   drawFramedBox(
-                     gamecanvas8.screen, gamecanvas8.int_er - 6, gamecanvas8.int_es - 3, j6 + 12, i3 + 6, gamecanvas8.noticeColor, gamecanvas8.int_eu
+                     gamecanvas8.screen, gamecanvas8.noticeX - 6, gamecanvas8.noticeY - 3, j6 + 12, i3 + 6, gamecanvas8.noticeColor, gamecanvas8.noticeStyle
                   );
-                  fontrenderer2.drawLines(gamecanvas8.screen, gamecanvas8.noticeText, gamecanvas8.int_er, gamecanvas8.int_es + 26, 0);
+                  fontrenderer2.drawLines(gamecanvas8.screen, gamecanvas8.noticeText, gamecanvas8.noticeX, gamecanvas8.noticeY + 26, 0);
                }
             } catch (Throwable throwable) {
             }
@@ -6229,7 +6229,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      sprites[10].paintFrame(var1, 0, this.int_z + var3, this.int_A + var4, 0, 0, 0);
+      sprites[10].paintFrame(var1, 0, this.sealX + var3, this.sealY + var4, 0, 0, 0);
       if (var2) {
          for (int b5 = 0; b5 < 240; b5 += 24) {
             for (int b3 = 0; b3 < 320; b3 += 24) {
@@ -6245,9 +6245,17 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void paintEnding() {
       if (this.fullRedraw) {
-         this.drawSealBackground(this.screen, false, this.int_Y, this.int_Z);
+         this.drawSealBackground(this.screen, false, this.endingShakeX, this.endingShakeY);
          sprites[17]
-            .paintFrame(this.screen, 11, 160 + Constants.endingCrystalOffsets[6] + this.int_Y, 96 + Constants.endingCrystalOffsets[7] + this.int_Z, 0, 0, 0);
+            .paintFrame(
+               this.screen,
+               11,
+               160 + Constants.endingCrystalOffsets[6] + this.endingShakeX,
+               96 + Constants.endingCrystalOffsets[7] + this.endingShakeY,
+               0,
+               0,
+               0
+            );
 
          for (int j = 0; j < 3; j++) {
             int i = j + 52;
@@ -6255,8 +6263,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                .paintFrame(
                   this.screen,
                   0,
-                  Constants.endingCrystalOffsets[j << 1] + 160 - this.int_G + this.int_Y,
-                  Constants.endingCrystalOffsets[(j << 1) + 1] + 96 - this.int_H + this.int_Z,
+                  Constants.endingCrystalOffsets[j << 1] + 160 - this.crystalHalfWidth + this.endingShakeX,
+                  Constants.endingCrystalOffsets[(j << 1) + 1] + 96 - this.crystalHalfHeight + this.endingShakeY,
                   0,
                   0,
                   0
@@ -6264,10 +6272,10 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      switch (this.int_W) {
+      switch (this.endingPhase) {
          case 1:
             if (!this.fullRedraw) {
-               this.screen.setColor(this.int_X);
+               this.screen.setColor(this.endingFlashColor);
                this.screen.fillRect(0, 0, 320, 240);
 
                for (int l = 0; l < 3; l++) {
@@ -6276,8 +6284,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      .paintFrame(
                         this.screen,
                         0,
-                        Constants.endingCrystalOffsets[l << 1] + 160 - this.int_G,
-                        Constants.endingCrystalOffsets[(l << 1) + 1] + 96 - this.int_H,
+                        Constants.endingCrystalOffsets[l << 1] + 160 - this.crystalHalfWidth,
+                        Constants.endingCrystalOffsets[(l << 1) + 1] + 96 - this.crystalHalfHeight,
                         0,
                         0,
                         0
@@ -6319,9 +6327,9 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintSeal() {
-      if (!this.fullRedraw && !this.bool_g) {
-         this.screen.setClip(this.int_s + 160, this.int_t + 96, 14, 22);
-         sprites[10].paintFrame(this.screen, 0, this.int_z, this.int_A, 0, 0, 0);
+      if (!this.fullRedraw && !this.sealDirty) {
+         this.screen.setClip(this.sealCursorPrevX + 160, this.sealCursorPrevY + 96, 14, 22);
+         sprites[10].paintFrame(this.screen, 0, this.sealX, this.sealY, 0, 0, 0);
       } else {
          this.screen.setClip(0, 0, 320, 240);
          this.drawSealBackground(this.screen, false);
@@ -6332,64 +6340,64 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.fullRedraw = false;
       }
 
-      if (this.int_B != 0) {
-         this.bool_g = false;
+      if (this.crystalsPlaced != 0) {
+         this.sealDirty = false;
          this.fullRedraw = true;
 
-         for (int i = 0; i < this.int_B; i++) {
+         for (int i = 0; i < this.crystalsPlaced; i++) {
             if (isWorldUnlocked(i)) {
-               sprites[10].paintFrame(this.screen, i + 1, this.int_z, this.int_A, 0, 0, 0);
+               sprites[10].paintFrame(this.screen, i + 1, this.sealX, this.sealY, 0, 0, 0);
             }
          }
 
          this.screen.setClip(0, 0, 320, 240);
-         if (this.int_K < this.int_J) {
+         if (this.crystalAnimFrame < this.crystalAnimLength) {
             sprites[9]
                .paintAnimFrame(
                   this.screen,
                   5,
-                  this.int_K,
-                  Constants.endingCrystalOffsets[this.int_B << 1] + 160 - 12,
-                  Constants.endingCrystalOffsets[(this.int_B << 1) + 1] + 84,
+                  this.crystalAnimFrame,
+                  Constants.endingCrystalOffsets[this.crystalsPlaced << 1] + 160 - 12,
+                  Constants.endingCrystalOffsets[(this.crystalsPlaced << 1) + 1] + 84,
                   0,
                   0,
                   0
                );
-            this.int_K++;
+            this.crystalAnimFrame++;
          } else {
-            if (this.int_y % this.int_x >= this.int_x >> 1) {
-               sprites[10].paintFrame(this.screen, this.int_B + 1, this.int_z, this.int_A, 0, 0, 0);
-               this.int_C++;
+            if (this.cursorAnimFrame % this.cursorAnimLength >= this.cursorAnimLength >> 1) {
+               sprites[10].paintFrame(this.screen, this.crystalsPlaced + 1, this.sealX, this.sealY, 0, 0, 0);
+               this.crystalInsertTicks++;
             }
 
-            if (this.int_C >= 15) {
-               boolArr_a[this.int_B] = true;
-               this.int_C = 0;
-               this.int_B = 0;
-               this.int_K = 0;
+            if (this.crystalInsertTicks >= 15) {
+               crystalInserted[this.crystalsPlaced] = true;
+               this.crystalInsertTicks = 0;
+               this.crystalsPlaced = 0;
+               this.crystalAnimFrame = 0;
                this.updateSealCaption();
-               this.bool_g = true;
+               this.sealDirty = true;
                this.fullRedraw = false;
             }
          }
       } else {
          for (int l1 = 0; l1 < 3; l1++) {
-            if (boolArr_a[l1]) {
-               sprites[10].paintFrame(this.screen, l1 + 1, this.int_z, this.int_A, 0, 0, 0);
+            if (crystalInserted[l1]) {
+               sprites[10].paintFrame(this.screen, l1 + 1, this.sealX, this.sealY, 0, 0, 0);
             }
          }
       }
 
       for (int j = 0; j < 3; j++) {
-         if (boolArr_b[j]) {
+         if (worldCrystalEarned[j]) {
             int i2 = j + 52;
-            if (this.int_D != j) {
+            if (this.flyingCrystal != j) {
                sprites[i2]
                   .paintFrame(
                      this.screen,
                      0,
-                     Constants.endingCrystalOffsets[j << 1] + 160 - this.int_G,
-                     Constants.endingCrystalOffsets[(j << 1) + 1] + 96 - this.int_H - 40,
+                     Constants.endingCrystalOffsets[j << 1] + 160 - this.crystalHalfWidth,
+                     Constants.endingCrystalOffsets[(j << 1) + 1] + 96 - this.crystalHalfHeight - 40,
                      0,
                      0,
                      0
@@ -6398,15 +6406,15 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      if (this.int_D == -1) {
-         this.int_y = this.int_y % this.int_x;
-         this.screen.setClip(this.int_q + 160, 96 + this.int_r, 14, 22);
-         sprites[55].paintAnimFrame(this.screen, 0, this.int_y, 160 + this.int_q, 96 + this.int_r, 0, 0, 0);
-         this.int_y++;
-         if (this.bool_g) {
-            String s = Cutscene.wrapText(this.string_b, 300).length > 1
-               ? wrapForScreen(this.string_b + "\n" + this.string_c)
-               : wrapForScreen(this.string_b) + this.string_c;
+      if (this.flyingCrystal == -1) {
+         this.cursorAnimFrame = this.cursorAnimFrame % this.cursorAnimLength;
+         this.screen.setClip(this.sealCursorX + 160, 96 + this.sealCursorY, 14, 22);
+         sprites[55].paintAnimFrame(this.screen, 0, this.cursorAnimFrame, 160 + this.sealCursorX, 96 + this.sealCursorY, 0, 0, 0);
+         this.cursorAnimFrame++;
+         if (this.sealDirty) {
+            String s = Cutscene.wrapText(this.sealCaption, 300).length > 1
+               ? wrapForScreen(this.sealCaption + "\n" + this.sealCaptionTarget)
+               : wrapForScreen(this.sealCaption) + this.sealCaptionTarget;
             fontSmall.measure(s);
             int k2 = (320 - FontRenderer.measuredWidth >> 1) - 3;
             int l2 = 170 - (fontSmall.font.getHeight() >> 1) - 3;
@@ -6415,7 +6423,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.screen.setClip(k2, l2 - 15, i3, j3 + 20);
             drawFramedBox(this.screen, k2, l2 - 15, i3, j3, 7096587, 0);
             fontSmall.drawLines(this.screen, s, 160, 170, 3);
-            this.bool_g = false;
+            this.sealDirty = false;
          }
       } else {
          int k;
@@ -6426,15 +6434,15 @@ public final class GameCanvas extends Canvas implements Runnable {
          int j2;
          label111: {
             this.fullRedraw = true;
-            j2 = this.int_D;
+            j2 = this.flyingCrystal;
             gamecanvas = this;
             k = j2 + 52;
             l = Constants.endingCrystalOffsets[j2 << 1] + 160;
-            int j1 = (i1 = Constants.endingCrystalOffsets[(j2 << 1) + 1] + 96 - 40) - gamecanvas.int_F;
-            k1 = l - gamecanvas.int_E;
+            int j1 = (i1 = Constants.endingCrystalOffsets[(j2 << 1) + 1] + 96 - 40) - gamecanvas.flyingCrystalY;
+            k1 = l - gamecanvas.flyingCrystalX;
             if (j1 < 0) {
-               gamecanvas.int_F -= 2;
-               if (gamecanvas.int_F > i1) {
+               gamecanvas.flyingCrystalY -= 2;
+               if (gamecanvas.flyingCrystalY > i1) {
                   break label111;
                }
             } else {
@@ -6442,19 +6450,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                   break label111;
                }
 
-               gamecanvas.int_F += 2;
-               if (gamecanvas.int_F < i1) {
+               gamecanvas.flyingCrystalY += 2;
+               if (gamecanvas.flyingCrystalY < i1) {
                   break label111;
                }
             }
 
-            gamecanvas.int_F = i1;
+            gamecanvas.flyingCrystalY = i1;
          }
 
          label103: {
             if (k1 < 0) {
-               gamecanvas.int_E -= 3;
-               if (gamecanvas.int_E > l) {
+               gamecanvas.flyingCrystalX -= 3;
+               if (gamecanvas.flyingCrystalX > l) {
                   break label103;
                }
             } else {
@@ -6462,33 +6470,42 @@ public final class GameCanvas extends Canvas implements Runnable {
                   break label103;
                }
 
-               gamecanvas.int_E += 3;
-               if (gamecanvas.int_E < l) {
+               gamecanvas.flyingCrystalX += 3;
+               if (gamecanvas.flyingCrystalX < l) {
                   break label103;
                }
             }
 
-            gamecanvas.int_E = l;
+            gamecanvas.flyingCrystalX = l;
          }
 
          boolean flag;
          label95: {
-            sprites[k].paintFrame(gamecanvas.screen, 0, gamecanvas.int_E - gamecanvas.int_G, gamecanvas.int_F - gamecanvas.int_H, 0, 0, 0);
-            if (gamecanvas.int_E == l && gamecanvas.int_F == i1) {
-               gamecanvas.int_E = l;
-               gamecanvas.int_F = i1;
-               if (gamecanvas.int_I < 20) {
-                  if (gamecanvas.int_I % 2 == 1) {
+            sprites[k]
+               .paintFrame(
+                  gamecanvas.screen,
+                  0,
+                  gamecanvas.flyingCrystalX - gamecanvas.crystalHalfWidth,
+                  gamecanvas.flyingCrystalY - gamecanvas.crystalHalfHeight,
+                  0,
+                  0,
+                  0
+               );
+            if (gamecanvas.flyingCrystalX == l && gamecanvas.flyingCrystalY == i1) {
+               gamecanvas.flyingCrystalX = l;
+               gamecanvas.flyingCrystalY = i1;
+               if (gamecanvas.sealFlashStep < 20) {
+                  if (gamecanvas.sealFlashStep % 2 == 1) {
                      j2 = 838860;
-                     gamecanvas.screen.setColor(0 + j2 * gamecanvas.int_I);
+                     gamecanvas.screen.setColor(0 + j2 * gamecanvas.sealFlashStep);
                      gamecanvas.screen.fillRect(0, 0, 320, 240);
                   }
 
-                  gamecanvas.int_I++;
+                  gamecanvas.sealFlashStep++;
                } else {
-                  if (gamecanvas.int_K >= gamecanvas.int_J) {
-                     gamecanvas.int_K = 0;
-                     gamecanvas.int_I = 0;
+                  if (gamecanvas.crystalAnimFrame >= gamecanvas.crystalAnimLength) {
+                     gamecanvas.crystalAnimFrame = 0;
+                     gamecanvas.sealFlashStep = 0;
                      flag = true;
                      break label95;
                   }
@@ -6497,14 +6514,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                      .paintAnimFrame(
                         gamecanvas.screen,
                         5,
-                        gamecanvas.int_K,
+                        gamecanvas.crystalAnimFrame,
                         Constants.endingCrystalOffsets[j2 << 1] + 160 - 12,
                         Constants.endingCrystalOffsets[(j2 << 1) + 1] + 84 - 40,
                         0,
                         0,
                         0
                      );
-                  gamecanvas.int_K++;
+                  gamecanvas.crystalAnimFrame++;
                }
             }
 
@@ -6512,11 +6529,11 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          if (flag) {
-            this.int_D = -1;
-            if (boolArr_b[0] && boolArr_b[1] && boolArr_b[2]) {
+            this.flyingCrystal = -1;
+            if (worldCrystalEarned[0] && worldCrystalEarned[1] && worldCrystalEarned[2]) {
                this.resetStateTimer();
                this.fullRedraw = true;
-               this.bool_i = true;
+               this.endingReached = true;
                gameState = 29;
             }
          }
@@ -6622,58 +6639,58 @@ public final class GameCanvas extends Canvas implements Runnable {
       int k = var1 % i;
       int l = var2 % j;
       this.drawY = l - 24;
-      this.int_bH = var2 / 24 - 1;
+      this.paintTileY = var2 / 24 - 1;
 
       for (int i1 = var2; i1 <= var4; i1 += 24) {
          this.drawX = k - 24;
-         this.int_bG = var1 / 24 - 1;
+         this.paintTileX = var1 / 24 - 1;
          this.drawY += 24;
-         this.int_bH++;
+         this.paintTileY++;
          if (this.drawY >= j) {
             this.drawY = 0;
          }
 
          for (int j1 = var1; j1 <= var3; j1 += 24) {
             this.drawX += 24;
-            this.int_bG++;
+            this.paintTileX++;
             if (this.drawX >= i) {
                this.drawX = 0;
             }
 
-            if (this.int_bG >= 0 && this.int_bG < this.mapWidth && this.int_bH >= 0 && this.int_bH < this.mapHeight) {
-               this.int_bI = objectMap[this.int_bG][this.int_bH];
-               this.int_bJ = tileMap[this.int_bG][this.int_bH] & 0xFF;
-               if (this.int_bI < 80) {
+            if (this.paintTileX >= 0 && this.paintTileX < this.mapWidth && this.paintTileY >= 0 && this.paintTileY < this.mapHeight) {
+               this.paintObject = objectMap[this.paintTileX][this.paintTileY];
+               this.paintTerrain = tileMap[this.paintTileX][this.paintTileY] & 0xFF;
+               if (this.paintObject < 80) {
                   graphics1.drawImage(imageSets[8][0], this.drawX, this.drawY, 0);
                }
 
                label131:
-               if (this.int_bJ > -1 && this.int_bJ < 38) {
+               if (this.paintTerrain > -1 && this.paintTerrain < 38) {
                   GameCanvas gamecanvas2;
                   int l1;
-                  switch (this.int_bJ) {
+                  switch (this.paintTerrain) {
                      case 4:
-                        this.int_aJ = 20;
-                        this.int_aK = 7;
-                        this.int_bN = this.int_bO = 0;
+                        this.paintImageSet = 20;
+                        this.paintFrame = 7;
+                        this.paintOffsetX = this.paintOffsetY = 0;
                         break label131;
                      case 15:
-                        if (this.int_ce != 0) {
+                        if (this.togglePhase != 0) {
                            break label131;
                         }
 
-                        this.int_aJ = 14;
+                        this.paintImageSet = 14;
                         gamecanvas2 = this;
-                        l1 = 0 + this.int_ce * 5 / 10;
+                        l1 = 0 + this.togglePhase * 5 / 10;
                         break;
                      case 16:
-                        if (this.int_ce != 9) {
+                        if (this.togglePhase != 9) {
                            break label131;
                         }
 
-                        this.int_aJ = 15;
-                        this.int_aK = 4 - this.int_ce * 5 / 10;
-                        if (this.int_aK >= 0) {
+                        this.paintImageSet = 15;
+                        this.paintFrame = 4 - this.togglePhase * 5 / 10;
+                        if (this.paintFrame >= 0) {
                            break label131;
                         }
 
@@ -6681,69 +6698,73 @@ public final class GameCanvas extends Canvas implements Runnable {
                         l1 = 0;
                         break;
                      case 27:
-                        this.int_aJ = 21;
-                        this.int_aK = 0;
-                        this.int_bN = this.int_bO = 0;
+                        this.paintImageSet = 21;
+                        this.paintFrame = 0;
+                        this.paintOffsetX = this.paintOffsetY = 0;
                      default:
                         break label131;
                   }
 
-                  gamecanvas2.int_aK = l1;
+                  gamecanvas2.paintFrame = l1;
                }
 
-               if (this.int_aJ != -1) {
-                  if (imageSets[this.int_aJ] == null) {
-                     sprites[themedSpriteIndex(this.int_aJ)]
-                        .paintFrame(graphics1, this.int_aK, this.drawX + this.int_bN, this.drawY + this.int_bO, this.int_bP, 0, 0);
+               if (this.paintImageSet != -1) {
+                  if (imageSets[this.paintImageSet] == null) {
+                     sprites[themedSpriteIndex(this.paintImageSet)]
+                        .paintFrame(graphics1, this.paintFrame, this.drawX + this.paintOffsetX, this.drawY + this.paintOffsetY, this.paintTransform, 0, 0);
                   } else {
-                     graphics1.drawImage(imageSets[this.int_aJ][this.int_aK], this.drawX + this.int_bN, this.drawY + this.int_bO, this.int_bP);
+                     graphics1.drawImage(
+                        imageSets[this.paintImageSet][this.paintFrame], this.drawX + this.paintOffsetX, this.drawY + this.paintOffsetY, this.paintTransform
+                     );
                   }
 
-                  this.int_bP = 0;
-                  this.int_aJ = -1;
-                  this.int_bN = this.int_bO = 0;
+                  this.paintTransform = 0;
+                  this.paintImageSet = -1;
+                  this.paintOffsetX = this.paintOffsetY = 0;
                }
 
-               if (this.int_bI != -1) {
+               if (this.paintObject != -1) {
                   label114: {
                      byte b0;
                      GameCanvas gamecanvas1;
                      int k1;
-                     if ((b0 = (byte)(this.int_bI - 80)) >= 0) {
-                        this.int_aL = 0;
+                     if ((b0 = (byte)(this.paintObject - 80)) >= 0) {
+                        this.paintOverlaySet = 0;
                         gamecanvas1 = this;
                         k1 = b0;
                      } else {
-                        switch (this.int_bI) {
+                        switch (this.paintObject) {
                            case 0:
-                              if (objectTimers[this.int_bG][this.int_bH] == 0 && (tileSlots == null || tileSlots[this.int_bG][this.int_bH] == 0)) {
+                              if (objectTimers[this.paintTileX][this.paintTileY] == 0
+                                 && (tileSlots == null || tileSlots[this.paintTileX][this.paintTileY] == 0)) {
                                  this.computeObjectOffset();
                               }
                               break label114;
                            case 1:
-                              if (objectTimers[this.int_bG][this.int_bH] == 0 && (tileSlots == null || tileSlots[this.int_bG][this.int_bH] == 0)) {
+                              if (objectTimers[this.paintTileX][this.paintTileY] == 0
+                                 && (tileSlots == null || tileSlots[this.paintTileX][this.paintTileY] == 0)) {
                                  this.computeObjectOffset();
-                                 this.int_aM = this.int_aM - this.int_bR;
-                                 this.int_bO = 0;
+                                 this.paintOverlayFrame = this.paintOverlayFrame - this.paintAnimPhase;
+                                 this.paintOffsetY = 0;
                               }
                               break label114;
                            case 10:
                               sprites[16].paintFrame(graphics1, 0, this.drawX, this.drawY, 0, 0, 0);
                               break label114;
                            case 34:
-                              if (this.int_ce != 9) {
+                              if (this.togglePhase != 9) {
                                  break label114;
                               }
 
-                              this.int_aL = 14;
+                              this.paintOverlaySet = 14;
                               gamecanvas1 = this;
-                              k1 = 0 + this.int_ce * 5 / 10;
+                              k1 = 0 + this.togglePhase * 5 / 10;
                               break;
                            case 35:
-                              if (this.int_ce == 0) {
-                                 this.int_aL = 15;
-                                 this.int_aM = 4 - this.int_ce * 5 / 10;
-                                 if (this.int_aM < 0) {
+                              if (this.togglePhase == 0) {
+                                 this.paintOverlaySet = 15;
+                                 this.paintOverlayFrame = 4 - this.togglePhase * 5 / 10;
+                                 if (this.paintOverlayFrame < 0) {
                                     gamecanvas1 = this;
                                     k1 = 0;
                                     break;
@@ -6754,20 +6775,27 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
                      }
 
-                     gamecanvas1.int_aM = k1;
+                     gamecanvas1.paintOverlayFrame = k1;
                   }
 
-                  if (this.int_aL != -1) {
-                     if (imageSets[this.int_aL] == null) {
-                        sprites[themedSpriteIndex(this.int_aL)]
-                           .paintFrame(graphics1, this.int_aM, this.drawX + this.int_bN, this.drawY + this.int_bO, this.int_bP, 0, 0);
+                  if (this.paintOverlaySet != -1) {
+                     if (imageSets[this.paintOverlaySet] == null) {
+                        sprites[themedSpriteIndex(this.paintOverlaySet)]
+                           .paintFrame(
+                              graphics1, this.paintOverlayFrame, this.drawX + this.paintOffsetX, this.drawY + this.paintOffsetY, this.paintTransform, 0, 0
+                           );
                      } else {
-                        graphics1.drawImage(imageSets[this.int_aL][this.int_aM], this.drawX + this.int_bN, this.drawY + this.int_bO, this.int_bP);
+                        graphics1.drawImage(
+                           imageSets[this.paintOverlaySet][this.paintOverlayFrame],
+                           this.drawX + this.paintOffsetX,
+                           this.drawY + this.paintOffsetY,
+                           this.paintTransform
+                        );
                      }
 
-                     this.int_aL = -1;
-                     this.int_bP = 0;
-                     this.int_bN = this.int_bO = 0;
+                     this.paintOverlaySet = -1;
+                     this.paintTransform = 0;
+                     this.paintOffsetX = this.paintOffsetY = 0;
                   }
                }
 
@@ -6783,8 +6811,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                      sprites[10] = loadSprite("/mmv.f", b1, 0, 0);
                   }
 
-                  if (gamecanvas.int_bG >= 60 && gamecanvas.int_bG < 65 && gamecanvas.int_bH >= 2 && gamecanvas.int_bH < 7) {
-                     sprites[10].paintFrame(graphics, 4 + (gamecanvas.int_bH - 2) * 5 + gamecanvas.int_bG - 60, gamecanvas.drawX, gamecanvas.drawY, 0, 0, 0);
+                  if (gamecanvas.paintTileX >= 60 && gamecanvas.paintTileX < 65 && gamecanvas.paintTileY >= 2 && gamecanvas.paintTileY < 7) {
+                     sprites[10]
+                        .paintFrame(graphics, 4 + (gamecanvas.paintTileY - 2) * 5 + gamecanvas.paintTileX - 60, gamecanvas.drawX, gamecanvas.drawY, 0, 0, 0);
                   }
                }
             }
@@ -6799,72 +6828,72 @@ public final class GameCanvas extends Canvas implements Runnable {
    private void paintPlaying() {
       Graphics graphics = this.screen;
       int i = stateTicks;
-      this.int_bQ = (this.playerFlags & 4096) == 0 ? this.queuedAction : 0;
+      this.paintPlayerDirection = (this.playerFlags & 4096) == 0 ? this.queuedAction : 0;
       graphics.translate(0, 31);
-      this.int_bk = 0;
+      this.screenShakeOffset = 0;
       this.clipToPlayfield();
-      if (this.int_bj > 0) {
-         this.int_bk = this.int_bj * i % ((this.int_bj >> 1) + 1) % 12;
+      if (this.screenShakeTicks > 0) {
+         this.screenShakeOffset = this.screenShakeTicks * i % ((this.screenShakeTicks >> 1) + 1) % 12;
       }
 
-      if (this.int_bk > this.cameraY) {
-         this.int_bk = this.cameraY;
+      if (this.screenShakeOffset > this.cameraY) {
+         this.screenShakeOffset = this.cameraY;
       }
 
-      this.cameraY = this.cameraY - this.int_bk;
-      this.int_cI = this.cameraX / 24;
-      this.int_cJ = this.cameraY / 24;
-      this.int_cK = this.cameraX % 24;
-      this.int_cL = this.cameraY % 24;
-      this.int_bR = (i & 63) >> 1;
-      if (this.int_bR >= 4) {
-         this.int_bR = 0;
+      this.cameraY = this.cameraY - this.screenShakeOffset;
+      this.cameraTileX = this.cameraX / 24;
+      this.cameraTileY = this.cameraY / 24;
+      this.cameraTileOffsetX = this.cameraX % 24;
+      this.cameraTileOffsetY = this.cameraY % 24;
+      this.paintAnimPhase = (i & 63) >> 1;
+      if (this.paintAnimPhase >= 4) {
+         this.paintAnimPhase = 0;
       }
 
-      int j = this.cameraX - this.int_cK;
-      int k = this.cameraY - this.int_cL;
+      int j = this.cameraX - this.cameraTileOffsetX;
+      int k = this.cameraY - this.cameraTileOffsetY;
       int l = this.cameraX + backgroundBufferWidth - 24 - (this.cameraX + backgroundBufferWidth - 24) % 24;
       int i1 = this.cameraY + backgroundBufferHeight - 24 - (this.cameraY + backgroundBufferHeight - 24) % 24;
-      if (int_cE == -1) {
+      if (bufferedLeft == -1) {
          this.renderBackgroundArea(j, k, l, i1, false);
-         int_cE = j;
-         int_cF = l;
-         int_cG = k;
-         int_cH = i1;
+         bufferedLeft = j;
+         bufferedRight = l;
+         bufferedTop = k;
+         bufferedBottom = i1;
       }
 
-      if (int_cE != j) {
+      if (bufferedLeft != j) {
          int j1;
          int l17;
-         if (int_cE < j) {
-            j1 = int_cF + 24;
+         if (bufferedLeft < j) {
+            j1 = bufferedRight + 24;
             l17 = l;
          } else {
             j1 = j;
-            l17 = int_cE - 24;
+            l17 = bufferedLeft - 24;
          }
 
          int k1 = l17;
          this.renderBackgroundArea(j1, k, k1, i1, false);
-         int_cE = j;
-         int_cF = l;
+         bufferedLeft = j;
+         bufferedRight = l;
       }
 
-      if (int_cG != k) {
+      if (bufferedTop != k) {
          int i4;
          int k16;
-         if (int_cG < k) {
-            i4 = int_cH + 24;
+         if (bufferedTop < k) {
+            i4 = bufferedBottom + 24;
             k16 = i1;
          } else {
             i4 = k;
-            k16 = int_cG - 24;
+            k16 = bufferedTop - 24;
          }
 
          int k5 = k16;
          this.renderBackgroundArea(j, i4, l, k5, false);
-         int_cG = k;
-         int_cH = i1;
+         bufferedTop = k;
+         bufferedBottom = i1;
       }
 
       Graphics graphics4;
@@ -6924,32 +6953,35 @@ public final class GameCanvas extends Canvas implements Runnable {
 
       for (int k3 = -1; k3 < 9; k3++) {
          for (int l3 = -1; l3 < 15; l3++) {
-            gamecanvas1.int_bG = l3 + gamecanvas1.int_cI;
-            gamecanvas1.int_bH = k3 + gamecanvas1.int_cJ;
-            if (gamecanvas1.int_bG >= 0 && gamecanvas1.int_bG < gamecanvas1.mapWidth && gamecanvas1.int_bH >= 0 && gamecanvas1.int_bH < gamecanvas1.mapHeight) {
-               gamecanvas1.int_bI = objectMap[gamecanvas1.int_bG][gamecanvas1.int_bH];
-               gamecanvas1.int_bJ = tileMap[gamecanvas1.int_bG][gamecanvas1.int_bH] & 0xFF;
-               gamecanvas1.drawX = l3 * 24 - gamecanvas1.int_cK;
-               gamecanvas1.drawY = k3 * 24 - gamecanvas1.int_cL;
+            gamecanvas1.paintTileX = l3 + gamecanvas1.cameraTileX;
+            gamecanvas1.paintTileY = k3 + gamecanvas1.cameraTileY;
+            if (gamecanvas1.paintTileX >= 0
+               && gamecanvas1.paintTileX < gamecanvas1.mapWidth
+               && gamecanvas1.paintTileY >= 0
+               && gamecanvas1.paintTileY < gamecanvas1.mapHeight) {
+               gamecanvas1.paintObject = objectMap[gamecanvas1.paintTileX][gamecanvas1.paintTileY];
+               gamecanvas1.paintTerrain = tileMap[gamecanvas1.paintTileX][gamecanvas1.paintTileY] & 0xFF;
+               gamecanvas1.drawX = l3 * 24 - gamecanvas1.cameraTileOffsetX;
+               gamecanvas1.drawY = k3 * 24 - gamecanvas1.cameraTileOffsetY;
                gamecanvas1.clipToPlayfield();
                label839:
-               if (gamecanvas1.int_bJ > -1 && gamecanvas1.int_bJ < 38) {
+               if (gamecanvas1.paintTerrain > -1 && gamecanvas1.paintTerrain < 38) {
                   label836: {
                      GameCanvas gamecanvas27;
-                     switch (gamecanvas1.int_bJ) {
+                     switch (gamecanvas1.paintTerrain) {
                         case 3:
                            int k4;
-                           if ((k4 = (tileMap[gamecanvas1.int_bG][gamecanvas1.int_bH] >> 8) - 1) >= 0) {
-                              gamecanvas1.int_aJ = 12;
-                              gamecanvas1.int_aK = (byte)k4;
+                           if ((k4 = (tileMap[gamecanvas1.paintTileX][gamecanvas1.paintTileY] >> 8) - 1) >= 0) {
+                              gamecanvas1.paintImageSet = 12;
+                              gamecanvas1.paintFrame = (byte)k4;
                            }
                            break label836;
                         case 4:
-                           if (tileMap[gamecanvas1.int_bG][gamecanvas1.int_bH] >> 8 >= gamecanvas1.int_aC) {
+                           if (tileMap[gamecanvas1.paintTileX][gamecanvas1.paintTileY] >> 8 >= gamecanvas1.nextCompassTarget) {
                               GameCanvas gamecanvas11 = gamecanvas1;
-                              gamecanvas1.int_aJ = 20;
+                              gamecanvas1.paintImageSet = 20;
                               GameCanvas gamecanvas31;
-                              if (tileMap[gamecanvas11.int_bG][gamecanvas11.int_bH] >> 8 >= gamecanvas11.int_aC) {
+                              if (tileMap[gamecanvas11.paintTileX][gamecanvas11.paintTileY] >> 8 >= gamecanvas11.nextCompassTarget) {
                                  gamecanvas31 = gamecanvas11;
                                  i18 = 0 + (stateTicks >> 1) % 7;
                               } else {
@@ -6957,14 +6989,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  i18 = 7;
                               }
 
-                              gamecanvas31.int_aK = i18;
+                              gamecanvas31.paintFrame = i18;
                            }
                            break label836;
                         case 5:
                            System.out.println("k_AOBJ_STAGE_END ..................");
                         case 28:
                            System.out.println("k_AOBJ_SECRET_EXIT ..................");
-                           gamecanvas1.int_aJ = 11;
+                           gamecanvas1.paintImageSet = 11;
                            GameCanvas gamecanvas30;
                            byte b10;
                            if ((gamecanvas1.world != 0 || gamecanvas1.stage != 4 && gamecanvas1.stage != 7)
@@ -6979,20 +7011,20 @@ public final class GameCanvas extends Canvas implements Runnable {
                               b10 = 1;
                            }
 
-                           gamecanvas30.int_aK = b10;
-                           if (gamecanvas1.int_bJ == 28
+                           gamecanvas30.paintFrame = b10;
+                           if (gamecanvas1.paintTerrain == 28
                               && (gamecanvas1.world == 1 && gamecanvas1.stage == 3 || gamecanvas1.world == 2 && gamecanvas1.stage == 4)) {
-                              gamecanvas1.int_aK = 1;
+                              gamecanvas1.paintFrame = 1;
                            }
                            break label836;
                         case 6:
                            GameCanvas gamecanvas10;
                            label938: {
                               gamecanvas10 = gamecanvas1;
-                              int l6 = gamecanvas1.int_bG;
-                              int l7 = gamecanvas10.int_bH;
-                              gamecanvas10.int_aJ = 26;
-                              gamecanvas10.int_aK = 0;
+                              int l6 = gamecanvas1.paintTileX;
+                              int l7 = gamecanvas10.paintTileY;
+                              gamecanvas10.paintImageSet = 26;
+                              gamecanvas10.paintFrame = 0;
                               GameCanvas gamecanvas29;
                               if (isHeavyObject(l6, l7) && objectTimers[l6][l7] <= 12) {
                                  gamecanvas29 = gamecanvas10;
@@ -7011,8 +7043,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  }
                               } else {
                                  if (gamecanvas10.isPlayerAt(l6 - 1, l7)
-                                    ? gamecanvas10.int_bQ != 4 || gamecanvas10.moveProgress <= 12
-                                    : !gamecanvas10.isPlayerAt(l6 + 1, l7) || gamecanvas10.int_bQ != 2 || gamecanvas10.moveProgress <= 12) {
+                                    ? gamecanvas10.paintPlayerDirection != 4 || gamecanvas10.moveProgress <= 12
+                                    : !gamecanvas10.isPlayerAt(l6 + 1, l7) || gamecanvas10.paintPlayerDirection != 2 || gamecanvas10.moveProgress <= 12) {
                                     break label938;
                                  }
 
@@ -7020,19 +7052,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  i18 = gamecanvas10.moveProgress - 12;
                               }
 
-                              gamecanvas29.int_bO = i18;
+                              gamecanvas29.paintOffsetY = i18;
                            }
 
-                           gamecanvas10.int_bO += 24;
-                           gamecanvas10.int_bP = 36;
+                           gamecanvas10.paintOffsetY += 24;
+                           gamecanvas10.paintTransform = 36;
                            if (gamecanvas1.drawY + 24 < 178) {
                               graphics2.clipRect(gamecanvas1.drawX, gamecanvas1.drawY, 24, 24);
                            }
                            break label836;
                         case 7:
                            GameCanvas gamecanvas9 = gamecanvas1;
-                           int k6 = gamecanvas1.int_bG;
-                           int k7 = gamecanvas9.int_bH;
+                           int k6 = gamecanvas1.paintTileX;
+                           int k7 = gamecanvas9.paintTileY;
                            int j2;
                            if ((j2 = ((tileMap[k6][k7] >> 8 & 240) >> 4) - 1) < 0) {
                               j2 = 0;
@@ -7042,14 +7074,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                               sprites[56].paintFrame(gamecanvas9.screen, j2, gamecanvas9.drawX, gamecanvas9.drawY, 0, 0, 0);
                            }
 
-                           gamecanvas9.int_aJ = 4;
-                           gamecanvas9.int_aK = (byte)(j2 + 3);
+                           gamecanvas9.paintImageSet = 4;
+                           gamecanvas9.paintFrame = (byte)(j2 + 3);
                            break label836;
                         case 8:
                         case 9:
                            GameCanvas gamecanvas8 = gamecanvas1;
-                           int j6 = tileMap[gamecanvas8.int_bG][gamecanvas8.int_bH] >> 8;
-                           gamecanvas8.int_aJ = gamecanvas8.int_bJ == 9 ? 22 : 23;
+                           int j6 = tileMap[gamecanvas8.paintTileX][gamecanvas8.paintTileY] >> 8;
+                           gamecanvas8.paintImageSet = gamecanvas8.paintTerrain == 9 ? 22 : 23;
                            GameCanvas gamecanvas28;
                            byte b9;
                            if ((j6 & 512) != 0) {
@@ -7063,7 +7095,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               b9 = 0;
                            }
 
-                           gamecanvas28.int_aK = b9;
+                           gamecanvas28.paintFrame = b9;
                         case 10:
                         case 11:
                         case 12:
@@ -7088,10 +7120,10 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break label836;
                         case 14:
                         case 33:
-                           int i6 = gamecanvas1.int_bJ;
+                           int i6 = gamecanvas1.paintTerrain;
                            GameCanvas gamecanvas7 = gamecanvas1;
                            int l1;
-                           if ((l1 = tileMap[gamecanvas7.int_bG][gamecanvas7.int_bH] >> 8) == 255) {
+                           if ((l1 = tileMap[gamecanvas7.paintTileX][gamecanvas7.paintTileY] >> 8) == 255) {
                               l1 = 0;
                            }
 
@@ -7101,17 +7133,17 @@ public final class GameCanvas extends Canvas implements Runnable {
                            }
                            break label836;
                         case 15:
-                           if (gamecanvas1.int_ce != 0 && gamecanvas1.int_ce <= 5) {
-                              gamecanvas1.int_aJ = 14;
-                              gamecanvas1.int_aK = 0 + gamecanvas1.int_ce * 5 / 10;
+                           if (gamecanvas1.togglePhase != 0 && gamecanvas1.togglePhase <= 5) {
+                              gamecanvas1.paintImageSet = 14;
+                              gamecanvas1.paintFrame = 0 + gamecanvas1.togglePhase * 5 / 10;
                            }
                            break label836;
                         case 16:
-                           if (gamecanvas1.int_ce != 9 && gamecanvas1.int_ce >= 5) {
-                              gamecanvas1.int_aJ = 15;
-                              gamecanvas1.int_aK = 4 - gamecanvas1.int_ce * 5 / 10;
-                              if (gamecanvas1.int_aK < 0) {
-                                 gamecanvas1.int_aK = 0;
+                           if (gamecanvas1.togglePhase != 9 && gamecanvas1.togglePhase >= 5) {
+                              gamecanvas1.paintImageSet = 15;
+                              gamecanvas1.paintFrame = 4 - gamecanvas1.togglePhase * 5 / 10;
+                              if (gamecanvas1.paintFrame < 0) {
+                                 gamecanvas1.paintFrame = 0;
                               }
                            }
                            break label836;
@@ -7127,75 +7159,75 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
 
                      GameCanvas gamecanvas6 = gamecanvas27;
-                     sprite_b = sprites[30];
-                     gamecanvas6.int_bK = 1;
-                     gamecanvas6.int_bL = frameAtTime(sprite_b, 1, stateTicks % animLength(sprite_b, 1));
+                     paintSprite = sprites[30];
+                     gamecanvas6.paintSpriteAnim = 1;
+                     gamecanvas6.paintSpriteFrame = frameAtTime(paintSprite, 1, stateTicks % animLength(paintSprite, 1));
                   }
 
-                  if (gamecanvas1.int_aJ != -1) {
-                     if (imageSets[gamecanvas1.int_aJ] == null) {
-                        sprites[themedSpriteIndex(gamecanvas1.int_aJ)]
+                  if (gamecanvas1.paintImageSet != -1) {
+                     if (imageSets[gamecanvas1.paintImageSet] == null) {
+                        sprites[themedSpriteIndex(gamecanvas1.paintImageSet)]
                            .paintFrame(
                               graphics2,
-                              gamecanvas1.int_aK,
-                              gamecanvas1.drawX + gamecanvas1.int_bN,
-                              gamecanvas1.drawY + gamecanvas1.int_bO,
-                              gamecanvas1.int_bP,
+                              gamecanvas1.paintFrame,
+                              gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                              gamecanvas1.drawY + gamecanvas1.paintOffsetY,
+                              gamecanvas1.paintTransform,
                               0,
                               0
                            );
                      } else {
                         graphics2.drawImage(
-                           imageSets[gamecanvas1.int_aJ][gamecanvas1.int_aK],
-                           gamecanvas1.drawX + gamecanvas1.int_bN,
-                           gamecanvas1.drawY + gamecanvas1.int_bO,
-                           gamecanvas1.int_bP
+                           imageSets[gamecanvas1.paintImageSet][gamecanvas1.paintFrame],
+                           gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                           gamecanvas1.drawY + gamecanvas1.paintOffsetY,
+                           gamecanvas1.paintTransform
                         );
                      }
 
-                     gamecanvas1.int_bP = 0;
-                     gamecanvas1.int_aJ = -1;
-                     graphics2.setClip(0, -gamecanvas1.int_bk, 320, 178);
+                     gamecanvas1.paintTransform = 0;
+                     gamecanvas1.paintImageSet = -1;
+                     graphics2.setClip(0, -gamecanvas1.screenShakeOffset, 320, 178);
                   } else {
-                     if (sprite_b == null) {
+                     if (paintSprite == null) {
                         break label839;
                      }
 
-                     if (gamecanvas1.int_bK != -1) {
-                        sprite_b.paintAnimFrame(
+                     if (gamecanvas1.paintSpriteAnim != -1) {
+                        paintSprite.paintAnimFrame(
                            graphics2,
-                           gamecanvas1.int_bK,
-                           gamecanvas1.int_bL,
-                           gamecanvas1.drawX + gamecanvas1.int_bN,
-                           gamecanvas1.drawY + gamecanvas1.int_bO,
+                           gamecanvas1.paintSpriteAnim,
+                           gamecanvas1.paintSpriteFrame,
+                           gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                           gamecanvas1.drawY + gamecanvas1.paintOffsetY,
                            0,
                            0,
                            0
                         );
-                        gamecanvas1.int_bK = -1;
+                        gamecanvas1.paintSpriteAnim = -1;
                      }
 
-                     sprite_b = null;
+                     paintSprite = null;
                   }
 
-                  gamecanvas1.int_bN = gamecanvas1.int_bO = 0;
+                  gamecanvas1.paintOffsetX = gamecanvas1.paintOffsetY = 0;
                }
 
-               if (gamecanvas1.int_bI != -1) {
+               if (gamecanvas1.paintObject != -1) {
                   label773:
-                  if ((byte)(gamecanvas1.int_bI - 80) < 0) {
-                     int i7 = objectState[gamecanvas1.int_bG][gamecanvas1.int_bH];
+                  if ((byte)(gamecanvas1.paintObject - 80) < 0) {
+                     int i7 = objectState[gamecanvas1.paintTileX][gamecanvas1.paintTileY];
                      GameCanvas gamecanvas35;
-                     switch (gamecanvas1.int_bI) {
+                     switch (gamecanvas1.paintObject) {
                         case 0:
-                           if ((objectState[gamecanvas1.int_bG][gamecanvas1.int_bH] & -2147483648) == 0) {
+                           if ((objectState[gamecanvas1.paintTileX][gamecanvas1.paintTileY] & -2147483648) == 0) {
                               break label773;
                            }
                         case 8:
                            gamecanvas35 = gamecanvas1;
                            break;
                         case 1:
-                           if ((objectState[gamecanvas1.int_bG][gamecanvas1.int_bH] & -2147483648) != 0 || gamecanvas1.int_bR != 0) {
+                           if ((objectState[gamecanvas1.paintTileX][gamecanvas1.paintTileY] & -2147483648) != 0 || gamecanvas1.paintAnimPhase != 0) {
                               gamecanvas35 = gamecanvas1;
                               break;
                            }
@@ -7226,19 +7258,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break label773;
                         case 9:
                            gamecanvas1.computeObjectOffset();
-                           if ((objectState[gamecanvas1.int_bG][gamecanvas1.int_bH] & 264241152) == 138412032) {
-                              gamecanvas1.int_bN = gamecanvas1.int_bN + gamecanvas1.shakeX;
-                              gamecanvas1.int_bO = gamecanvas1.int_bO + gamecanvas1.shakeY;
+                           if ((objectState[gamecanvas1.paintTileX][gamecanvas1.paintTileY] & 264241152) == 138412032) {
+                              gamecanvas1.paintOffsetX = gamecanvas1.paintOffsetX + gamecanvas1.shakeX;
+                              gamecanvas1.paintOffsetY = gamecanvas1.paintOffsetY + gamecanvas1.shakeY;
                            }
                            break label773;
                         case 11:
                            GameCanvas gamecanvas25 = gamecanvas1;
-                           i7 = gamecanvas1.int_bG;
-                           int i10 = gamecanvas25.int_bH;
-                           gamecanvas25.int_aL = 6;
+                           i7 = gamecanvas1.paintTileX;
+                           int i10 = gamecanvas25.paintTileY;
+                           gamecanvas25.paintOverlaySet = 6;
                            int i12;
                            if ((i12 = (objectState[i7][i10] & 3840) >> 8) >= 4) {
-                              gamecanvas25.int_aL = -1;
+                              gamecanvas25.paintOverlaySet = -1;
                            } else {
                               GameCanvas gamecanvas43;
                               if (i12 == 0) {
@@ -7249,54 +7281,54 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  i18 = i12 + 3 - 1;
                               }
 
-                              gamecanvas43.int_aM = i18;
+                              gamecanvas43.paintOverlayFrame = i18;
                               int l13 = objectState[i7][i10] & 7;
-                              gamecanvas25.int_bN = objectTimers[i7][i10] * directionOffsets[l13] + 2;
-                              gamecanvas25.int_bO = objectTimers[i7][i10] * directionOffsets[l13 + 8] + 2;
+                              gamecanvas25.paintOffsetX = objectTimers[i7][i10] * directionOffsets[l13] + 2;
+                              gamecanvas25.paintOffsetY = objectTimers[i7][i10] * directionOffsets[l13 + 8] + 2;
                               if ((objectState[i7][i10] & 16) == 0) {
                                  GameCanvas gamecanvas44;
                                  switch (l13) {
                                     case 1:
-                                       gamecanvas25.int_bN += 4;
+                                       gamecanvas25.paintOffsetX += 4;
                                        break label773;
                                     case 2:
                                        gamecanvas44 = gamecanvas25;
-                                       i18 = gamecanvas25.int_bO + 4;
+                                       i18 = gamecanvas25.paintOffsetY + 4;
                                        break;
                                     case 3:
-                                       gamecanvas25.int_bN -= 4;
+                                       gamecanvas25.paintOffsetX -= 4;
                                        break label773;
                                     case 4:
                                        gamecanvas44 = gamecanvas25;
-                                       i18 = gamecanvas25.int_bO - 4;
+                                       i18 = gamecanvas25.paintOffsetY - 4;
                                        break;
                                     default:
                                        break label773;
                                  }
 
-                                 gamecanvas44.int_bO = i18;
+                                 gamecanvas44.paintOffsetY = i18;
                               } else {
                                  GameCanvas gamecanvas45;
                                  switch (l13) {
                                     case 1:
-                                       gamecanvas25.int_bN -= 4;
+                                       gamecanvas25.paintOffsetX -= 4;
                                        break label773;
                                     case 2:
                                        gamecanvas45 = gamecanvas25;
-                                       i18 = gamecanvas25.int_bO - 4;
+                                       i18 = gamecanvas25.paintOffsetY - 4;
                                        break;
                                     case 3:
-                                       gamecanvas25.int_bN += 4;
+                                       gamecanvas25.paintOffsetX += 4;
                                        break label773;
                                     case 4:
                                        gamecanvas45 = gamecanvas25;
-                                       i18 = gamecanvas25.int_bO + 4;
+                                       i18 = gamecanvas25.paintOffsetY + 4;
                                        break;
                                     default:
                                        break label773;
                                  }
 
-                                 gamecanvas45.int_bO = i18;
+                                 gamecanvas45.paintOffsetY = i18;
                               }
                            }
                            break label773;
@@ -7320,96 +7352,96 @@ public final class GameCanvas extends Canvas implements Runnable {
                         case 14:
                            GameCanvas gamecanvas23 = gamecanvas1;
                            i7 = stateTicks;
-                           int k9 = objectState[gamecanvas23.int_bG][gamecanvas23.int_bH];
+                           int k9 = objectState[gamecanvas23.paintTileX][gamecanvas23.paintTileY];
                            byte b6;
-                           if ((b6 = objectTimers[gamecanvas23.int_bG][gamecanvas23.int_bH]) > 24) {
+                           if ((b6 = objectTimers[gamecanvas23.paintTileX][gamecanvas23.paintTileY]) > 24) {
                               b6 = 24;
                            }
 
                            int k13 = k9 & 7;
-                           gamecanvas23.int_bN = b6 * directionOffsets[k13];
-                           gamecanvas23.int_bO = b6 * directionOffsets[k13 + 8];
+                           gamecanvas23.paintOffsetX = b6 * directionOffsets[k13];
+                           gamecanvas23.paintOffsetY = b6 * directionOffsets[k13 + 8];
                            if ((k9 & 8) == 0) {
-                              gamecanvas23.int_aL = 10;
-                              gamecanvas23.int_aM = (i7 >> 1) % 3;
+                              gamecanvas23.paintOverlaySet = 10;
+                              gamecanvas23.paintOverlayFrame = (i7 >> 1) % 3;
                               if (k13 != 3) {
                                  int l14 = (i7 >> 1) % 5;
                                  gamecanvas23.screen
                                     .drawImage(
                                        imageSets[10][l14 + 3],
-                                       gamecanvas23.drawX + gamecanvas23.int_bN - (l14 << 2),
-                                       gamecanvas23.drawY + gamecanvas23.int_bO + 24,
+                                       gamecanvas23.drawX + gamecanvas23.paintOffsetX - (l14 << 2),
+                                       gamecanvas23.drawY + gamecanvas23.paintOffsetY + 24,
                                        36
                                     );
                               }
                            } else {
-                              gamecanvas23.int_aL = 10;
-                              gamecanvas23.int_aM = 2 - (i7 >> 1) % 3;
+                              gamecanvas23.paintOverlaySet = 10;
+                              gamecanvas23.paintOverlayFrame = 2 - (i7 >> 1) % 3;
                               if (k13 != 3) {
                                  int i15 = (i7 >> 1) % 5;
                                  gamecanvas23.screen
                                     .drawImage(
                                        imageSets[10][i15 + 8],
-                                       gamecanvas23.drawX + 24 - 12 + gamecanvas23.int_bN + i15 * 3,
-                                       gamecanvas23.drawY + gamecanvas23.int_bO + 24,
+                                       gamecanvas23.drawX + 24 - 12 + gamecanvas23.paintOffsetX + i15 * 3,
+                                       gamecanvas23.drawY + gamecanvas23.paintOffsetY + 24,
                                        36
                                     );
-                                 if ((i7 >> 1 & 1) == 0 && objectMap[gamecanvas23.int_bG - 1][gamecanvas23.int_bH] >= 0) {
-                                    gamecanvas23.int_bN--;
-                                    gamecanvas23.int_bO++;
+                                 if ((i7 >> 1 & 1) == 0 && objectMap[gamecanvas23.paintTileX - 1][gamecanvas23.paintTileY] >= 0) {
+                                    gamecanvas23.paintOffsetX--;
+                                    gamecanvas23.paintOffsetY++;
                                  }
                               }
                            }
                            break label773;
                         case 16:
                            GameCanvas gamecanvas22 = gamecanvas1;
-                           if (objectMap[gamecanvas22.int_bG][gamecanvas22.int_bH + 1] != 16) {
-                              i7 = objectState[gamecanvas22.int_bG][gamecanvas22.int_bH];
+                           if (objectMap[gamecanvas22.paintTileX][gamecanvas22.paintTileY + 1] != 16) {
+                              i7 = objectState[gamecanvas22.paintTileX][gamecanvas22.paintTileY];
                               Sprite sprite4;
-                              sprite_b = sprite4 = sprites[1];
-                              byte b5 = objectTimers[gamecanvas22.int_bG][gamecanvas22.int_bH];
+                              paintSprite = sprite4 = sprites[1];
+                              byte b5 = objectTimers[gamecanvas22.paintTileX][gamecanvas22.paintTileY];
                               int j13 = 36 - b5;
                               int k14 = 0;
-                              gamecanvas22.int_bK = (i7 & 7) == 4 ? 1 : 0;
+                              gamecanvas22.paintSpriteAnim = (i7 & 7) == 4 ? 1 : 0;
                               if (b5 != 0) {
                                  for (int i16 = 0; j13 > 0; k14 = i16++) {
-                                    j13 -= sprite4.getAnimFrameDuration(gamecanvas22.int_bK, i16);
+                                    j13 -= sprite4.getAnimFrameDuration(gamecanvas22.paintSpriteAnim, i16);
                                  }
                               }
 
-                              gamecanvas22.int_bL = k14;
-                              int j16 = (sprite4.animFrameStarts[gamecanvas22.int_bK] + k14) * 5;
-                              gamecanvas22.int_bN = sprite4.animFrames[j16 + 2];
+                              gamecanvas22.paintSpriteFrame = k14;
+                              int j16 = (sprite4.animFrameStarts[gamecanvas22.paintSpriteAnim] + k14) * 5;
+                              gamecanvas22.paintOffsetX = sprite4.animFrames[j16 + 2];
                            }
                            break label773;
                         case 18:
                            GameCanvas gamecanvas21 = gamecanvas1;
-                           sprite_b = sprites[6];
-                           gamecanvas21.int_bK = 0;
+                           paintSprite = sprites[6];
+                           gamecanvas21.paintSpriteAnim = 0;
                            GameCanvas gamecanvas42;
                            byte b14;
-                           if (gamecanvas21.int_ce == 0) {
+                           if (gamecanvas21.togglePhase == 0) {
                               gamecanvas42 = gamecanvas21;
                               b14 = 0;
-                           } else if (gamecanvas21.int_ce == 9) {
+                           } else if (gamecanvas21.togglePhase == 9) {
                               gamecanvas42 = gamecanvas21;
                               b14 = 2;
                            } else {
                               gamecanvas42 = gamecanvas21;
-                              b14 = (byte)(gamecanvas21.int_cf < 0 ? 1 : 3);
+                              b14 = (byte)(gamecanvas21.toggleDirection < 0 ? 1 : 3);
                            }
 
-                           gamecanvas42.int_bL = b14;
+                           gamecanvas42.paintSpriteFrame = b14;
                            break label773;
                         case 19:
-                           gamecanvas1.selectRollingObjectSprite((byte)gamecanvas1.int_bI);
+                           gamecanvas1.selectRollingObjectSprite((byte)gamecanvas1.paintObject);
                            break label773;
                         case 21:
                            GameCanvas gamecanvas20 = gamecanvas1;
-                           i7 = objectState[gamecanvas20.int_bG][gamecanvas20.int_bH] & 7;
-                           sprite_b = sprites[29];
+                           i7 = objectState[gamecanvas20.paintTileX][gamecanvas20.paintTileY] & 7;
+                           paintSprite = sprites[29];
                            GameCanvas gamecanvas40;
-                           if ((objectState[gamecanvas20.int_bG][gamecanvas20.int_bH] & 8) == 0) {
+                           if ((objectState[gamecanvas20.paintTileX][gamecanvas20.paintTileY] & 8) == 0) {
                               label716: {
                                  GameCanvas gamecanvas41;
                                  byte b13;
@@ -7430,12 +7462,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        b13 = 0;
                                  }
 
-                                 gamecanvas41.int_bL = b13;
+                                 gamecanvas41.paintSpriteFrame = b13;
                               }
 
-                              gamecanvas20.int_bN = objectTimers[gamecanvas20.int_bG][gamecanvas20.int_bH] * directionOffsets[i7];
+                              gamecanvas20.paintOffsetX = objectTimers[gamecanvas20.paintTileX][gamecanvas20.paintTileY] * directionOffsets[i7];
                               gamecanvas40 = gamecanvas20;
-                              i18 = objectTimers[gamecanvas20.int_bG][gamecanvas20.int_bH] * directionOffsets[i7 + 8];
+                              i18 = objectTimers[gamecanvas20.paintTileX][gamecanvas20.paintTileY] * directionOffsets[i7 + 8];
                            } else {
                               label722: {
                                  GameCanvas gamecanvas39;
@@ -7457,26 +7489,28 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        b12 = 12;
                                  }
 
-                                 gamecanvas39.int_bK = b12;
+                                 gamecanvas39.paintSpriteAnim = b12;
                               }
 
-                              gamecanvas20.int_bL = frameAtTime(sprite_b, gamecanvas20.int_bK, objectTimers[gamecanvas20.int_bG][gamecanvas20.int_bH]);
-                              int j9 = (sprite_b.animFrameStarts[gamecanvas20.int_bK] + gamecanvas20.int_bL) * 5;
-                              gamecanvas20.int_bN = sprite_b.animFrames[j9 + 2];
+                              gamecanvas20.paintSpriteFrame = frameAtTime(
+                                 paintSprite, gamecanvas20.paintSpriteAnim, objectTimers[gamecanvas20.paintTileX][gamecanvas20.paintTileY]
+                              );
+                              int j9 = (paintSprite.animFrameStarts[gamecanvas20.paintSpriteAnim] + gamecanvas20.paintSpriteFrame) * 5;
+                              gamecanvas20.paintOffsetX = paintSprite.animFrames[j9 + 2];
                               gamecanvas40 = gamecanvas20;
-                              i18 = sprite_b.animFrames[j9 + 3];
+                              i18 = paintSprite.animFrames[j9 + 3];
                            }
 
-                           gamecanvas40.int_bO = i18;
+                           gamecanvas40.paintOffsetY = i18;
                            break label773;
                         case 22:
-                           sprite_b = sprites[12];
-                           gamecanvas1.int_bL = 1;
+                           paintSprite = sprites[12];
+                           gamecanvas1.paintSpriteFrame = 1;
                            gamecanvas1.paintSideObject((byte)22);
                            break label773;
                         case 23:
-                           sprite_b = sprites[12];
-                           gamecanvas1.int_bL = 0;
+                           paintSprite = sprites[12];
+                           gamecanvas1.paintSpriteFrame = 0;
                            gamecanvas1.paintSideObject((byte)23);
                            break label773;
                         case 28:
@@ -7484,7 +7518,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                            byte b2 = -1;
                            byte b3 = 3;
                            int k11;
-                           if (((k11 = objectState[gamecanvas19.int_bG][gamecanvas19.int_bH]) & 7) == 3) {
+                           if (((k11 = objectState[gamecanvas19.paintTileX][gamecanvas19.paintTileY]) & 7) == 3) {
                               b2 = 1;
                               b3 = 0;
                            }
@@ -7492,11 +7526,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                            int i13;
                            int i17;
                            if ((k11 & 8) == 0) {
-                              i13 = gamecanvas19.int_aO;
-                              i17 = gamecanvas19.int_aN;
+                              i13 = gamecanvas19.trapReachA;
+                              i17 = gamecanvas19.trapLengthA;
                            } else {
-                              i13 = gamecanvas19.int_aQ;
-                              i17 = gamecanvas19.int_aP;
+                              i13 = gamecanvas19.trapReachB;
+                              i17 = gamecanvas19.trapLengthB;
                            }
 
                            int j14 = i17;
@@ -7511,13 +7545,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                            if (b2 == 1) {
                               sprite6 = sprites[42];
                               graphics5 = gamecanvas19.screen;
-                              j18 = objectMap[gamecanvas19.int_bG][gamecanvas19.int_bH - 1] - 80;
+                              j18 = objectMap[gamecanvas19.paintTileX][gamecanvas19.paintTileY - 1] - 80;
                               k18 = gamecanvas19.drawX;
                               l18 = gamecanvas19.drawY - 24;
                            } else {
                               sprite6 = sprites[42];
                               graphics5 = gamecanvas19.screen;
-                              j18 = objectMap[gamecanvas19.int_bG][gamecanvas19.int_bH + 1] - 80;
+                              j18 = objectMap[gamecanvas19.paintTileX][gamecanvas19.paintTileY + 1] - 80;
                               k18 = gamecanvas19.drawX;
                               l18 = gamecanvas19.drawY + 24;
                            }
@@ -7525,18 +7559,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                            sprite6.paintFrame(graphics5, j18, k18, l18, 0, 0, 0);
                            break label773;
                         case 30:
-                           sprite_b = sprites[20];
-                           gamecanvas1.int_bK = 0;
-                           gamecanvas1.int_bL = 0 + (i7 - 1) * 7 / 16;
+                           paintSprite = sprites[20];
+                           gamecanvas1.paintSpriteAnim = 0;
+                           gamecanvas1.paintSpriteFrame = 0 + (i7 - 1) * 7 / 16;
                            break label773;
                         case 32:
                            GameCanvas gamecanvas18 = gamecanvas1;
                            gamecanvas1.screen.setColor(13883367);
-                           byte b4 = objectTimers[gamecanvas18.int_bG][gamecanvas18.int_bH];
+                           byte b4 = objectTimers[gamecanvas18.paintTileX][gamecanvas18.paintTileY];
                            int i9;
                            GameCanvas gamecanvas38;
                            byte b11;
-                           if ((objectState[gamecanvas18.int_bG][gamecanvas18.int_bH] & 1) != 0) {
+                           if ((objectState[gamecanvas18.paintTileX][gamecanvas18.paintTileY] & 1) != 0) {
                               i7 = gamecanvas18.drawX;
                               i9 = gamecanvas18.drawX + 24 - b4;
                               gamecanvas38 = gamecanvas18;
@@ -7548,30 +7582,30 @@ public final class GameCanvas extends Canvas implements Runnable {
                               b11 = 1;
                            }
 
-                           gamecanvas38.int_bL = b11;
+                           gamecanvas38.paintSpriteFrame = b11;
                            gamecanvas18.screen.drawLine(i7, gamecanvas18.drawY + 12, i9, gamecanvas18.drawY + 12);
                            if (b4 > 0) {
-                              spriteInstances[0].sprite.paintModule(gamecanvas18.screen, gamecanvas18.int_bL, i9, gamecanvas18.drawY + 12 - 2, 0);
+                              spriteInstances[0].sprite.paintModule(gamecanvas18.screen, gamecanvas18.paintSpriteFrame, i9, gamecanvas18.drawY + 12 - 2, 0);
                            }
                            break label773;
                         case 34:
-                           if (gamecanvas1.int_ce != 9 && gamecanvas1.int_ce >= 5) {
-                              gamecanvas1.int_aL = 14;
-                              gamecanvas1.int_aM = 0 + gamecanvas1.int_ce * 5 / 10;
+                           if (gamecanvas1.togglePhase != 9 && gamecanvas1.togglePhase >= 5) {
+                              gamecanvas1.paintOverlaySet = 14;
+                              gamecanvas1.paintOverlayFrame = 0 + gamecanvas1.togglePhase * 5 / 10;
                            }
                            break label773;
                         case 35:
-                           if (gamecanvas1.int_ce != 0 && gamecanvas1.int_ce <= 5) {
-                              gamecanvas1.int_aL = 15;
-                              gamecanvas1.int_aM = 4 - gamecanvas1.int_ce * 5 / 10;
-                              if (gamecanvas1.int_aM < 0) {
-                                 gamecanvas1.int_aM = 0;
+                           if (gamecanvas1.togglePhase != 0 && gamecanvas1.togglePhase <= 5) {
+                              gamecanvas1.paintOverlaySet = 15;
+                              gamecanvas1.paintOverlayFrame = 4 - gamecanvas1.togglePhase * 5 / 10;
+                              if (gamecanvas1.paintOverlayFrame < 0) {
+                                 gamecanvas1.paintOverlayFrame = 0;
                               }
                            }
                            break label773;
                         case 36:
                            GameCanvas gamecanvas17 = gamecanvas1;
-                           i7 = objectState[gamecanvas17.int_bG][gamecanvas17.int_bH] == 1 ? 1 : 0;
+                           i7 = objectState[gamecanvas17.paintTileX][gamecanvas17.paintTileY] == 1 ? 1 : 0;
                            Sprite sprite3;
                            (sprite3 = sprites[5])
                               .paintAnimFrame(
@@ -7579,63 +7613,63 @@ public final class GameCanvas extends Canvas implements Runnable {
                               );
                            break label773;
                         case 37:
-                           gamecanvas1.int_aL = 17;
-                           gamecanvas1.int_aM = 0 + (i7 - 1) * 3 / 8;
+                           gamecanvas1.paintOverlaySet = 17;
+                           gamecanvas1.paintOverlayFrame = 0 + (i7 - 1) * 3 / 8;
                            break label773;
                         case 43:
-                           gamecanvas1.selectRollingObjectSprite((byte)gamecanvas1.int_bI);
+                           gamecanvas1.selectRollingObjectSprite((byte)gamecanvas1.paintObject);
                            break label773;
                         case 44:
                            label695: {
                               GameCanvas gamecanvas16 = gamecanvas1;
-                              gamecanvas1.int_bK = (objectState[gamecanvas16.int_bG][gamecanvas16.int_bH] & 56) >> 3;
-                              sprite_b = sprites[27];
+                              gamecanvas1.paintSpriteAnim = (objectState[gamecanvas16.paintTileX][gamecanvas16.paintTileY] & 56) >> 3;
+                              paintSprite = sprites[27];
                               GameCanvas gamecanvas37;
-                              switch (gamecanvas16.int_bK) {
+                              switch (gamecanvas16.paintSpriteAnim) {
                                  case 1:
                                     gamecanvas37 = gamecanvas16;
-                                    i18 = (objectTimers[gamecanvas16.int_bG][gamecanvas16.int_bH] >> 1) % sprites[27].getAnimFrameCount(1);
+                                    i18 = (objectTimers[gamecanvas16.paintTileX][gamecanvas16.paintTileY] >> 1) % sprites[27].getAnimFrameCount(1);
                                     break;
                                  case 3:
-                                    gamecanvas16.int_bL = 0;
-                                    gamecanvas16.int_bO = -objectTimers[gamecanvas16.int_bG][gamecanvas16.int_bH];
+                                    gamecanvas16.paintSpriteFrame = 0;
+                                    gamecanvas16.paintOffsetY = -objectTimers[gamecanvas16.paintTileX][gamecanvas16.paintTileY];
                                     break label695;
                                  default:
                                     gamecanvas37 = gamecanvas16;
-                                    i18 = objectTimers[gamecanvas16.int_bG][gamecanvas16.int_bH];
+                                    i18 = objectTimers[gamecanvas16.paintTileX][gamecanvas16.paintTileY];
                               }
 
-                              gamecanvas37.int_bL = i18;
+                              gamecanvas37.paintSpriteFrame = i18;
                            }
 
-                           gamecanvas1.int_bL = 0;
+                           gamecanvas1.paintSpriteFrame = 0;
                            break label773;
                         case 45:
                            GameCanvas gamecanvas15 = gamecanvas1;
-                           i7 = objectState[gamecanvas15.int_bG][gamecanvas15.int_bH];
-                           sprite_b = sprites[28];
-                           gamecanvas15.int_bK = i7 & 15;
-                           int l8 = (objectState[gamecanvas15.int_bG][gamecanvas15.int_bH] & 2088960) >> 13;
-                           if (gamecanvas15.int_bK != 10) {
-                              int j11 = frameAtTime(sprite_b, gamecanvas15.int_bK, l8);
-                              gamecanvas15.int_bL = j11;
-                              int l12 = (sprite_b.animFrameStarts[gamecanvas15.int_bK] + j11) * 5;
-                              gamecanvas15.int_bN = sprite_b.animFrames[l12 + 2];
-                              gamecanvas15.int_bO = sprite_b.animFrames[l12 + 3];
+                           i7 = objectState[gamecanvas15.paintTileX][gamecanvas15.paintTileY];
+                           paintSprite = sprites[28];
+                           gamecanvas15.paintSpriteAnim = i7 & 15;
+                           int l8 = (objectState[gamecanvas15.paintTileX][gamecanvas15.paintTileY] & 2088960) >> 13;
+                           if (gamecanvas15.paintSpriteAnim != 10) {
+                              int j11 = frameAtTime(paintSprite, gamecanvas15.paintSpriteAnim, l8);
+                              gamecanvas15.paintSpriteFrame = j11;
+                              int l12 = (paintSprite.animFrameStarts[gamecanvas15.paintSpriteAnim] + j11) * 5;
+                              gamecanvas15.paintOffsetX = paintSprite.animFrames[l12 + 2];
+                              gamecanvas15.paintOffsetY = paintSprite.animFrames[l12 + 3];
                            } else {
                               int i11 = l8;
                               int k12 = 0;
-                              int k15 = sprite_b.getAnimFrameCount(gamecanvas15.int_bK);
+                              int k15 = paintSprite.getAnimFrameCount(gamecanvas15.paintSpriteAnim);
                               int l16 = 0;
 
                               while (true) {
                                  int i14 = l16;
                                  if (i11 <= 0) {
-                                    gamecanvas15.int_bL = k12;
+                                    gamecanvas15.paintSpriteFrame = k12;
                                     break;
                                  }
 
-                                 i11 -= sprite_b.getAnimFrameDuration(gamecanvas15.int_bK, i14);
+                                 i11 -= paintSprite.getAnimFrameDuration(gamecanvas15.paintSpriteAnim, i14);
                                  k12 = i14;
                                  l16 = (i14 + 1) % k15;
                               }
@@ -7645,34 +7679,34 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break label773;
                         case 46:
                            GameCanvas gamecanvas14 = gamecanvas1;
-                           sprite_b = sprites[29];
-                           gamecanvas14.int_bK = objectState[gamecanvas14.int_bG][gamecanvas14.int_bH] & 31;
+                           paintSprite = sprites[29];
+                           gamecanvas14.paintSpriteAnim = objectState[gamecanvas14.paintTileX][gamecanvas14.paintTileY] & 31;
                            GameCanvas gamecanvas36;
-                           if (gamecanvas14.int_bK != 8 && gamecanvas14.int_bK != 9) {
-                              i7 = (objectState[gamecanvas14.int_bG][gamecanvas14.int_bH] & 8160) >> 5;
-                              int k8 = frameAtTime(sprite_b, gamecanvas14.int_bK, i7);
-                              gamecanvas14.int_bL = k8;
-                              int l10 = (sprite_b.animFrameStarts[gamecanvas14.int_bK] + k8) * 5;
-                              gamecanvas14.int_bN = sprite_b.animFrames[l10 + 2];
+                           if (gamecanvas14.paintSpriteAnim != 8 && gamecanvas14.paintSpriteAnim != 9) {
+                              i7 = (objectState[gamecanvas14.paintTileX][gamecanvas14.paintTileY] & 8160) >> 5;
+                              int k8 = frameAtTime(paintSprite, gamecanvas14.paintSpriteAnim, i7);
+                              gamecanvas14.paintSpriteFrame = k8;
+                              int l10 = (paintSprite.animFrameStarts[gamecanvas14.paintSpriteAnim] + k8) * 5;
+                              gamecanvas14.paintOffsetX = paintSprite.animFrames[l10 + 2];
                               gamecanvas36 = gamecanvas14;
-                              i18 = sprite_b.animFrames[l10 + 3];
+                              i18 = paintSprite.animFrames[l10 + 3];
                            } else {
-                              gamecanvas14.int_bL = 0;
-                              i7 = sprite_b.animFrameStarts[gamecanvas14.int_bK] * 5;
-                              gamecanvas14.int_bN = sprite_b.animFrames[i7 + 2];
+                              gamecanvas14.paintSpriteFrame = 0;
+                              i7 = paintSprite.animFrameStarts[gamecanvas14.paintSpriteAnim] * 5;
+                              gamecanvas14.paintOffsetX = paintSprite.animFrames[i7 + 2];
                               gamecanvas36 = gamecanvas14;
-                              i18 = -objectTimers[gamecanvas14.int_bG][gamecanvas14.int_bH];
+                              i18 = -objectTimers[gamecanvas14.paintTileX][gamecanvas14.paintTileY];
                            }
 
-                           gamecanvas36.int_bO = i18;
+                           gamecanvas36.paintOffsetY = i18;
                            break label773;
                         case 47:
                            gamecanvas35 = gamecanvas1;
                            break;
                         case 48:
                            GameCanvas gamecanvas13 = gamecanvas1;
-                           if (((i7 = objectState[gamecanvas13.int_bG][gamecanvas13.int_bH]) & 8) == 0) {
-                              sprite_b = sprites[32];
+                           if (((i7 = objectState[gamecanvas13.paintTileX][gamecanvas13.paintTileY]) & 8) == 0) {
+                              paintSprite = sprites[32];
                               int j8 = i7 & 7;
                               boolean flag;
                               GameCanvas gamecanvas34;
@@ -7684,22 +7718,22 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  i18 = 2;
                               }
 
-                              gamecanvas34.int_bL = i18;
-                              byte b8 = objectTimers[gamecanvas13.int_bG][gamecanvas13.int_bH];
-                              gamecanvas13.int_bN = b8 * directionOffsets[j8];
-                              gamecanvas13.int_bO = b8 * directionOffsets[j8 + 8];
+                              gamecanvas34.paintSpriteFrame = i18;
+                              byte b8 = objectTimers[gamecanvas13.paintTileX][gamecanvas13.paintTileY];
+                              gamecanvas13.paintOffsetX = b8 * directionOffsets[j8];
+                              gamecanvas13.paintOffsetY = b8 * directionOffsets[j8 + 8];
                            }
                            break label773;
                         case 49:
                            GameCanvas gamecanvas12 = gamecanvas1;
-                           i7 = gamecanvas1.int_bG;
-                           int i8 = gamecanvas12.int_bH;
+                           i7 = gamecanvas1.paintTileX;
+                           int i8 = gamecanvas12.paintTileY;
                            int k10 = objectState[i7][i8];
                            byte b7 = objectTimers[i7][i8];
                            int k2 = k10 & 7;
-                           gamecanvas12.int_bN = b7 * directionOffsets[k2];
-                           gamecanvas12.int_bO = b7 * directionOffsets[k2 + 8];
-                           sprite_b = sprites[38];
+                           gamecanvas12.paintOffsetX = b7 * directionOffsets[k2];
+                           gamecanvas12.paintOffsetY = b7 * directionOffsets[k2 + 8];
+                           paintSprite = sprites[38];
                            int l2;
                            GameCanvas gamecanvas32;
                            if (((l2 = (k10 & 28672) >> 12) != 2 && l2 != 4 && k2 != 2 && k2 != 4 || objectMap[i7 - 1][i8] < 0 || objectMap[i7 + 1][i8] < 0)
@@ -7713,16 +7747,16 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  i18 = k2 - 1;
                               }
 
-                              gamecanvas33.int_bK = i18;
+                              gamecanvas33.paintSpriteAnim = i18;
                               gamecanvas32 = gamecanvas12;
-                              i18 = (stateTicks >> 1) % sprite_b.getAnimFrameCount(gamecanvas12.int_bK);
+                              i18 = (stateTicks >> 1) % paintSprite.getAnimFrameCount(gamecanvas12.paintSpriteAnim);
                            } else {
-                              gamecanvas12.int_bK = 1;
+                              gamecanvas12.paintSpriteAnim = 1;
                               gamecanvas32 = gamecanvas12;
                               i18 = 0;
                            }
 
-                           gamecanvas32.int_bL = i18;
+                           gamecanvas32.paintSpriteFrame = i18;
                            gamecanvas12.adjustForWindPod();
                            break label773;
                      }
@@ -7730,76 +7764,82 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas35.computeObjectOffset();
                   }
 
-                  if (gamecanvas1.int_aL != -1) {
-                     if (imageSets[gamecanvas1.int_aL] == null) {
-                        sprites[themedSpriteIndex(gamecanvas1.int_aL)]
+                  if (gamecanvas1.paintOverlaySet != -1) {
+                     if (imageSets[gamecanvas1.paintOverlaySet] == null) {
+                        sprites[themedSpriteIndex(gamecanvas1.paintOverlaySet)]
                            .paintFrame(
                               graphics2,
-                              gamecanvas1.int_aM,
-                              gamecanvas1.drawX + gamecanvas1.int_bN,
-                              gamecanvas1.drawY + gamecanvas1.int_bO,
-                              gamecanvas1.int_bP,
+                              gamecanvas1.paintOverlayFrame,
+                              gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                              gamecanvas1.drawY + gamecanvas1.paintOffsetY,
+                              gamecanvas1.paintTransform,
                               0,
                               0
                            );
                      } else {
                         graphics2.drawImage(
-                           imageSets[gamecanvas1.int_aL][gamecanvas1.int_aM],
-                           gamecanvas1.drawX + gamecanvas1.int_bN,
-                           gamecanvas1.drawY + gamecanvas1.int_bO,
-                           gamecanvas1.int_bP
+                           imageSets[gamecanvas1.paintOverlaySet][gamecanvas1.paintOverlayFrame],
+                           gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                           gamecanvas1.drawY + gamecanvas1.paintOffsetY,
+                           gamecanvas1.paintTransform
                         );
                      }
 
-                     gamecanvas1.int_aL = -1;
-                     gamecanvas1.int_bP = 0;
+                     gamecanvas1.paintOverlaySet = -1;
+                     gamecanvas1.paintTransform = 0;
                   } else {
-                     if (sprite_b == null) {
+                     if (paintSprite == null) {
                         continue;
                      }
 
-                     if (gamecanvas1.int_bG == gamecanvas1.deathX && gamecanvas1.int_bH == gamecanvas1.deathY) {
-                        sprite_c = sprite_b;
-                        gamecanvas1.int_ct = gamecanvas1.int_bK;
-                        gamecanvas1.int_cs = gamecanvas1.int_bL;
-                        gamecanvas1.int_cr = gamecanvas1.drawX + gamecanvas1.int_bN;
-                        gamecanvas1.int_cq = gamecanvas1.drawY + gamecanvas1.int_bO;
+                     if (gamecanvas1.paintTileX == gamecanvas1.deathX && gamecanvas1.paintTileY == gamecanvas1.deathY) {
+                        deferredSprite = paintSprite;
+                        gamecanvas1.deferredAnim = gamecanvas1.paintSpriteAnim;
+                        gamecanvas1.deferredFrame = gamecanvas1.paintSpriteFrame;
+                        gamecanvas1.deferredX = gamecanvas1.drawX + gamecanvas1.paintOffsetX;
+                        gamecanvas1.deferredY = gamecanvas1.drawY + gamecanvas1.paintOffsetY;
                      }
 
-                     if (gamecanvas1.int_bK != -1) {
-                        sprite_b.paintAnimFrame(
+                     if (gamecanvas1.paintSpriteAnim != -1) {
+                        paintSprite.paintAnimFrame(
                            graphics2,
-                           gamecanvas1.int_bK,
-                           gamecanvas1.int_bL,
-                           gamecanvas1.drawX + gamecanvas1.int_bN,
-                           gamecanvas1.drawY + gamecanvas1.int_bO,
+                           gamecanvas1.paintSpriteAnim,
+                           gamecanvas1.paintSpriteFrame,
+                           gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                           gamecanvas1.drawY + gamecanvas1.paintOffsetY,
                            0,
                            0,
                            0
                         );
-                        gamecanvas1.int_bK = -1;
+                        gamecanvas1.paintSpriteAnim = -1;
                      } else {
-                        sprite_b.paintFrame(
-                           graphics2, gamecanvas1.int_bL, gamecanvas1.drawX + gamecanvas1.int_bN, gamecanvas1.drawY + gamecanvas1.int_bO, 0, 0, 0
+                        paintSprite.paintFrame(
+                           graphics2,
+                           gamecanvas1.paintSpriteFrame,
+                           gamecanvas1.drawX + gamecanvas1.paintOffsetX,
+                           gamecanvas1.drawY + gamecanvas1.paintOffsetY,
+                           0,
+                           0,
+                           0
                         );
                      }
 
-                     sprite_b = null;
-                     gamecanvas1.int_bM = 0;
+                     paintSprite = null;
+                     gamecanvas1.unusedPaintValue = 0;
                   }
 
-                  gamecanvas1.int_bN = gamecanvas1.int_bO = 0;
+                  gamecanvas1.paintOffsetX = gamecanvas1.paintOffsetY = 0;
                }
             }
          }
       }
 
-      if (bool_a) {
+      if (pickupAnimStarting) {
          graphics.setColor(0);
          graphics.fillRect(0, 0, 320, 240);
          this.paintPlayer();
-         if (this.int_ad != this.nextEffect) {
-            int k17 = this.int_ad;
+         if (this.drawnEffect != this.nextEffect) {
+            int k17 = this.drawnEffect;
 
             while (true) {
                j = k17;
@@ -7836,10 +7876,10 @@ public final class GameCanvas extends Canvas implements Runnable {
       } else {
          this.paintPlayer();
          if (this.hasEnemies) {
-            this.paintTileSlots(this.int_cK, this.int_cL);
+            this.paintTileSlots(this.cameraTileOffsetX, this.cameraTileOffsetY);
          }
 
-         if (this.int_aw > 0) {
+         if (this.collapsingRowCount > 0) {
             this.paintCollapsingRows();
          }
 
@@ -7851,8 +7891,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                   break;
                case 2:
                   GameCanvas gamecanvas4 = gamecanvas2;
-                  if (gamecanvas2.bool_t && gamecanvas4.activeCutscene == null && gamecanvas4.pendingHint == -1) {
-                     sprites[15].paintAnimFrame(gamecanvas4.screen, 0, stateTicks >> 1 & 3, gamecanvas4.int_bv, gamecanvas4.int_bw - 24, 0, 0, 0);
+                  if (gamecanvas2.prologueMarkerHint && gamecanvas4.activeCutscene == null && gamecanvas4.pendingHint == -1) {
+                     sprites[15].paintAnimFrame(gamecanvas4.screen, 0, stateTicks >> 1 & 3, gamecanvas4.playerScreenX, gamecanvas4.playerScreenY - 24, 0, 0, 0);
                   }
 
                   GameCanvas gamecanvas5 = gamecanvas2;
@@ -7867,7 +7907,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                   }
 
-                  if (gamecanvas5.playerX > 55 && gamecanvas5.bool_e) {
+                  if (gamecanvas5.playerX > 55 && gamecanvas5.playerVisible) {
                      spriteInstances[0].paint(gamecanvas5.screen);
                   }
                   break;
@@ -7884,8 +7924,8 @@ public final class GameCanvas extends Canvas implements Runnable {
 
          for (int i3 = -1; i3 < 9; i3++) {
             for (int j3 = -1; j3 < 15; j3++) {
-               int i5 = j3 + this.int_cI;
-               int j7 = i3 + this.int_cJ;
+               int i5 = j3 + this.cameraTileX;
+               int j7 = i3 + this.cameraTileY;
                if (i5 >= 0 && i5 < this.mapWidth && j7 >= 0 && j7 < this.mapHeight) {
                   l = tileMap[i5][j7] & 0xFF;
                   byte b1 = objectMap[i5][j7];
@@ -7893,8 +7933,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      int j10;
                      int j12;
                      label929: {
-                        j10 = j3 * 24 - this.int_cK;
-                        j12 = i3 * 24 - this.int_cL;
+                        j10 = j3 * 24 - this.cameraTileOffsetX;
+                        j12 = i3 * 24 - this.cameraTileOffsetY;
                         Sprite sprite7;
                         Graphics graphics6;
                         if (l >= 20 && l < 26) {
@@ -7947,20 +7987,20 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
          }
 
-         if (this.bool_A) {
-            j = (this.int_bB - this.int_cI) * 24 - this.int_cK + this.int_bz;
-            k = (this.int_bC - this.int_cJ + 1) * 24 - this.int_cL + this.int_bA;
-            graphics.drawImage(sprites[13].moduleImages[0][0 + this.int_bD], j, k, 0);
-            this.bool_A = false;
+         if (this.overlayPending) {
+            j = (this.overlayTileX - this.cameraTileX) * 24 - this.cameraTileOffsetX + this.overlayDx;
+            k = (this.overlayTileY - this.cameraTileY + 1) * 24 - this.cameraTileOffsetY + this.overlayDy;
+            graphics.drawImage(sprites[13].moduleImages[0][0 + this.overlayModule], j, k, 0);
+            this.overlayPending = false;
          }
 
-         if (this.int_aD != -1) {
-            graphics.drawImage(imageSets[13][0], this.int_bv + -12, this.int_bw + -24 + 2, 3);
-            graphics.drawImage(imageSets[this.int_aD][this.int_aE], this.int_bv + -12, this.int_bw + -24, 3);
+         if (this.hintIconSet != -1) {
+            graphics.drawImage(imageSets[13][0], this.playerScreenX + -12, this.playerScreenY + -24 + 2, 3);
+            graphics.drawImage(imageSets[this.hintIconSet][this.hintIconFrame], this.playerScreenX + -12, this.playerScreenY + -24, 3);
          }
 
-         if (this.int_ad != this.nextEffect) {
-            int j17 = this.int_ad;
+         if (this.drawnEffect != this.nextEffect) {
+            int j17 = this.drawnEffect;
 
             while (true) {
                j = j17;
@@ -7991,22 +8031,22 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
          }
 
-         this.cameraY = this.cameraY + this.int_bk;
-         if (this.bool_x) {
+         this.cameraY = this.cameraY + this.screenShakeOffset;
+         if (this.cheatSkipWalking) {
             drawMessageBox(graphics, fontMedium, strings[15], 160, 120, 17, 19, false);
          }
 
-         if (this.int_bn > stateTicks && this.stageKind != 2) {
-            if (!this.bool_aj && !this.bool_h) {
-               k = (j = this.int_bn - stateTicks) < 20 ? (j - 10) * 320 / 20 : (j >= 50 ? (60 - j) * 320 / 15 : 160);
+         if (this.stageTitleUntil > stateTicks && this.stageKind != 2) {
+            if (!this.bossExitPending && !this.crystalExitPending) {
+               k = (j = this.stageTitleUntil - stateTicks) < 20 ? (j - 10) * 320 / 20 : (j >= 50 ? (60 - j) * 320 / 15 : 160);
                l = 320 - k;
                drawMessageBox(graphics, fontMedium, strings[worldNameStrings[this.world]], k, 15, 17, 20, false);
                drawMessageBox(graphics, fontMedium, stageNames[stageNumbers[this.world][this.stage] - 1], l, 50, 17, 20, false);
             }
-         } else if (this.int_ak > stateTicks) {
+         } else if (this.checkpointBannerUntil > stateTicks) {
             drawMessageBox(graphics, fontMedium, strings[13], 160, Constants.checkpointTextY, 17, 20, false);
-         } else if (this.int_ak == stateTicks && this.byte_r <= 2) {
-            this.byte_r++;
+         } else if (this.checkpointBannerUntil == stateTicks && this.checkpointBannerCount <= 2) {
+            this.checkpointBannerCount++;
             this.storeLives();
          }
 
@@ -8029,9 +8069,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                   Graphics graphics3 = this.screen;
                   SpriteInstance spriteinstance = spriteInstances[5];
                   if (gamecanvas3.bossAnim == 7) {
-                     i1 = spriteinstance.x + stateTicks * gamecanvas3.int_ap % 48;
+                     i1 = spriteinstance.x + stateTicks * gamecanvas3.bossTimer % 48;
                      int j5 = spriteinstance.y;
-                     if (gamecanvas3.int_S == 10) {
+                     if (gamecanvas3.bossPreviousAnim == 10) {
                         j5 -= 144;
                      }
 
@@ -8066,32 +8106,32 @@ public final class GameCanvas extends Canvas implements Runnable {
             drawMessageBox(graphics, fontSmall, wrapForScreen(this.hintText), 160, 152, 17, 4, true);
          }
 
-         if (this.activeCutscene != null && !bool_a) {
+         if (this.activeCutscene != null && !pickupAnimStarting) {
             this.hudDirty = true;
             this.activeCutscene.paint(graphics);
          }
 
-         if (this.int_bl > 0) {
+         if (this.fadeHeight > 0) {
             this.hudDirty = true;
             graphics.setColor(0);
-            graphics.fillRect(0, 0, 320, this.int_bl);
-            graphics.fillRect(0, 240 - this.int_bl, 320, this.int_bl);
+            graphics.fillRect(0, 0, 320, this.fadeHeight);
+            graphics.fillRect(0, 240 - this.fadeHeight, 320, this.fadeHeight);
             graphics.translate(0, 31);
             this.paintPlayer();
-            if (sprite_c != null) {
-               if (this.int_ct != -1) {
-                  sprite_c.paintAnimFrame(
+            if (deferredSprite != null) {
+               if (this.deferredAnim != -1) {
+                  deferredSprite.paintAnimFrame(
                      graphics,
-                     this.int_ct,
-                     this.int_cs,
-                     (this.deathX - this.int_cI) * 24 - this.int_cK,
-                     (this.deathY - this.int_cJ) * 24 - this.int_cL,
+                     this.deferredAnim,
+                     this.deferredFrame,
+                     (this.deathX - this.cameraTileX) * 24 - this.cameraTileOffsetX,
+                     (this.deathY - this.cameraTileY) * 24 - this.cameraTileOffsetY,
                      0,
                      0,
                      0
                   );
                } else {
-                  sprite_c.paintFrame(graphics, this.int_cs, this.int_cr, this.int_cq, 0, 0, 0);
+                  deferredSprite.paintFrame(graphics, this.deferredFrame, this.deferredX, this.deferredY, 0, 0, 0);
                }
             }
 
@@ -8187,9 +8227,9 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void adjustForWindPod() {
-      if ((objectState[this.int_bG][this.int_bH] & 7) == 1 && (tileMap[this.int_bG][this.int_bH] & 0xFF) == 35) {
-         this.int_bN = 0;
-         this.int_bO = objectTimers[this.int_bG][this.int_bH];
+      if ((objectState[this.paintTileX][this.paintTileY] & 7) == 1 && (tileMap[this.paintTileX][this.paintTileY] & 0xFF) == 35) {
+         this.paintOffsetX = 0;
+         this.paintOffsetY = objectTimers[this.paintTileX][this.paintTileY];
       }
    }
 
@@ -8260,10 +8300,10 @@ public final class GameCanvas extends Canvas implements Runnable {
                         l1 = i3;
                         j2 = ((i2 = i3 >> 1) == 7 ? stateTicks >> 3 : stateTicks) & 1;
                         if (i2 == 15) {
-                           sprite_d.paintFrame(graphics, l1 + this.int_cB, j1 + b0 - 8, k1 + (b1 << 3) + 8, 36, 0, 0);
-                           this.int_cB++;
-                           if (this.int_cB > 2) {
-                              this.int_cB = 0;
+                           slotSprite.paintFrame(graphics, l1 + this.slotFrameCycle, j1 + b0 - 8, k1 + (b1 << 3) + 8, 36, 0, 0);
+                           this.slotFrameCycle++;
+                           if (this.slotFrameCycle > 2) {
+                              this.slotFrameCycle = 0;
                            }
                         } else {
                            label123: {
@@ -8274,18 +8314,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                               int l3;
                               if (i2 != 14 && i2 != 11) {
                                  if (i2 == 8 && b1 == 0 && tileSlots[l][i1 - 1] > 0) {
-                                    sprite_d.paintFrame(graphics, 33, j1 + b0, k1, 20, 0, 0);
+                                    slotSprite.paintFrame(graphics, 33, j1 + b0, k1, 20, 0, 0);
                                     b1 = 3;
                                     break label123;
                                  }
 
-                                 sprite = sprite_d;
+                                 sprite = slotSprite;
                                  graphics1 = graphics;
                                  j3 = l1 + j2;
                                  k3 = j1 + b0;
                                  l3 = k1 + (b1 << 3);
                               } else {
-                                 sprite = sprite_d;
+                                 sprite = slotSprite;
                                  graphics1 = graphics;
                                  j3 = l1 + j2;
                                  k3 = j1 + b0;
@@ -8319,7 +8359,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             sprite1 = sprite;
          } else {
             sprite.paintFrame(graphics, 0, 0, 0, 0, 0, 0);
-            if (this.bool_U) {
+            if (this.hudPanelVisible) {
                sprite.paintFrame(graphics, 19, -159, 0, 0, 0, 0);
             }
 
@@ -8327,7 +8367,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          sprite1.paintFrame(graphics, 1, 0, 0, 0, 0, 0);
-         if (this.bool_p) {
+         if (this.hasCompass) {
             sprite.paintFrame(graphics, 2, -150, 0, 0, 0, 0);
             sprite.paintFrame(graphics, 3 + this.compassDirection, -150, 0, 0, 0, 0);
          }
@@ -8440,20 +8480,20 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintMenu() {
-      if (this.bool_Y) {
+      if (this.menuGameStartedStale) {
          GameCanvas gamecanvas = this;
-         this.bool_Y = false;
-         gamecanvas.bool_X = hasStartedGame();
+         this.menuGameStartedStale = false;
+         gamecanvas.menuGameStarted = hasStartedGame();
       }
 
-      int i = 240 - ((this.menuItemCount + 1) * Constants.menuRowHeight + 1 + 2) + (!this.bool_X && this.menu == 0 ? Constants.menuRowHeight : 0);
+      int i = 240 - ((this.menuItemCount + 1) * Constants.menuRowHeight + 1 + 2) + (!this.menuGameStarted && this.menu == 0 ? Constants.menuRowHeight : 0);
       int i1 = 240 - Constants.menuRowHeight + 1 + 1;
       this.screen.setClip(0, 0, 320, 240);
-      if (gameState == 2 && bool_V && bool_W) {
-         this.bool_U = false;
+      if (gameState == 2 && menuNeedsRedraw && pauseBackgroundStale) {
+         this.hudPanelVisible = false;
          this.paintPlaying();
-         this.bool_U = true;
-         bool_W = false;
+         this.hudPanelVisible = true;
+         pauseBackgroundStale = false;
       }
 
       if (gameState == 7 || gameState == 2) {
@@ -8473,7 +8513,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          int j4;
          short short2;
          int k4;
-         if (this.menuHighlightedRow != -1 && !bool_V) {
+         if (this.menuHighlightedRow != -1 && !menuNeedsRedraw) {
             int j1 = i + this.menuHighlightedRow * Constants.menuRowHeight;
             this.screen.setColor(0);
             graphics1 = this.screen;
@@ -8499,13 +8539,13 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.menuAnimTime = k1;
       }
 
-      if (this.menuHighlightedRow != -1 && !bool_V) {
-         int l1 = this.menu == 0 && this.menuHighlightedRow > 0 && !this.bool_X ? Constants.menuRowHeight : 0;
+      if (this.menuHighlightedRow != -1 && !menuNeedsRedraw) {
+         int l1 = this.menu == 0 && this.menuHighlightedRow > 0 && !this.menuGameStarted ? Constants.menuRowHeight : 0;
          int i2 = i + this.menuHighlightedRow * Constants.menuRowHeight - l1;
          this.screen.setClip(0, i2, 320, Constants.menuRowHeight + 1);
       }
 
-      if (this.menuHighlightedRow != this.menuSelection || bool_V) {
+      if (this.menuHighlightedRow != this.menuSelection || menuNeedsRedraw) {
          int k = i1;
          int j2 = i;
          GameCanvas gamecanvas1 = this;
@@ -8530,15 +8570,15 @@ public final class GameCanvas extends Canvas implements Runnable {
          gamecanvas1.screen.drawLine(0, k - 2, 320, k - 2);
       }
 
-      if (!this.bool_X && gameState == 4 && this.menuSelection == 0 && this.subState != 5 && this.menu != 8) {
+      if (!this.menuGameStarted && gameState == 4 && this.menuSelection == 0 && this.subState != 5 && this.menu != 8) {
          this.menuSelection = 1;
       }
 
       for (int k2 = 0; k2 < this.menuItemCount; k2++) {
-         if ((this.menuHighlightedRow == -1 || k2 == this.menuHighlightedRow || k2 == this.menuSelection || bool_V)
-            && (this.menu != 0 || k2 != 0 || this.bool_X)) {
+         if ((this.menuHighlightedRow == -1 || k2 == this.menuHighlightedRow || k2 == this.menuSelection || menuNeedsRedraw)
+            && (this.menu != 0 || k2 != 0 || this.menuGameStarted)) {
             i1 = i + k2 * Constants.menuRowHeight + Constants.menuRowHeight / 2;
-            if (this.menu == 0 && k2 > 0 && !this.bool_X) {
+            if (this.menu == 0 && k2 > 0 && !this.menuGameStarted) {
                i1 -= Constants.menuRowHeight;
             }
 
@@ -8609,20 +8649,20 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       this.menuHighlightedRow = this.menuSelection;
-      this.int_cW++;
+      this.menuTicks++;
       GameCanvas gamecanvas8;
       int k3;
-      if (this.int_da < 0) {
+      if (this.menuRevealDelay < 0) {
          gamecanvas8 = this;
          k3 = 3;
       } else {
          gamecanvas8 = this;
-         k3 = this.int_da - 1;
+         k3 = this.menuRevealDelay - 1;
       }
 
-      gamecanvas8.int_da = k3;
-      if (this.int_da == 0 && this.int_cZ + 1 < this.menuItemCount) {
-         this.int_cZ++;
+      gamecanvas8.menuRevealDelay = k3;
+      if (this.menuRevealDelay == 0 && this.menuItemsRevealed + 1 < this.menuItemCount) {
+         this.menuItemsRevealed++;
       }
 
       this.screen.setClip(0, 0, 320, 240);
@@ -8631,11 +8671,11 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       this.drawBackSoftKey();
-      bool_V = false;
+      menuNeedsRedraw = false;
       if (this.menuAnimFrame == 2) {
          if (gameState == 2) {
-            bool_V = true;
-            bool_W = true;
+            menuNeedsRedraw = true;
+            pauseBackgroundStale = true;
          }
 
          this.menuAnimFrame = -1;
@@ -8643,7 +8683,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.menuHighlightedRow = -1;
          GameCanvas gamecanvas2 = this;
          FontRenderer.setColor(16777215);
-         gamecanvas2.bool_z = true;
+         gamecanvas2.menuItemChosen = true;
          switch (gamecanvas2.menu) {
             case 0:
                GameCanvas gamecanvas7 = gamecanvas2;
@@ -8652,9 +8692,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas7.sound.stop();
                      gamecanvas7.loadSave();
                      if (saveData != null && hasStartedGame()) {
-                        gamecanvas7.int_ag = 0;
-                        gamecanvas7.bool_M = true;
-                        gamecanvas7.bool_p = true;
+                        gamecanvas7.tipIndex = 0;
+                        gamecanvas7.reloadLivesOnLoad = true;
+                        gamecanvas7.hasCompass = true;
                         gamecanvas7.loadingStep = 0;
                         gameState = 28;
                         return;
@@ -8664,7 +8704,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (!hasStartedGame()) {
                         gamecanvas7.startNewGame();
                      } else {
-                        gamecanvas7.bool_Q = true;
+                        gamecanvas7.blackScreenPending = true;
                         gamecanvas7.creatingNewGame = false;
                         gameState = 31;
                      }
@@ -8692,7 +8732,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas7.openMoreGames();
                      return;
                   default:
-                     gamecanvas7.bool_z = false;
+                     gamecanvas7.menuItemChosen = false;
                      return;
                }
             case 1:
@@ -8730,7 +8770,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas6.fullRedraw = true;
                      return;
                   default:
-                     gamecanvas6.bool_z = false;
+                     gamecanvas6.menuItemChosen = false;
                      return;
                }
             case 2:
@@ -8742,7 +8782,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas5.hasEnemies = false;
                      gameState = 15;
                      unlockedStage = getWorldProgress(gamecanvas5.world);
-                     gamecanvas5.bool_H = true;
+                     gamecanvas5.unloadMapOnLoad = true;
                      gamecanvas5.openWorldMap();
                      return;
                   case 1:
@@ -8751,9 +8791,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas5.stage = 0;
                      gameState = 15;
                      unlockedStage = getWorldProgress(gamecanvas5.world);
-                     gamecanvas5.bool_H = true;
+                     gamecanvas5.unloadMapOnLoad = true;
                      gamecanvas5.openWorldMap();
-                     gamecanvas5.bool_p = true;
+                     gamecanvas5.hasCompass = true;
                      gamecanvas5.hasEnemies = false;
                      if (saveData[9] >= 1) {
                         return;
@@ -8768,9 +8808,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                      gamecanvas5.hasEnemies = false;
                      gameState = 15;
                      unlockedStage = getWorldProgress(gamecanvas5.world);
-                     gamecanvas5.bool_H = true;
+                     gamecanvas5.unloadMapOnLoad = true;
                      gamecanvas5.openWorldMap();
-                     gamecanvas5.bool_p = true;
+                     gamecanvas5.hasCompass = true;
                      if (saveData[9] < 2) {
                         saveData[9] = 2;
                      }
@@ -8834,8 +8874,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break;
                         case 3:
                            gameState = 15;
-                           gamecanvas4.bool_J = true;
-                           gamecanvas4.bool_H = true;
+                           gamecanvas4.freeStageOnLoad = true;
+                           gamecanvas4.unloadMapOnLoad = true;
                            gamecanvas4.openWorldMap();
                            break;
                         case 4:
@@ -8900,7 +8940,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          spriteinstance.applyFrameStep();
          spriteinstance.paint(this.screen);
          if (this.bossAnim == 12) {
-            int j = this.bossX - this.cameraX + stateTicks * this.int_ap % 48;
+            int j = this.bossX - this.cameraX + stateTicks * this.bossTimer % 48;
             int i = spriteInstances[5].y + 24;
             sprites[7].paintAnimFrame(this.screen, 0, stateTicks % sprites[7].getAnimFrameCount(1), j, i, 0, 0, 0);
             this.hurtPlayerNear(j, i);
@@ -8909,7 +8949,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintBossArena() {
-      if (this.stageKind == 3 && stateTicks >= this.long_k + 80L) {
+      if (this.stageKind == 3 && stateTicks >= this.icicleDropTime + 80L) {
          for (int i = 14; i <= 21; i++) {
             objectState[i][15] = 0;
             tileMap[i][15] = -1;
@@ -8918,20 +8958,20 @@ public final class GameCanvas extends Canvas implements Runnable {
             tileRedrawTimers[i][15] = 24;
          }
 
-         this.long_k = 0L;
+         this.icicleDropTime = 0L;
       }
 
       if (this.bossAnim != 15) {
-         if (this.cameraX + 320 + 48 >= this.int_as && this.cameraY + 240 + 48 >= 504) {
+         if (this.cameraX + 320 + 48 >= this.yetiX && this.cameraY + 240 + 48 >= 504) {
             SpriteInstance spriteinstance;
-            (spriteinstance = spriteInstances[5]).x = this.int_as - this.cameraX;
+            (spriteinstance = spriteInstances[5]).x = this.yetiX - this.cameraX;
             spriteinstance.y = 504 - this.cameraY;
             spriteinstance.applyFrameStep();
             spriteinstance.paint(this.screen);
          }
 
          if (this.bossAnim == 12) {
-            int k = this.int_as - this.cameraX + stateTicks * this.int_ap % 48;
+            int k = this.yetiX - this.cameraX + stateTicks * this.bossTimer % 48;
             int j = spriteInstances[5].y + 24;
             sprites[7].paintAnimFrame(this.screen, 0, stateTicks % sprites[7].getAnimFrameCount(0), k, j, 0, 0, 0);
             this.hurtPlayerNear(k, j);
@@ -8965,7 +9005,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          int l;
          switch (this.bossAnim) {
             case 1:
-               l = this.int_ap;
+               l = this.bossTimer;
                break;
             case 2:
             case 7:
@@ -8975,11 +9015,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                l = 40;
                break;
             case 4:
-               l = 40 - (this.int_ap << 1 << 1);
+               l = 40 - (this.bossTimer << 1 << 1);
                break;
             case 5:
-               i = 15 + this.int_ap * 18;
-               this.bool_Z = false;
+               i = 15 + this.bossTimer * 18;
+               this.arenaWallsRestored = false;
                break label58;
             case 6:
             case 8:
@@ -8987,20 +9027,20 @@ public final class GameCanvas extends Canvas implements Runnable {
                l = -1000;
                break;
             case 9:
-               l = 15 + this.int_ap * 18;
+               l = 15 + this.bossTimer * 18;
                break;
             case 10:
-               l = 15 + this.int_ap * 18;
+               l = 15 + this.bossTimer * 18;
                break;
             case 11:
-               l = 15 + this.int_ap * 18;
+               l = 15 + this.bossTimer * 18;
          }
 
          i = l;
       }
 
       label53: {
-         spriteinstance.x = (10 + this.int_ar * (2 + (this.int_ar > 0 ? 1 : 0))) * 24 - this.cameraX;
+         spriteinstance.x = (10 + this.bossPosition * (2 + (this.bossPosition > 0 ? 1 : 0))) * 24 - this.cameraX;
          SpriteInstance spriteinstance2;
          int i1;
          if (this.bossAnim == 5) {
@@ -9021,7 +9061,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       spriteinstance.paint(graphics);
-      if (this.bool_k) {
+      if (this.bossSlamVisible) {
          spriteinstance1.y = 96 - this.cameraY;
          spriteinstance1.x = (this.bossColumn() + 1) * 24 - this.cameraX;
          spriteinstance1.paint(graphics);
@@ -9038,7 +9078,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    private void paintStageAnimations() {
       int i = stateTicks;
       SpriteInstance spriteinstance = spriteInstances[2];
-      if (this.cameraY + this.int_bk < 1008 && this.cameraY + this.int_bk > 672) {
+      if (this.cameraY + this.screenShakeOffset < 1008 && this.cameraY + this.screenShakeOffset > 672) {
          spriteinstance.x = 240 - this.cameraX;
          spriteinstance.y = 1008 - this.cameraY;
          spriteinstance.applyFrameStep();
@@ -9050,7 +9090,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          spriteinstance.paint(this.screen);
       }
 
-      if (this.int_bj > 10) {
+      if (this.screenShakeTicks > 10) {
          GameCanvas gamecanvas = this;
 
          for (int b0 = 3; b0 < 13; b0 += 2) {
@@ -9061,7 +9101,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      int j1 = this.mapHeight * 24 - this.int_al - this.cameraY;
+      int j1 = this.mapHeight * 24 - this.floodHeight - this.cameraY;
       int k1;
       int l1 = k1 = 168 - this.cameraX;
       int i2 = k1 + 240;
@@ -9071,7 +9111,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       SpriteInstance spriteinstance1 = spriteInstances[1];
-      if ((this.int_al >= 816 || spriteinstance1.anim == 2) && this.int_al > 816) {
+      if ((this.floodHeight >= 816 || spriteinstance1.anim == 2) && this.floodHeight > 816) {
          for (int l = j1 + 20; l < 240; l += 24) {
             for (int i1 = k1; i1 < i2; i1 += 24) {
                spriteinstance1.sprite.paintAnimFrame(this.screen, 1, ((i >> 1) + i1 + l) % 2, i1, l, 0, 0, 0);
@@ -9096,7 +9136,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintPlayer() {
-      if (!this.bool_E) {
+      if (!this.cameraPanToCheckpoint) {
          int i = this.playerX;
          int j = this.playerY;
          int k = stateTicks;
@@ -9104,13 +9144,13 @@ public final class GameCanvas extends Canvas implements Runnable {
          int i1 = (this.playerFlags & 16384) == 0 ? 0 : 3;
          SpriteInstance spriteinstance = spriteInstances[i1];
          boolean flag = this.isPlayerInsideBorder();
-         int j1 = (this.playerFlags & 2048) == 0 ? this.int_bQ : this.playerFlags & 7;
-         if (this.bool_e) {
-            this.int_bv = i * 24 + directionOffsets[j1] * this.moveProgress - this.cameraX;
-            this.int_bw = j * 24 + directionOffsets[j1 + 8] * this.moveProgress - this.cameraY;
+         int j1 = (this.playerFlags & 2048) == 0 ? this.paintPlayerDirection : this.playerFlags & 7;
+         if (this.playerVisible) {
+            this.playerScreenX = i * 24 + directionOffsets[j1] * this.moveProgress - this.cameraX;
+            this.playerScreenY = j * 24 + directionOffsets[j1 + 8] * this.moveProgress - this.cameraY;
             if ((this.invulnerableTicks <= 0L || (k >> 1 & 1) == 0) && this.escapePressesLeft <= 0) {
-               spriteinstance.x = this.int_bv;
-               spriteinstance.y = this.int_bw;
+               spriteinstance.x = this.playerScreenX;
+               spriteinstance.y = this.playerScreenY;
                if (tileSlots != null && flag && l != 1 && l != 3 && tileSlots[i][j + 1] != 0 && isHeavyObject(i, j + 1)) {
                   int k1;
                   l = (k1 = (k >> 1) + i) % 4;
@@ -9124,12 +9164,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                spriteinstance.applyFrameStep();
                spriteinstance.paint(this.screen);
                k = spriteinstance.anim;
-               bool_a = spriteinstance.anim == 47 && spriteinstance.animFrame == 0;
+               pickupAnimStarting = spriteinstance.anim == 47 && spriteinstance.animFrame == 0;
                switch (k) {
                   case 17:
                   case 18:
                      if (spriteinstance.animFrame == 0) {
-                        this.screen.drawImage(imageSets[this.int_aF][this.int_aG], spriteinstance.x, spriteinstance.y - 12, 0);
+                        this.screen.drawImage(imageSets[this.pickupIconSet][this.pickupIconFrame], spriteinstance.x, spriteinstance.y - 12, 0);
                      }
                      break;
                   case 40:
@@ -9138,22 +9178,22 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (spriteinstance.animFrame > (k == 40 ? 13 : 6) || k == 47) {
                         try {
                            byte b0 = 0;
-                           if (this.int_aF == 30 || this.int_aF == 31 || this.int_aF == 32) {
+                           if (this.pickupIconSet == 30 || this.pickupIconSet == 31 || this.pickupIconSet == 32) {
                               b0 = -2;
                            }
 
-                           if (imageSets[this.int_aF] == null) {
-                              sprites[themedSpriteIndex(this.int_aF)]
-                                 .paintFrame(this.screen, this.int_aG, spriteinstance.x + b0, spriteinstance.y - 24, 0, 0, 0);
+                           if (imageSets[this.pickupIconSet] == null) {
+                              sprites[themedSpriteIndex(this.pickupIconSet)]
+                                 .paintFrame(this.screen, this.pickupIconFrame, spriteinstance.x + b0, spriteinstance.y - 24, 0, 0, 0);
                            } else {
-                              this.screen.drawImage(imageSets[this.int_aF][this.int_aG], spriteinstance.x + b0, spriteinstance.y - 24, 0);
+                              this.screen.drawImage(imageSets[this.pickupIconSet][this.pickupIconFrame], spriteinstance.x + b0, spriteinstance.y - 24, 0);
                            }
                         } catch (Exception exception1) {
                            System.out.println(exception1);
                         }
 
-                        if (this.int_aH > 0) {
-                           drawNumber(this.screen, spriteinstance.x + 24, spriteinstance.y - 10, this.int_aH, sprites[0].moduleImages[0], 0);
+                        if (this.pickupValue > 0) {
+                           drawNumber(this.screen, spriteinstance.x + 24, spriteinstance.y - 10, this.pickupValue, sprites[0].moduleImages[0], 0);
                         }
                      }
                }
@@ -9183,12 +9223,12 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void computeObjectOffset() {
-      int i = this.int_bG;
-      int j = this.int_bH;
-      int k = this.int_bH + 1;
-      this.int_bz = 0;
-      this.int_bA = 0;
-      this.bool_A = false;
+      int i = this.paintTileX;
+      int j = this.paintTileY;
+      int k = this.paintTileY + 1;
+      this.overlayDx = 0;
+      this.overlayDy = 0;
+      this.overlayPending = false;
       int l;
       int i1 = (l = objectState[i][j]) & 7;
       byte b0 = objectTimers[i][j];
@@ -9196,10 +9236,10 @@ public final class GameCanvas extends Canvas implements Runnable {
          l = -1;
       }
 
-      this.int_bN = this.int_bN + b0 * directionOffsets[i1];
-      this.int_bO = this.int_bO + b0 * directionOffsets[i1 + 8];
+      this.paintOffsetX = this.paintOffsetX + b0 * directionOffsets[i1];
+      this.paintOffsetY = this.paintOffsetY + b0 * directionOffsets[i1 + 8];
       boolean flag = tileSlots != null && tileSlots[i][j] != 0;
-      switch (this.int_bI) {
+      switch (this.paintObject) {
          case 0:
             int l1 = (l & 56) >> 3;
             int j2 = (l & 28672) >> 12;
@@ -9213,27 +9253,27 @@ public final class GameCanvas extends Canvas implements Runnable {
                   j2 = -j2;
                }
 
-               this.int_bN = j2;
+               this.paintOffsetX = j2;
             } else {
                l &= -28673;
             }
 
             objectState[i][j] = l;
-            this.int_aL = 1;
-            this.int_aM = l1 + 0;
+            this.paintOverlaySet = 1;
+            this.paintOverlayFrame = l1 + 0;
             break;
          case 1:
-            this.int_aL = 2;
-            this.int_aM = 0 + this.int_bR;
+            this.paintOverlaySet = 2;
+            this.paintOverlayFrame = 0 + this.paintAnimPhase;
             break;
          case 2:
             GameCanvas gamecanvas = this;
-            int j1 = tileMap[gamecanvas.int_bG][gamecanvas.int_bH] & 0xFF;
-            int k1 = tileMap[gamecanvas.int_bG][gamecanvas.int_bH] >> 8;
+            int j1 = tileMap[gamecanvas.paintTileX][gamecanvas.paintTileY] & 0xFF;
+            int k1 = tileMap[gamecanvas.paintTileX][gamecanvas.paintTileY] >> 8;
             label113:
             if (j1 != 14 && j1 != 33 || k1 > 11) {
-               gamecanvas.int_aL = 3;
-               gamecanvas.int_aM = 0 + gamecanvas.int_bR;
+               gamecanvas.paintOverlaySet = 3;
+               gamecanvas.paintOverlayFrame = 0 + gamecanvas.paintAnimPhase;
                GameCanvas gamecanvas2;
                Sprite[] asprite;
                byte b2;
@@ -9251,37 +9291,37 @@ public final class GameCanvas extends Canvas implements Runnable {
                   b2 = 22;
                }
 
-               gamecanvas2.int_bO = -(asprite[b2].getAnimFrameCount(0) - k1);
+               gamecanvas2.paintOffsetY = -(asprite[b2].getAnimFrameCount(0) - k1);
             }
             break;
          case 4:
-            this.int_aL = 24;
-            this.int_aM = 0 + this.int_bR;
+            this.paintOverlaySet = 24;
+            this.paintOverlayFrame = 0 + this.paintAnimPhase;
             break;
          case 5:
-            this.int_aL = 25;
-            this.int_aM = 0 + this.int_bR;
+            this.paintOverlaySet = 25;
+            this.paintOverlayFrame = 0 + this.paintAnimPhase;
             break;
          case 6:
-            this.int_aL = 5;
-            this.int_aM = 0;
+            this.paintOverlaySet = 5;
+            this.paintOverlayFrame = 0;
             break;
          case 7:
-            this.int_aL = 5;
-            this.int_aM = 1;
+            this.paintOverlaySet = 5;
+            this.paintOverlayFrame = 1;
             break;
          case 8:
-            this.int_aL = 16;
-            this.int_aM = 0 + (stateTicks >> 1 & 1);
+            this.paintOverlaySet = 16;
+            this.paintOverlayFrame = 0 + (stateTicks >> 1 & 1);
             break;
          case 9:
-            sprite_b = sprites[(l & 264241152) >> 22];
-            this.int_bL = 0;
+            paintSprite = sprites[(l & 264241152) >> 22];
+            this.paintSpriteFrame = 0;
             break;
          case 47:
-            sprite_b = sprites[30];
-            this.int_bK = 0;
-            this.int_bL = frameAtTime(sprite_b, 0, stateTicks % animLength(sprite_b, 0));
+            paintSprite = sprites[30];
+            this.paintSpriteAnim = 0;
+            this.paintSpriteFrame = frameAtTime(paintSprite, 0, stateTicks % animLength(paintSprite, 0));
       }
 
       if (flag || tileSlots != null && tileSlots[i][k] != 0 && isHeavyObject(i, k)) {
@@ -9291,28 +9331,28 @@ public final class GameCanvas extends Canvas implements Runnable {
             k2 = 4 - k2;
          }
 
-         this.int_bO += k2;
+         this.paintOffsetY += k2;
       }
 
       if ((
             (l & 512) != 0
-               || objectMap[i - directionOffsets[i1]][k] < 0 && isHeavyObject(i, k) && (objectState[i][k] & 7) == 0 && i != this.int_bg && j != this.int_bh
+               || objectMap[i - directionOffsets[i1]][k] < 0 && isHeavyObject(i, k) && (objectState[i][k] & 7) == 0 && i != this.hookX && j != this.hookY
          )
          && (this.playerFlags & 8) == 0) {
-         this.int_bO += b0 * b0 / 24;
-         if (this.int_bI != 9) {
-            this.int_bN = this.int_bN + -1 + stateTicks % 3;
+         this.paintOffsetY += b0 * b0 / 24;
+         if (this.paintObject != 9) {
+            this.paintOffsetX = this.paintOffsetX + -1 + stateTicks % 3;
          }
       }
 
       if ((l & 512) != 0) {
-         this.int_bN = -this.int_bN;
+         this.paintOffsetX = -this.paintOffsetX;
       }
 
-      if (this.int_bI == 0) {
-         this.int_bD = ((l & 448) >> 6) - 1;
-         if (this.int_bD >= 0 && this.int_bD < 5) {
-            this.bool_A = true;
+      if (this.paintObject == 0) {
+         this.overlayModule = ((l & 448) >> 6) - 1;
+         if (this.overlayModule >= 0 && this.overlayModule < 5) {
+            this.overlayPending = true;
             GameCanvas gamecanvas1;
             byte b1;
             switch (l & 7) {
@@ -9329,10 +9369,10 @@ public final class GameCanvas extends Canvas implements Runnable {
                   b1 = 0;
             }
 
-            gamecanvas1.int_bz = b1;
-            this.int_bA = 13;
-            this.int_bB = this.int_bG;
-            this.int_bC = this.int_bH - 1;
+            gamecanvas1.overlayDx = b1;
+            this.overlayDy = 13;
+            this.overlayTileX = this.paintTileX;
+            this.overlayTileY = this.paintTileY - 1;
          }
       }
 
@@ -9345,13 +9385,13 @@ public final class GameCanvas extends Canvas implements Runnable {
       Sprite sprite;
       int l;
       label33: {
-         int i = objectState[this.int_bG][this.int_bH];
-         byte b0 = objectTimers[this.int_bG][this.int_bH];
+         int i = objectState[this.paintTileX][this.paintTileY];
+         byte b0 = objectTimers[this.paintTileX][this.paintTileY];
          int j = i & 7;
-         this.int_bN = b0 * directionOffsets[j];
-         this.int_bO = b0 * directionOffsets[j + 8];
+         this.paintOffsetX = b0 * directionOffsets[j];
+         this.paintOffsetY = b0 * directionOffsets[j + 8];
          var1 = (byte)(var1 == 19 ? 4 : 21);
-         sprite_b = sprites[var1];
+         paintSprite = sprites[var1];
          if (this.world == 1) {
             byte b1;
             if ((i & 248) >> 3 > 0) {
@@ -9362,18 +9402,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                b1 = 0;
             }
 
-            gamecanvas.int_bK = b1;
+            gamecanvas.paintSpriteAnim = b1;
             gamecanvas = this;
             k = stateTicks;
-            sprite = sprite_b;
+            sprite = paintSprite;
          } else {
             label30: {
                if ((i & 248) >> 3 > 0) {
                   gamecanvas = this;
                   k = 4;
                } else {
-                  this.int_bK = j - 1;
-                  if (this.int_bK >= 0) {
+                  this.paintSpriteAnim = j - 1;
+                  if (this.paintSpriteAnim >= 0) {
                      break label30;
                   }
 
@@ -9381,22 +9421,22 @@ public final class GameCanvas extends Canvas implements Runnable {
                   k = ((i & 28672) >> 12) - 1;
                }
 
-               gamecanvas.int_bK = k;
+               gamecanvas.paintSpriteAnim = k;
             }
 
             gamecanvas = this;
             k = stateTicks >> 1;
-            sprite = sprite_b;
-            if (this.int_bK < 0) {
+            sprite = paintSprite;
+            if (this.paintSpriteAnim < 0) {
                l = 0;
                break label33;
             }
          }
 
-         l = this.int_bK;
+         l = this.paintSpriteAnim;
       }
 
-      gamecanvas.int_bL = k % sprite.getAnimFrameCount(l);
+      gamecanvas.paintSpriteFrame = k % sprite.getAnimFrameCount(l);
       this.adjustForWindPod();
    }
 
@@ -9566,7 +9606,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          if (i != var1) {
-            this.int_ax = 70;
+            this.idleAnimDelay = 70;
          }
       }
    }
@@ -9577,33 +9617,33 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.fullRedraw = true;
          int i = this.armorLevel;
          GameCanvas gamecanvas1 = this;
-         this.int_en = -1;
+         this.shownArmorLevel = -1;
          switch (armorStatus(i)) {
             case -1:
-               gamecanvas1.string_a = strings[41];
+               gamecanvas1.shopMessage = strings[41];
                return;
             case 0:
-               gamecanvas1.string_a = strings[0];
+               gamecanvas1.shopMessage = strings[0];
                return;
             case 1:
                gamecanvas1.stageDiamonds = readShort(saveData, 4) - Constants.armorDiamondThresholds[gamecanvas1.armorLevel];
-               gamecanvas1.string_g = null;
+               gamecanvas1.shopDiamondsText = null;
                System.gc();
-               gamecanvas1.string_g = strings[125] + " " + gamecanvas1.stageDiamonds + " " + strings[19];
+               gamecanvas1.shopDiamondsText = strings[125] + " " + gamecanvas1.stageDiamonds + " " + strings[19];
                saveData[4] = (byte)gamecanvas1.stageDiamonds;
                saveData[5] = (byte)(gamecanvas1.stageDiamonds >> 8);
                saveData[8] = (byte)(i + 4 + 1);
                gamecanvas1.writeSave();
                gamecanvas1.nextArmorThreshold = -1;
-               gamecanvas1.string_a = strings[0];
-               gamecanvas1.bool_aa = true;
+               gamecanvas1.shopMessage = strings[0];
+               gamecanvas1.shopTextChanged = true;
                gamecanvas1.showNotice(strings[32], -1, -1, 5000, 4273165, 0);
          }
       } else if (isKeyDown(64)) {
          keysDown = 0;
          gameState = 27;
          this.fullRedraw = true;
-         this.bool_g = true;
+         this.sealDirty = true;
          keysDown = 0;
       } else {
          label41: {
@@ -9644,14 +9684,14 @@ public final class GameCanvas extends Canvas implements Runnable {
             b2 = 0;
          } else {
             this.nextArmorThreshold = Constants.armorDiamondThresholds[this.armorLevel];
-            this.stringBuffer_d.delete(0, this.stringBuffer_d.length());
-            this.stringBuffer_d.append(this.nextArmorThreshold);
+            this.armorThresholdText.delete(0, this.armorThresholdText.length());
+            this.armorThresholdText.append(this.nextArmorThreshold);
             gamecanvas2 = this;
             astring = strings;
             b2 = 6;
          }
 
-         gamecanvas2.string_a = astring[b2];
+         gamecanvas2.shopMessage = astring[b2];
          this.fullRedraw = true;
       }
    }
@@ -9672,8 +9712,8 @@ public final class GameCanvas extends Canvas implements Runnable {
       this.lives = 0;
       this.stageRedDiamonds = 0;
       this.stageDiamonds = 0;
-      this.bool_p = false;
-      this.int_ag = 0;
+      this.hasCompass = false;
+      this.tipIndex = 0;
       unlockedStage = 0;
    }
 
@@ -9709,7 +9749,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       gameState = stateBeforeCheats;
       if (stateBeforeCheats == 27) {
          this.fullRedraw = true;
-         this.bool_g = true;
+         this.sealDirty = true;
       } else if (stateBeforeCheats == 1) {
          this.hudDirty = true;
       }
@@ -9727,7 +9767,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
 
             this.menuUp();
-            if (this.menu == 0 && this.menuSelection == 0 && !this.bool_X) {
+            if (this.menu == 0 && this.menuSelection == 0 && !this.menuGameStarted) {
                this.menuUp();
             }
          } else if (isKeyDown(262146)) {
@@ -9736,7 +9776,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             }
 
             this.menuDown();
-            if (this.menu == 0 && this.menuSelection == 0 && !this.bool_X) {
+            if (this.menu == 0 && this.menuSelection == 0 && !this.menuGameStarted) {
                this.menuDown();
             }
          } else if (isKeyDown(32944)) {
@@ -9762,12 +9802,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                   this.openMenu(2);
                   break;
                case 5:
-                  bool_V = true;
-                  bool_W = false;
+                  menuNeedsRedraw = true;
+                  pauseBackgroundStale = false;
                   if (gameState == 2) {
                      this.openMenu(1);
                      this.hudDirty = true;
-                     bool_W = true;
+                     pauseBackgroundStale = true;
                   }
 
                   if (gameState == 4) {
@@ -9781,14 +9821,14 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private boolean d_bool() {
-      if (this.byte_x == 3) {
+   private boolean tryStartFloorToggle() {
+      if (this.enemyPhase == 3) {
          int i = tileMap[this.playerX][this.playerY] & 0xFF;
-         if (this.int_cf == 0 && i != 15 && i != 16) {
+         if (this.toggleDirection == 0 && i != 15 && i != 16) {
             this.playSound(0);
             GameCanvas gamecanvas;
             byte b0;
-            if (this.int_ce <= 0) {
+            if (this.togglePhase <= 0) {
                gamecanvas = this;
                b0 = 1;
             } else {
@@ -9796,7 +9836,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                b0 = -1;
             }
 
-            gamecanvas.int_cf = b0;
+            gamecanvas.toggleDirection = b0;
          }
 
          return true;
@@ -9805,7 +9845,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void b_void(int var1, int var2, int var3) {
+   private void hitObject(int var1, int var2, int var3) {
       int i = objectState[var2][var3];
       if (var1 == 43 && (i & 248) == 0) {
          if ((i & 98304) == 0) {
@@ -9852,34 +9892,34 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void updatePlaying() {
-      if (this.bool_c) {
-         this.int_l--;
+      if (this.underHeavyObject) {
+         this.crushTimer--;
       }
 
-      if ((this.bool_h || this.bool_aj) && stateTicks > 140) {
-         if (this.bool_aj) {
+      if ((this.crystalExitPending || this.bossExitPending) && stateTicks > 140) {
+         if (this.bossExitPending) {
             this.bankStageDiamonds();
          }
 
-         this.bool_h = false;
-         this.bool_aj = false;
-         this.bool_K = true;
+         this.crystalExitPending = false;
+         this.bossExitPending = false;
+         this.unloadCutscenesOnLoad = true;
          this.loadingStep = 0;
          this.resetStateTimer();
-         this.bool_I = true;
+         this.saveResultOnLoad = true;
          gameState = 28;
       }
 
       boolean flag = this.isPlayerInsideBorder();
-      if (this.bool_al) {
-         this.bool_al = false;
-         if (this.int_dt < this.enemyCount) {
-            int i = enemyBits((byte)this.int_dt, (byte)13, (byte)7);
-            int j = enemyBits((byte)this.int_dt, (byte)20, (byte)7);
-            this.n_void(i, j);
-            this.int_dt++;
+      if (this.enemyRemovalPending) {
+         this.enemyRemovalPending = false;
+         if (this.enemyRemovalIndex < this.enemyCount) {
+            int i = enemyBits((byte)this.enemyRemovalIndex, (byte)13, (byte)7);
+            int j = enemyBits((byte)this.enemyRemovalIndex, (byte)20, (byte)7);
+            this.killEnemyAt(i, j);
+            this.enemyRemovalIndex++;
          } else {
-            this.int_dt = 0;
+            this.enemyRemovalIndex = 0;
             this.enemyCount = 0;
          }
       }
@@ -9888,19 +9928,19 @@ public final class GameCanvas extends Canvas implements Runnable {
          spriteInstances[4].updateAnim();
       }
 
-      if (this.int_bj > 0) {
-         this.int_bj--;
+      if (this.screenShakeTicks > 0) {
+         this.screenShakeTicks--;
       }
 
-      if (this.int_di > 0) {
-         this.int_di--;
-         if (this.int_di == 0) {
+      if (this.hintTextTicks > 0) {
+         this.hintTextTicks--;
+         if (this.hintTextTicks == 0) {
             this.hintText = null;
          }
       }
 
-      if (this.int_ad != this.nextEffect) {
-         int l11 = this.int_ad;
+      if (this.drawnEffect != this.nextEffect) {
+         int l11 = this.drawnEffect;
 
          while (true) {
             int k2 = l11;
@@ -9911,8 +9951,8 @@ public final class GameCanvas extends Canvas implements Runnable {
             effectTimers[k2]++;
             int k3 = effectTypes[k2] < 0 ? animLength(sprites[2], 0) : sprites[9].getAnimFrameCount(effectTypes[k2]);
             if (effectTimers[k2] >= k3) {
-               this.int_ad++;
-               this.int_ad &= 7;
+               this.drawnEffect++;
+               this.drawnEffect &= 7;
             }
 
             l11 = k2 + 1 & 7;
@@ -9925,20 +9965,20 @@ public final class GameCanvas extends Canvas implements Runnable {
          switch (this.stageKind) {
             case 1:
                GameCanvas gamecanvas6 = gamecanvas;
-               if (objectMap[18][63] == 0 && objectTimers[18][63] <= 0 && gamecanvas6.int_am == 0) {
-                  gamecanvas6.int_bj = 120;
-                  gamecanvas6.int_am++;
+               if (objectMap[18][63] == 0 && objectTimers[18][63] <= 0 && gamecanvas6.floodSwitchPresses == 0) {
+                  gamecanvas6.screenShakeTicks = 120;
+                  gamecanvas6.floodSwitchPresses++;
                }
 
                label1365: {
                   SpriteInstance spriteinstance6;
                   byte b19;
-                  if (gamecanvas6.int_am == 3) {
+                  if (gamecanvas6.floodSwitchPresses == 3) {
                      if (spriteInstances[2].anim != 0) {
                         if (spriteInstances[2].anim == 1 && spriteInstances[2].isAnimFinished()) {
                            spriteInstances[2].setAnim(2);
                            if (gamecanvas6.playerY == gamecanvas6.mapHeight - 4) {
-                              gamecanvas6.int_al = 817;
+                              gamecanvas6.floodHeight = 817;
                            }
                         }
                         break label1365;
@@ -9964,8 +10004,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                }
 
                spriteInstances[1].updateAnim();
-               if (gamecanvas6.int_bj == 10) {
-                  gamecanvas6.int_bj = 60;
+               if (gamecanvas6.screenShakeTicks == 10) {
+                  gamecanvas6.screenShakeTicks = 60;
                }
 
                if (spriteInstances[1].anim != 0) {
@@ -9973,15 +10013,15 @@ public final class GameCanvas extends Canvas implements Runnable {
                      spriteInstances[1].setAnim(0);
                   }
                } else {
-                  if ((gamecanvas6.activeCutscene == null || gamecanvas6.int_al < 46) && gamecanvas6.int_al < 1704) {
-                     gamecanvas6.int_al++;
+                  if ((gamecanvas6.activeCutscene == null || gamecanvas6.floodHeight < 46) && gamecanvas6.floodHeight < 1704) {
+                     gamecanvas6.floodHeight++;
                      int k5 = gamecanvas6.mapHeight * 24 - (gamecanvas6.cameraY + 240 - 62);
-                     if (gamecanvas6.int_al < k5) {
-                        gamecanvas6.int_al = k5;
+                     if (gamecanvas6.floodHeight < k5) {
+                        gamecanvas6.floodHeight = k5;
                      }
                   }
 
-                  if (gamecanvas6.mapHeight * 24 - gamecanvas6.int_al <= gamecanvas6.playerY * 24 + 18 && gamecanvas6.playerX < 17) {
+                  if (gamecanvas6.mapHeight * 24 - gamecanvas6.floodHeight <= gamecanvas6.playerY * 24 + 18 && gamecanvas6.playerX < 17) {
                      gamecanvas6.hurtPlayer(saveData[8], 64, 1);
                   }
                }
@@ -9991,26 +10031,26 @@ public final class GameCanvas extends Canvas implements Runnable {
                if (tileMap != null && gamecanvas5.isPlayerInsideBorder() && (tileMap[gamecanvas5.playerX][gamecanvas5.playerY] & 0xFF) == 0) {
                   int j5;
                   if ((j5 = tileMap[gamecanvas5.playerX][gamecanvas5.playerY] >> 8) == 13) {
-                     gamecanvas5.bool_q = true;
+                     gamecanvas5.prologueSaw13 = true;
                   } else if (j5 == 16) {
-                     gamecanvas5.bool_r = true;
+                     gamecanvas5.prologueSaw16 = true;
                   }
                }
 
-               if (!gamecanvas5.bool_s && gamecanvas5.moveProgress <= 0 && gamecanvas5.isPlayerAt(46, 7)) {
-                  gamecanvas5.bool_t = true;
-                  gamecanvas5.bool_s = true;
+               if (!gamecanvas5.prologueMarkerReached && gamecanvas5.moveProgress <= 0 && gamecanvas5.isPlayerAt(46, 7)) {
+                  gamecanvas5.prologueMarkerHint = true;
+                  gamecanvas5.prologueMarkerReached = true;
                }
 
                gamecanvas5 = gamecanvas;
                if (gamecanvas.isPlayerAt(61, 3) && gamecanvas5.moveProgress == 6) {
                   gamecanvas5.addEffect(gamecanvas5.playerX, gamecanvas5.playerY, 5);
-                  gamecanvas5.bool_e = false;
+                  gamecanvas5.playerVisible = false;
                }
 
                if (gamecanvas5.activeCutscene == null && (gamecanvas5.isPlayerAt(60, 3) || gamecanvas5.isPlayerAt(61, 3))) {
                   gamecanvas5.markGameStarted(true);
-                  gamecanvas5.bool_N = true;
+                  gamecanvas5.writeSaveOnLoad = true;
                   gamecanvas5.unloadMapResources();
                   gamecanvas5.freeStageResources();
                   gamecanvas5.world = 0;
@@ -10018,7 +10058,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   gamecanvas5.startStage();
                }
 
-               if (gamecanvas5.int_aI == 2) {
+               if (gamecanvas5.pickupObject == 2) {
                   tileMap[11][50] = -1;
                }
                break;
@@ -10037,7 +10077,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if ((k10 <= k7 || k10 >= k8 || j10 <= j9 || j10 >= l9) && objectMap[k10][j10] == 44) {
                         gamecanvas4.scanX = k10;
                         gamecanvas4.scanY = j10;
-                        gamecanvas4.am_void();
+                        gamecanvas4.updateStalactite();
                      }
                   }
                }
@@ -10050,7 +10090,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                SpriteInstance spriteinstance5;
                if (gamecanvas4.bossAnim == 12) {
-                  if (gamecanvas4.int_ap++ > 100) {
+                  if (gamecanvas4.bossTimer++ > 100) {
                      gamecanvas4.bossAnim = 15;
                      gamecanvas4.triggerTile(11, 11);
                   } else {
@@ -10074,9 +10114,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                   byte b9 = -1;
                   int l10 = gamecanvas4.playerX * 24 + 12;
                   k8 = gamecanvas4.playerY * 24;
-                  j9 = gamecanvas4.int_as + 24;
-                  if (gamecanvas4.long_j == 0L && gamecanvas4.energy != 0) {
-                     gamecanvas4.long_j = stateTicks + Rand.between(340, 441);
+                  j9 = gamecanvas4.yetiX + 24;
+                  if (gamecanvas4.yetiNextRoar == 0L && gamecanvas4.energy != 0) {
+                     gamecanvas4.yetiNextRoar = stateTicks + Rand.between(340, 441);
                   }
 
                   l9 = gamecanvas4.bossHealth > 0 && stateTicks % gamecanvas4.bossHealth == 0 ? 2 : 1;
@@ -10106,7 +10146,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break;
                         case 2:
                            if (spriteinstance2.isAnimFinished()) {
-                              if (stateTicks > gamecanvas4.long_j) {
+                              if (stateTicks > gamecanvas4.yetiNextRoar) {
                                  b9 = 13;
                                  gamecanvas4.bossAnim = 13;
                               } else {
@@ -10117,7 +10157,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break;
                         case 3:
                            if (spriteinstance2.isAnimFinished()) {
-                              if (stateTicks > gamecanvas4.long_j) {
+                              if (stateTicks > gamecanvas4.yetiNextRoar) {
                                  b9 = 14;
                                  gamecanvas4.bossAnim = 14;
                               } else {
@@ -10127,11 +10167,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                            }
                            break;
                         case 4:
-                           if (stateTicks > gamecanvas4.long_j) {
+                           if (stateTicks > gamecanvas4.yetiNextRoar) {
                               b9 = 13;
                               gamecanvas4.bossAnim = 13;
                            } else {
-                              if (k8 >= 504 && l10 < j9 && gamecanvas4.int_as - 48 >= 360) {
+                              if (k8 >= 504 && l10 < j9 && gamecanvas4.yetiX - 48 >= 360) {
                                  b9 = 10;
                                  gamecanvas4.bossAnim = 10;
                               }
@@ -10142,16 +10182,16 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
 
                               if (gamecanvas4.bossAnim == 4) {
-                                 gamecanvas4.int_as--;
+                                 gamecanvas4.yetiX--;
                               }
                            }
                            break;
                         case 5:
-                           if (stateTicks > gamecanvas4.long_j) {
+                           if (stateTicks > gamecanvas4.yetiNextRoar) {
                               b9 = 14;
                               gamecanvas4.bossAnim = 14;
                            } else {
-                              if (k8 >= 504 && l10 > j9 && gamecanvas4.int_as + 48 <= 504) {
+                              if (k8 >= 504 && l10 > j9 && gamecanvas4.yetiX + 48 <= 504) {
                                  b9 = 11;
                                  gamecanvas4.bossAnim = 11;
                               }
@@ -10162,7 +10202,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
 
                               if (gamecanvas4.bossAnim == 5) {
-                                 gamecanvas4.int_as++;
+                                 gamecanvas4.yetiX++;
                               }
                            }
                            break;
@@ -10214,13 +10254,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  b16 = 80;
                               }
 
-                              gamecanvas11.int_bj = b16;
+                              gamecanvas11.screenShakeTicks = b16;
                            }
 
                            if (spriteinstance2.isAnimFinished()) {
                               if (gamecanvas4.bossAnim == 13 || gamecanvas4.bossAnim == 14) {
-                                 gamecanvas4.long_k = stateTicks + 40;
-                                 gamecanvas4.long_j = stateTicks + Rand.between(340, 441);
+                                 gamecanvas4.icicleDropTime = stateTicks + 40;
+                                 gamecanvas4.yetiNextRoar = stateTicks + Rand.between(340, 441);
                               }
 
                               b9 = b11;
@@ -10237,9 +10277,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                            break;
                         case 10:
                            if (spriteinstance2.isAnimFinished()) {
-                              gamecanvas4.int_bj = 10;
-                              j9 = gamecanvas4.int_as + 24;
-                              if (stateTicks > gamecanvas4.long_j) {
+                              gamecanvas4.screenShakeTicks = 10;
+                              j9 = gamecanvas4.yetiX + 24;
+                              if (stateTicks > gamecanvas4.yetiNextRoar) {
                                  b9 = 13;
                                  gamecanvas4.bossAnim = 13;
                               } else if (k8 >= 504) {
@@ -10252,14 +10292,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  gamecanvas4.bossAnim = 4;
                               }
                            } else {
-                              gamecanvas4.int_as -= 2;
+                              gamecanvas4.yetiX -= 2;
                            }
                            break;
                         case 11:
                            if (spriteinstance2.isAnimFinished()) {
-                              gamecanvas4.int_bj = 10;
-                              j9 = gamecanvas4.int_as + 24;
-                              if (stateTicks > gamecanvas4.long_j) {
+                              gamecanvas4.screenShakeTicks = 10;
+                              j9 = gamecanvas4.yetiX + 24;
+                              if (stateTicks > gamecanvas4.yetiNextRoar) {
                                  b9 = 14;
                                  gamecanvas4.bossAnim = 14;
                               } else if (k8 >= 504) {
@@ -10272,26 +10312,26 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  gamecanvas4.bossAnim = 5;
                               }
                            } else {
-                              gamecanvas4.int_as += 2;
+                              gamecanvas4.yetiX += 2;
                            }
                      }
 
                      if (k8 >= 504 && l10 >= j9 - 24 && l10 <= j9 + 24) {
-                        gamecanvas4.hurtPlayer(1, 48, byteArr_h[gamecanvas4.playerFlags & 7]);
+                        gamecanvas4.hurtPlayer(1, 48, oppositeDirection[gamecanvas4.playerFlags & 7]);
                      }
 
                      if (gamecanvas4.bossHealth <= 0) {
                         gamecanvas4.bossAnim = 12;
-                        gamecanvas4.int_ap = 0;
+                        gamecanvas4.bossTimer = 0;
                         break label1368;
                      }
                   }
 
                   label1272:
-                  if (gamecanvas4.int_ce == 5) {
+                  if (gamecanvas4.togglePhase == 5) {
                      int[] aint;
                      byte b17;
-                     if (gamecanvas4.int_cf <= 0) {
+                     if (gamecanvas4.toggleDirection <= 0) {
                         if (gamecanvas4.bossHealth <= 2) {
                            objectMap[10][16] = 45;
                            tileRedrawTimers[10][16] = 24;
@@ -10379,85 +10419,85 @@ public final class GameCanvas extends Canvas implements Runnable {
             case 4:
                GameCanvas gamecanvas3 = gamecanvas;
                if (gamecanvas.bossAnim == 5) {
-                  if (gamecanvas3.bool_Z) {
+                  if (gamecanvas3.arenaWallsRestored) {
                      break;
                   }
 
-                  gamecanvas3.bool_Z = true;
+                  gamecanvas3.arenaWallsRestored = true;
                }
 
                SpriteInstance spriteinstance1 = spriteInstances[5];
-               gamecanvas3.int_ap++;
+               gamecanvas3.bossTimer++;
                byte b1 = -1;
                SpriteInstance spriteinstance3 = spriteInstances[4];
                byte b6 = -1;
                int j8 = gamecanvas3.bossColumn();
-               if (objectMap[gamecanvas3.int_P][2] == -1) {
-                  objectMap[gamecanvas3.int_P][2] = 31;
+               if (objectMap[gamecanvas3.arenaWallX1][2] == -1) {
+                  objectMap[gamecanvas3.arenaWallX1][2] = 31;
                }
 
-               if (objectMap[gamecanvas3.int_Q][2] == -1) {
-                  objectMap[gamecanvas3.int_Q][2] = 31;
+               if (objectMap[gamecanvas3.arenaWallX2][2] == -1) {
+                  objectMap[gamecanvas3.arenaWallX2][2] = 31;
                }
 
                switch (gamecanvas3.bossAnim) {
                   case 0:
                      if (gamecanvas3.playerX >= 10) {
                         gamecanvas3.bossAnim = 6;
-                        gamecanvas3.int_ap = 0;
+                        gamecanvas3.bossTimer = 0;
                      }
                      break;
                   case 1:
-                     if (gamecanvas3.int_ap > 40) {
+                     if (gamecanvas3.bossTimer > 40) {
                         gamecanvas3.bossAnim = 2;
-                        gamecanvas3.int_ap = 0;
-                     } else if (gamecanvas3.int_ap > 20) {
+                        gamecanvas3.bossTimer = 0;
+                     } else if (gamecanvas3.bossTimer > 20) {
                         gamecanvas3.crushObjectsAt(j8, 8);
                         fillObjectPair(j8, 8);
-                        gamecanvas3.int_M = j8;
-                        gamecanvas3.int_N = 8;
+                        gamecanvas3.bossHeldObjectX = j8;
+                        gamecanvas3.bossHeldObjectY = 8;
                      }
                      break;
                   case 2:
                      if (gamecanvas3.crushObjectsAt(j8, 8)) {
                         gamecanvas3.bossHealth--;
-                        gamecanvas3.int_S = gamecanvas3.bossAnim;
-                        clearObjectPair(gamecanvas3.int_M, gamecanvas3.int_N);
-                        gamecanvas3.int_M = -1;
-                        gamecanvas3.int_N = -1;
-                        gamecanvas3.int_S = gamecanvas3.bossAnim;
+                        gamecanvas3.bossPreviousAnim = gamecanvas3.bossAnim;
+                        clearObjectPair(gamecanvas3.bossHeldObjectX, gamecanvas3.bossHeldObjectY);
+                        gamecanvas3.bossHeldObjectX = -1;
+                        gamecanvas3.bossHeldObjectY = -1;
+                        gamecanvas3.bossPreviousAnim = gamecanvas3.bossAnim;
                         gamecanvas3.bossAnim = 3;
                         b1 = 3;
                         gamecanvas3.playSound(10);
                      }
 
-                     if (gamecanvas3.int_ap > 15 && spriteinstance1.anim != 6) {
+                     if (gamecanvas3.bossTimer > 15 && spriteinstance1.anim != 6) {
                         b1 = 6;
                      }
 
-                     if (gamecanvas3.int_ap > 30) {
+                     if (gamecanvas3.bossTimer > 30) {
                         gamecanvas3.bossAnim = 4;
-                        gamecanvas3.int_ap = 0;
+                        gamecanvas3.bossTimer = 0;
                         b1 = 0;
-                        clearObjectPair(gamecanvas3.int_M, gamecanvas3.int_N);
-                        gamecanvas3.int_M = -1;
-                        gamecanvas3.int_N = -1;
+                        clearObjectPair(gamecanvas3.bossHeldObjectX, gamecanvas3.bossHeldObjectY);
+                        gamecanvas3.bossHeldObjectX = -1;
+                        gamecanvas3.bossHeldObjectY = -1;
                      }
                      break;
                   case 3:
-                     if (gamecanvas3.int_ap > 40) {
+                     if (gamecanvas3.bossTimer > 40) {
                         if (gamecanvas3.bossHealth > 0) {
-                           if (gamecanvas3.int_S == 10) {
+                           if (gamecanvas3.bossPreviousAnim == 10) {
                               gamecanvas3.bossAnim = 9;
-                              gamecanvas3.int_ap = 0;
-                           } else if (gamecanvas3.int_S == 2 || gamecanvas3.int_S == 1) {
+                              gamecanvas3.bossTimer = 0;
+                           } else if (gamecanvas3.bossPreviousAnim == 2 || gamecanvas3.bossPreviousAnim == 1) {
                               gamecanvas3.bossAnim = 4;
-                              gamecanvas3.int_ap = 0;
+                              gamecanvas3.bossTimer = 0;
                               b1 = 2;
                            }
                         } else {
                            gamecanvas3.bossAnim = 7;
-                           gamecanvas3.int_ap = 0;
+                           gamecanvas3.bossTimer = 0;
                         }
                      }
                      break;
@@ -10465,12 +10505,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                      label1224: {
                         int k9 = gamecanvas3.bossHealth <= 1 ? 5 : 10;
                         byte b12;
-                        if (gamecanvas3.int_ap >= k9) {
+                        if (gamecanvas3.bossTimer >= k9) {
                            gamecanvas3.bossAnim = 5;
-                           gamecanvas3.int_ap = 0;
+                           gamecanvas3.bossTimer = 0;
                            b12 = 4;
                         } else {
-                           if (gamecanvas3.int_ap <= k9 >> 1 || spriteinstance1.anim == 1) {
+                           if (gamecanvas3.bossTimer <= k9 >> 1 || spriteinstance1.anim == 1) {
                               break label1224;
                            }
 
@@ -10488,90 +10528,90 @@ public final class GameCanvas extends Canvas implements Runnable {
                      int i2 = (spriteinstance1.sprite.animFrameStarts[spriteinstance1.anim] + spriteinstance1.animFrame) * 5;
                      byte b10 = spriteinstance1.sprite.animFrames[i2 + 3];
                      if (i10 - b10 <= 72 - gamecanvas3.cameraY + 40) {
-                        gamecanvas3.int_T = 0;
+                        gamecanvas3.unusedBossValue = 0;
                         gamecanvas3.restoreArenaWalls();
                         gamecanvas3.bossAnim = 10;
-                        gamecanvas3.int_M = j8;
-                        gamecanvas3.int_N = 4;
-                        fillObjectPair(gamecanvas3.int_M, gamecanvas3.int_N);
+                        gamecanvas3.bossHeldObjectX = j8;
+                        gamecanvas3.bossHeldObjectY = 4;
+                        fillObjectPair(gamecanvas3.bossHeldObjectX, gamecanvas3.bossHeldObjectY);
                      }
 
                      gamecanvas3.crushObjectsUnderBoss();
                      gamecanvas3.checkBossContact();
                      break;
                   case 6:
-                     if (gamecanvas3.int_ap > 10) {
+                     if (gamecanvas3.bossTimer > 10) {
                         gamecanvas3.bossAnim = 1;
                         b1 = 2;
-                        gamecanvas3.int_ap = 0;
+                        gamecanvas3.bossTimer = 0;
                      }
                      break;
                   case 7:
-                     clearObjectPair(gamecanvas3.int_M, gamecanvas3.int_N);
-                     gamecanvas3.int_M = -1;
-                     gamecanvas3.int_N = -1;
-                     if (gamecanvas3.int_ap > 80) {
+                     clearObjectPair(gamecanvas3.bossHeldObjectX, gamecanvas3.bossHeldObjectY);
+                     gamecanvas3.bossHeldObjectX = -1;
+                     gamecanvas3.bossHeldObjectY = -1;
+                     if (gamecanvas3.bossTimer > 80) {
                         gamecanvas3.bossAnim = 8;
-                        gamecanvas3.an_void();
+                        gamecanvas3.pressActiveSwitch();
                      }
 
-                     if ((gamecanvas3.int_ap & 111) == 1) {
+                     if ((gamecanvas3.bossTimer & 111) == 1) {
                         gamecanvas3.playSound(7);
                      }
                   case 8:
                   default:
                      break;
                   case 9:
-                     gamecanvas3.int_ap -= 2;
+                     gamecanvas3.bossTimer -= 2;
                      gamecanvas3.checkBossContact();
                      j8 = spriteinstance1.y + -40;
                      int i9 = (spriteinstance1.sprite.animFrameStarts[spriteinstance1.anim] + spriteinstance1.animFrame) * 5;
                      byte b8 = spriteinstance1.sprite.animFrames[i9 + 3];
                      if (j8 - b8 >= 240 - gamecanvas3.cameraY + 40) {
                         gamecanvas3.bossAnim = 6;
-                        gamecanvas3.int_ap = 0;
+                        gamecanvas3.bossTimer = 0;
                         int j2 = (j8 = gamecanvas3.playerX - 10) / 3;
                         if (j8 == j2 * 3 + 2) {
                            j2 += stateTicks % 50 / 25;
                         }
 
-                        gamecanvas3.int_ar = j2;
+                        gamecanvas3.bossPosition = j2;
                      }
                      break;
                   case 10:
-                     gamecanvas3.int_ap--;
+                     gamecanvas3.bossTimer--;
                      gamecanvas3.checkBossContact();
-                     gamecanvas3.int_L++;
-                     if (gamecanvas3.int_L == 28) {
+                     gamecanvas3.bossSlamTicks++;
+                     if (gamecanvas3.bossSlamTicks == 28) {
                         b1 = 7;
                      }
 
-                     if (gamecanvas3.int_L >= 50) {
-                        gamecanvas3.int_L = 0;
+                     if (gamecanvas3.bossSlamTicks >= 50) {
+                        gamecanvas3.bossSlamTicks = 0;
                         gamecanvas3.bossAnim = 11;
-                        clearObjectPair(gamecanvas3.int_M, gamecanvas3.int_N);
-                        gamecanvas3.int_M = -1;
-                        gamecanvas3.int_N = -1;
+                        clearObjectPair(gamecanvas3.bossHeldObjectX, gamecanvas3.bossHeldObjectY);
+                        gamecanvas3.bossHeldObjectX = -1;
+                        gamecanvas3.bossHeldObjectY = -1;
                         b1 = 8;
                         b6 = 2;
-                        gamecanvas3.bool_k = true;
+                        gamecanvas3.bossSlamVisible = true;
                      }
                      break;
                   case 11:
-                     gamecanvas3.int_ap--;
-                     gamecanvas3.int_L++;
-                     if (gamecanvas3.int_L >= 12) {
-                        gamecanvas3.int_L = 0;
+                     gamecanvas3.bossTimer--;
+                     gamecanvas3.bossSlamTicks++;
+                     if (gamecanvas3.bossSlamTicks >= 12) {
+                        gamecanvas3.bossSlamTicks = 0;
                         gamecanvas3.bossAnim = 9;
                         b1 = 4;
-                        gamecanvas3.bool_j = false;
-                        gamecanvas3.bool_k = false;
-                     } else if (!gamecanvas3.bool_j) {
+                        gamecanvas3.bossSlamHitPlayer = false;
+                        gamecanvas3.bossSlamVisible = false;
+                     } else if (!gamecanvas3.bossSlamHitPlayer) {
                         GameCanvas gamecanvas7 = gamecanvas3;
                         j8 = gamecanvas3.bossColumn();
                         if (gamecanvas7.playerY == 4 && gamecanvas7.playerX >= j8 - 3 && gamecanvas7.playerX <= j8 + 4) {
                            gamecanvas7.hurtPlayer(1, 64, gamecanvas7.playerX == j8 ? 4 : 2);
-                           gamecanvas7.bool_j = true;
+                           gamecanvas7.bossSlamHitPlayer = true;
                         }
                      }
                }
@@ -10582,7 +10622,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   spriteinstance1.setAnim(b1);
                }
 
-               if (gamecanvas3.bool_k) {
+               if (gamecanvas3.bossSlamVisible) {
                   if (b6 == -1) {
                      spriteinstance3.updateAnim();
                   } else {
@@ -10596,7 +10636,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   SpriteInstance spriteinstance = spriteInstances[5];
                   SpriteInstance spriteinstance4;
                   if (gamecanvas2.bossAnim == 12) {
-                     if (gamecanvas2.int_ap++ > 100) {
+                     if (gamecanvas2.bossTimer++ > 100) {
                         gamecanvas2.bossAnim = 15;
                         gamecanvas2.triggerTile(11, 11);
                      } else {
@@ -10624,7 +10664,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (gamecanvas2.bossAnim == 13) {
                         b0 = 13;
                         if (k > i1) {
-                           gamecanvas2.bool_ae = true;
+                           gamecanvas2.knightTurning = true;
                         }
                      }
 
@@ -10633,22 +10673,22 @@ public final class GameCanvas extends Canvas implements Runnable {
                         j1 = (stateTicks & 11) == 0 ? 2 : j1;
                      }
 
-                     if (!gamecanvas2.bool_ad && (gamecanvas2.bossAnim == 0 || gamecanvas2.bossAnim == 1)) {
+                     if (!gamecanvas2.knightCharging && (gamecanvas2.bossAnim == 0 || gamecanvas2.bossAnim == 1)) {
                         GameCanvas gamecanvas8;
                         int i12;
                         if (gamecanvas2.bossAnim == 0) {
-                           gamecanvas2.int_dh = 36;
-                           gamecanvas2.int_dh = ~gamecanvas2.int_dh;
+                           gamecanvas2.knightChargeOffset = 36;
+                           gamecanvas2.knightChargeOffset = ~gamecanvas2.knightChargeOffset;
                            gamecanvas8 = gamecanvas2;
-                           i12 = gamecanvas2.int_dh + 1;
+                           i12 = gamecanvas2.knightChargeOffset + 1;
                         } else {
                            gamecanvas8 = gamecanvas2;
                            i12 = 36;
                         }
 
-                        gamecanvas8.int_dh = i12;
-                        if (l < 504 && (k == i1 + gamecanvas2.int_dh || stateTicks % 76 == 0)) {
-                           gamecanvas2.bool_ad = true;
+                        gamecanvas8.knightChargeOffset = i12;
+                        if (l < 504 && (k == i1 + gamecanvas2.knightChargeOffset || stateTicks % 76 == 0)) {
+                           gamecanvas2.knightCharging = true;
                         }
                      }
 
@@ -10663,7 +10703,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     } else {
                                        gamecanvas2.bossX--;
                                     }
-                                 } else if (gamecanvas2.bool_ad) {
+                                 } else if (gamecanvas2.knightCharging) {
                                     b0 = 2;
                                     gamecanvas2.bossAnim = 2;
                                  } else if (i1 <= 360) {
@@ -10681,7 +10721,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        b0 = 7;
                                        gamecanvas2.bossAnim = 7;
                                     }
-                                 } else if (gamecanvas2.bool_ad) {
+                                 } else if (gamecanvas2.knightCharging) {
                                     b0 = 3;
                                     gamecanvas2.bossAnim = 3;
                                  } else if (i1 >= 504) {
@@ -10693,33 +10733,33 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  break label1197;
                               case 2:
                                  if (spriteinstance.animFrame == 5 && spriteinstance.frameTimer == 0) {
-                                    gamecanvas2.int_bj = 30;
+                                    gamecanvas2.screenShakeTicks = 30;
                                  }
 
                                  if (spriteinstance.isAnimFinished()) {
                                     b0 = 10;
                                     gamecanvas2.bossAnim = 10;
-                                    gamecanvas2.bool_ad = false;
-                                    gamecanvas2.int_dh = 0;
+                                    gamecanvas2.knightCharging = false;
+                                    gamecanvas2.knightChargeOffset = 0;
                                  }
 
-                                 if (spriteinstance.animFrame < 7 || l >= 504 || k != i1 + gamecanvas2.int_dh) {
+                                 if (spriteinstance.animFrame < 7 || l >= 504 || k != i1 + gamecanvas2.knightChargeOffset) {
                                     break label1197;
                                  }
                                  break;
                               case 3:
                                  if (spriteinstance.animFrame == 5 && spriteinstance.frameTimer == 0) {
-                                    gamecanvas2.int_bj = 30;
+                                    gamecanvas2.screenShakeTicks = 30;
                                  }
 
                                  if (spriteinstance.isAnimFinished()) {
                                     b0 = 11;
                                     gamecanvas2.bossAnim = 11;
-                                    gamecanvas2.bool_ad = false;
-                                    gamecanvas2.int_dh = 0;
+                                    gamecanvas2.knightCharging = false;
+                                    gamecanvas2.knightChargeOffset = 0;
                                  }
 
-                                 if (spriteinstance.animFrame < 7 || l >= 504 || k != i1 + gamecanvas2.int_dh) {
+                                 if (spriteinstance.animFrame < 7 || l >= 504 || k != i1 + gamecanvas2.knightChargeOffset) {
                                     break label1197;
                                  }
                                  break;
@@ -10729,8 +10769,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     gamecanvas2.bossAnim = b0 = (byte)(gamecanvas2.bossAnim == 4 ? 0 : 1);
                                  }
 
-                                 gamecanvas2.bool_ad = false;
-                                 gamecanvas2.int_dh = 0;
+                                 gamecanvas2.knightCharging = false;
+                                 gamecanvas2.knightChargeOffset = 0;
                                  break label1197;
                               case 6:
                                  if (l >= 504) {
@@ -10799,8 +10839,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     gamecanvas9.bossAnim = b14;
                                  }
 
-                                 gamecanvas2.bool_ad = false;
-                                 gamecanvas2.int_dh = 0;
+                                 gamecanvas2.knightCharging = false;
+                                 gamecanvas2.knightChargeOffset = 0;
                               case 12:
                               default:
                                  break label1197;
@@ -10808,8 +10848,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  if (spriteinstance.isAnimFinished()) {
                                     b0 = 0;
                                     gamecanvas2.bossAnim = 0;
-                                    gamecanvas2.bool_ae = false;
-                                 } else if (gamecanvas2.bool_ae) {
+                                    gamecanvas2.knightTurning = false;
+                                 } else if (gamecanvas2.knightTurning) {
                                     spriteinstance.updateAnim();
                                  }
                                  break label1197;
@@ -10819,7 +10859,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
 
                         if (l >= 504 && k >= i1 - 24 && k <= i1 - 24) {
-                           gamecanvas2.hurtPlayer(1, 48, byteArr_h[gamecanvas2.playerFlags & 7]);
+                           gamecanvas2.hurtPlayer(1, 48, oppositeDirection[gamecanvas2.playerFlags & 7]);
                         }
                      }
 
@@ -10876,7 +10916,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                      if (gamecanvas2.bossHealth <= 0) {
                         gamecanvas2.bossAnim = 12;
-                        gamecanvas2.int_ap = 0;
+                        gamecanvas2.bossTimer = 0;
                         b0 = 12;
                      }
 
@@ -10901,10 +10941,10 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.updateCompass();
       }
 
-      if (this.int_cf != 0 && (stateTicks >> 1 & 1) == 0) {
-         this.int_ce = this.int_ce + this.int_cf;
-         if (this.int_ce != 0 && this.int_ce != 9) {
-            if (this.int_ce == 5) {
+      if (this.toggleDirection != 0 && (stateTicks >> 1 & 1) == 0) {
+         this.togglePhase = this.togglePhase + this.toggleDirection;
+         if (this.togglePhase != 0 && this.togglePhase != 9) {
+            if (this.togglePhase == 5) {
                int j3 = this.mapHeight - 1;
                int i4 = this.mapWidth - 1;
 
@@ -10941,7 +10981,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                            aint1[j11] = b24;
                            objectMap[j7][i6] = -1;
-                           this.m_void(j7, i6);
+                           this.alertCreatures(j7, i6);
                         }
 
                         flag4 = true;
@@ -10954,7 +10994,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                }
             }
          } else {
-            this.int_cf = 0;
+            this.toggleDirection = 0;
 
             for (int i3 = 1; i3 < this.mapHeight - 1; i3++) {
                for (int l3 = 1; l3 < this.mapWidth - 1; l3++) {
@@ -10973,8 +11013,8 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.loseLife();
       }
 
-      if (this.moveProgress <= 0 && this.bool_w) {
-         this.bool_w = false;
+      if (this.moveProgress <= 0 && this.checkpointReached) {
+         this.checkpointReached = false;
          this.playSound(9);
 
          try {
@@ -11004,8 +11044,8 @@ public final class GameCanvas extends Canvas implements Runnable {
             k11 = 48 - 48 * (j4 - 60) / 30;
          }
 
-         gamecanvas13.int_aN = k11;
-         gamecanvas1.int_aO = gamecanvas1.int_aN > 0 ? (gamecanvas1.int_aN - 1) / 24 + 2 : 1;
+         gamecanvas13.trapLengthA = k11;
+         gamecanvas1.trapReachA = gamecanvas1.trapLengthA > 0 ? (gamecanvas1.trapLengthA - 1) / 24 + 2 : 1;
          if ((j4 = stateTicks % 44) < 7) {
             gamecanvas13 = gamecanvas1;
             k11 = 0;
@@ -11020,16 +11060,16 @@ public final class GameCanvas extends Canvas implements Runnable {
             k11 = 48 - 48 * (j4 - 30) / 15;
          }
 
-         gamecanvas13.int_aP = k11;
-         gamecanvas1.int_aQ = gamecanvas1.int_aP > 0 ? (gamecanvas1.int_aP - 1) / 24 + 2 : 1;
+         gamecanvas13.trapLengthB = k11;
+         gamecanvas1.trapReachB = gamecanvas1.trapLengthB > 0 ? (gamecanvas1.trapLengthB - 1) / 24 + 2 : 1;
       }
 
-      if (this.int_bi != 0 && this.int_bg != 0) {
-         this.ab_void();
+      if (this.hookPullSteps != 0 && this.hookX != 0) {
+         this.updateHookPull();
       }
 
       this.updateTilesNearPlayer();
-      if (this.int_aw > 0) {
+      if (this.collapsingRowCount > 0) {
          this.updateCollapsingRows();
       }
 
@@ -11039,7 +11079,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       if (this.activeCutscene != null) {
-         this.int_ax = 70;
+         this.idleAnimDelay = 70;
          if (this.activeCutscene.isStepFinished() && this.activeCutscene.nextStep() == null) {
             this.activeCutscene = null;
          }
@@ -11089,15 +11129,15 @@ public final class GameCanvas extends Canvas implements Runnable {
             b20 = objectTimers[this.playerX][this.playerY];
          } else {
             if ((this.queuedAction == 0 || this.moveProgress <= 0 && this.queuedAction != 5)
-               && !this.bool_x
+               && !this.cheatSkipWalking
                && (this.playerFlags & 112) == 0
-               && this.int_aF == -1) {
+               && this.pickupIconSet == -1) {
                this.queuedAction = this.playerAction;
                boolean flag1 = false;
-               if (this.int_ay > 0) {
+               if (this.entryWalkSteps > 0) {
                   this.queuedAction = 2;
-                  this.int_ay--;
-                  if (this.int_ay == 0) {
+                  this.entryWalkSteps--;
+                  if (this.entryWalkSteps == 0) {
                      this.closeGateAt(this.playerX - 1, this.playerY);
                      this.playerAction = 0;
                      keysDown = 0;
@@ -11143,7 +11183,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               b22 = 0;
                            }
 
-                           gamecanvas14.int_aX = b22;
+                           gamecanvas14.moveSpeed = b22;
                            if (this.moveProgress > 0) {
                               this.moveProgress -= 6;
                            }
@@ -11159,8 +11199,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                            flag1 = this.tryMovePlayer(-directionOffsets[this.queuedAction], -directionOffsets[this.queuedAction + 8], false);
                            flag = this.isPlayerInsideBorder();
                            if (flag1) {
-                              this.int_l = 40;
-                              this.bool_c = false;
+                              this.crushTimer = 40;
+                              this.underHeavyObject = false;
                               int l4;
                               if ((l4 = this.queuedAction - 1) < 0) {
                                  l4 = 0;
@@ -11225,9 +11265,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                            this.setPlayerAnim(11);
                         }
 
-                        this.bool_c = true;
-                        if (this.int_l <= 0) {
-                           this.int_l = 40;
+                        this.underHeavyObject = true;
+                        if (this.crushTimer <= 0) {
+                           this.crushTimer = 40;
                            this.invulnerableTicks = 0L;
                            this.hurtPlayer(saveData[8], 32, 0);
                            return;
@@ -11237,7 +11277,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                }
 
                if (flag1) {
-                  this.bool_y = false;
+                  this.stuckWarning = false;
                } else if (flag && (stateTicks & 31) == 0) {
                   boolean flag2 = objectMap[this.playerX][this.playerY - 1] == 0;
 
@@ -11246,24 +11286,24 @@ public final class GameCanvas extends Canvas implements Runnable {
                   }
 
                   if (!flag2) {
-                     if (this.bool_y) {
+                     if (this.stuckWarning) {
                         this.setPlayerAnim(19);
                      } else {
-                        this.bool_y = true;
+                        this.stuckWarning = true;
                      }
                   }
                }
                break label1011;
             }
 
-            if (this.bool_x && this.moveProgress <= 0) {
+            if (this.cheatSkipWalking && this.moveProgress <= 0) {
                byte b21;
-               if (this.bool_at) {
+               if (this.cheatSkipExitA) {
                   gamecanvas14 = this;
-                  b21 = this.byte_p;
+                  b21 = this.exitDirectionA;
                } else {
                   gamecanvas14 = this;
-                  b21 = this.byte_q;
+                  b21 = this.exitDirectionB;
                }
 
                gamecanvas14.queuedAction = b21;
@@ -11295,19 +11335,19 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       if (this.switchRevealPhase == 0) {
-         if (this.bool_E) {
+         if (this.cameraPanToCheckpoint) {
             this.cameraPanSpeed = 8;
             if (this.panCameraToTarget()) {
                this.addEffect(this.checkpointX, this.checkpointY, 5);
-               this.bool_E = false;
+               this.cameraPanToCheckpoint = false;
             }
          } else if (this.activeCutscene == null) {
-            if (bool_ak && this.queuedAction != 0) {
-               bool_ak = false;
-               this.int_ax = 0;
+            if (cameraHeldAfterReveal && this.queuedAction != 0) {
+               cameraHeldAfterReveal = false;
+               this.idleAnimDelay = 0;
             }
 
-            if (!bool_ak) {
+            if (!cameraHeldAfterReveal) {
                this.updateCamera();
             }
          } else {
@@ -11317,13 +11357,13 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       if (this.queuedAction != 0 && flag) {
-         this.bool_n = objectMap[this.playerX][this.playerY + 1] >= 0;
+         this.onSolidGround = objectMap[this.playerX][this.playerY + 1] >= 0;
       }
 
       this.updatePlayer();
-      if (this.bool_x && (this.playerX < -5 || this.playerX > this.mapWidth + 5 || this.playerY < -5 || this.playerY > this.mapHeight + 5)) {
+      if (this.cheatSkipWalking && (this.playerX < -5 || this.playerX > this.mapWidth + 5 || this.playerY < -5 || this.playerY > this.mapHeight + 5)) {
          this.unloadCutscenes();
-         if (!this.bool_at && this.stage < this.firstSecretStage) {
+         if (!this.cheatSkipExitA && this.stage < this.firstSecretStage) {
             gameState = 20;
             this.loadingStep = 0;
             this.commitTakenTreasures();
@@ -11527,7 +11567,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.propagateTileFlag(var1, var2 - 1, -1, 0, 0);
             if (this.isPlayerAt(var1, var2)) {
                this.invulnerableTicks = 0L;
-               this.int_bi = 0;
+               this.hookPullSteps = 0;
                this.hurtPlayer(saveData[8], 48, 0);
                this.playSound(2);
             } else {
@@ -11600,35 +11640,35 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label432;
                   case 4:
                   case 6:
-                     if (!this.bool_n) {
+                     if (!this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = spriteinstance.anim;
                      break label432;
                   case 5:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 24;
                      break label432;
                   case 7:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 25;
                      break label432;
                   case 8:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 26;
                      break label432;
                   case 9:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
@@ -11655,8 +11695,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                      b3 = 0;
                      break;
                   case 12:
-                     if (this.int_bl < 120) {
-                        this.int_bl += 12;
+                     if (this.fadeHeight < 120) {
+                        this.fadeHeight += 12;
                      }
                      break label442;
                   case 13:
@@ -11755,7 +11795,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                                              abyte[i4] = b5;
                                              objectState[l][i1] = i3;
-                                             gamecanvas.b_void(19, l, i1);
+                                             gamecanvas.hitObject(19, l, i1);
                                           case 38:
                                           default:
                                              break label372;
@@ -11766,7 +11806,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     }
                                     break label372;
                                  case 10:
-                                    if (gamecanvas2.byte_x == 3 && objectState[tx][i2] <= 0) {
+                                    if (gamecanvas2.enemyPhase == 3 && objectState[tx][i2] <= 0) {
                                        flag4 = 1;
                                        objectState[tx][i2] = 1;
                                        gamecanvas2.refreshBackgroundTile(tx, i2);
@@ -11777,7 +11817,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     flag6 = true;
                                     break label372;
                                  case 18:
-                                    flag11 = gamecanvas2.d_bool();
+                                    flag11 = gamecanvas2.tryStartFloorToggle();
                                     break;
                                  case 30:
                                     flag4 = 1;
@@ -11854,7 +11894,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                              objectTimers[k2][l2] = 0;
                                           }
                                        } else {
-                                          gamecanvas2.b_void(flag4, k2, l2);
+                                          gamecanvas2.hitObject(flag4, k2, l2);
                                        }
                                     }
                                  }
@@ -11877,7 +11917,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (flag2) {
                         j = 0 + (this.playerFlags & 7) - 1;
                         this.moveProgress = 0;
-                     } else if (spriteinstance.animFrame > 0 && this.int_aF != -1) {
+                     } else if (spriteinstance.animFrame > 0 && this.pickupIconSet != -1) {
                         i = (this.playerFlags & 7) == 2 ? this.playerX + 1 : this.playerX - 1;
                         int l1 = tileMap[i][this.playerY] >> 8;
                         int lockType = tileMap[i][this.playerY] & 0xFF;
@@ -11890,7 +11930,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                         tileMap[i][this.playerY] = l1 << 8 | lockType;
                         this.activateGate(l1 & 0xFF);
-                        this.int_aF = this.int_aH = -1;
+                        this.pickupIconSet = this.pickupValue = -1;
                      }
                      break label442;
                   case 19:
@@ -11913,28 +11953,28 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break label442;
                   case 24:
-                     if (!this.bool_n) {
+                     if (!this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 5;
                      break label432;
                   case 25:
-                     if (!this.bool_n) {
+                     if (!this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 7;
                      break label432;
                   case 26:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
                      l3 = 8;
                      break label432;
                   case 27:
-                     if (this.bool_n) {
+                     if (this.onSolidGround) {
                         break label442;
                      }
 
@@ -11968,7 +12008,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                            boolean flag8 = false;
                            byte b1 = -1;
                            boolean flag3 = false;
-                           switch (gamecanvas1.int_aI) {
+                           switch (gamecanvas1.pickupObject) {
                               case 2:
                                  gamecanvas1.stageRedDiamonds++;
                                  flag3 = true;
@@ -12055,12 +12095,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  break;
                               case 41:
                                  if (gamecanvas1.isBossStage()) {
-                                    gamecanvas1.bool_aj = true;
+                                    gamecanvas1.bossExitPending = true;
                                     gamecanvas1.resetStateTimer();
                                  }
 
-                                 gamecanvas1.stageDiamonds = gamecanvas1.stageDiamonds + gamecanvas1.int_aH;
-                                 gamecanvas1.padlockGemsRemaining = gamecanvas1.padlockGemsRemaining - gamecanvas1.int_aH;
+                                 gamecanvas1.stageDiamonds = gamecanvas1.stageDiamonds + gamecanvas1.pickupValue;
+                                 gamecanvas1.padlockGemsRemaining = gamecanvas1.padlockGemsRemaining - gamecanvas1.pickupValue;
                                  if (gamecanvas1.padlockGemsRemaining <= 0 && !gamecanvas1.isBossStage()) {
                                     objectMap[gamecanvas1.padlockX][gamecanvas1.padlockY] = -1;
                                     gamecanvas1.padlockGemsRemaining = 0;
@@ -12071,7 +12111,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               case 42:
                                  flag3 = true;
                                  flag8 = true;
-                                 gamecanvas1.bool_p = true;
+                                 gamecanvas1.hasCompass = true;
                                  gamecanvas1.pendingHint = 11;
                                  break;
                               case 51:
@@ -12081,13 +12121,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  b1 = 0;
                                  flag8 = true;
                                  gamecanvas1.resetStateTimer();
-                                 gamecanvas1.bool_h = true;
+                                 gamecanvas1.crystalExitPending = true;
                                  GameCanvas gamecanvas3;
                                  byte b4;
-                                 if (gamecanvas1.int_aI == 53) {
+                                 if (gamecanvas1.pickupObject == 53) {
                                     gamecanvas3 = gamecanvas1;
                                     b4 = 0;
-                                 } else if (gamecanvas1.int_aI == 51) {
+                                 } else if (gamecanvas1.pickupObject == 51) {
                                     gamecanvas3 = gamecanvas1;
                                     b4 = 1;
                                  } else {
@@ -12095,8 +12135,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     b4 = 2;
                                  }
 
-                                 gamecanvas3.int_D = b4;
-                                 saveData[2] = (byte)(saveData[2] | 1 << gamecanvas1.int_D);
+                                 gamecanvas3.flyingCrystal = b4;
+                                 saveData[2] = (byte)(saveData[2] | 1 << gamecanvas1.flyingCrystal);
                                  gamecanvas1.writeSave();
                            }
 
@@ -12115,14 +12155,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                            }
 
                            gamecanvas1.hudDirty = true;
-                           gamecanvas1.int_aI = -1;
+                           gamecanvas1.pickupObject = -1;
                         }
                      }
 
                      if (spriteinstance.isAnimFinished()) {
-                        this.long_i = System.currentTimeMillis();
+                        this.lastPickupTime = System.currentTimeMillis();
                         j = 0 + (this.playerFlags & 7) - 1;
-                        this.int_aF = this.int_aG = this.int_aH = -1;
+                        this.pickupIconSet = this.pickupIconFrame = this.pickupValue = -1;
                      }
                      break label442;
                   case 41:
@@ -12153,7 +12193,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                      if (flag2) {
                         j = 0 + (this.playerFlags & 7) - 1;
-                        this.int_aF = this.int_aG = this.int_aH = -1;
+                        this.pickupIconSet = this.pickupIconFrame = this.pickupValue = -1;
                      }
                      break label442;
                   default:
@@ -12171,13 +12211,13 @@ public final class GameCanvas extends Canvas implements Runnable {
       int j4;
       if (flag1) {
          gamecanvas4 = this;
-         j4 = this.int_ax - 1;
+         j4 = this.idleAnimDelay - 1;
       } else {
          gamecanvas4 = this;
          j4 = 70;
       }
 
-      gamecanvas4.int_ax = j4;
+      gamecanvas4.idleAnimDelay = j4;
       if (j != -1) {
          this.setPlayerAnim(j);
       }
@@ -12186,7 +12226,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          spriteinstance.updateAnim();
       }
 
-      this.int_m = this.int_m > 0 ? --this.int_m : 0;
+      this.turnCooldown = this.turnCooldown > 0 ? --this.turnCooldown : 0;
    }
 
    private int hitRecoveryAnim() {
@@ -12211,21 +12251,21 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void ab_void() {
-      if (this.byte_o <= 0) {
-         int i = this.int_bi > 0 ? 1 : -1;
-         this.int_bi -= i;
-         if (this.int_bi != 0) {
-            if (objectMap[this.int_bg][this.int_bh] == 48) {
-               int j = objectState[this.int_bg][this.int_bh];
-               j = this.int_bh + ((j & 8) == 0 ? -1 : 1);
-               if (objectMap[this.int_bg + i][j] >= 0) {
+   private void updateHookPull() {
+      if (this.hookPullDelay <= 0) {
+         int i = this.hookPullSteps > 0 ? 1 : -1;
+         this.hookPullSteps -= i;
+         if (this.hookPullSteps != 0) {
+            if (objectMap[this.hookX][this.hookY] == 48) {
+               int j = objectState[this.hookX][this.hookY];
+               j = this.hookY + ((j & 8) == 0 ? -1 : 1);
+               if (objectMap[this.hookX + i][j] >= 0) {
                   int l = this.playerX;
 
                   while (true) {
                      j = l - i;
                      if (objectMap[j][this.playerY] != 32) {
-                        this.int_bi = 0;
+                        this.hookPullSteps = 0;
                         return;
                      }
 
@@ -12234,47 +12274,47 @@ public final class GameCanvas extends Canvas implements Runnable {
                   }
                }
 
-               objectMap[this.int_bg + i][j] = objectMap[this.int_bg][j];
-               objectMap[this.int_bg][j] = -1;
-               objectState[this.int_bg + i][j] = objectState[this.int_bg][j];
-               objectTimers[this.int_bg][j] = this.byte_o;
+               objectMap[this.hookX + i][j] = objectMap[this.hookX][j];
+               objectMap[this.hookX][j] = -1;
+               objectState[this.hookX + i][j] = objectState[this.hookX][j];
+               objectTimers[this.hookX][j] = this.hookPullDelay;
             }
 
-            objectMap[this.int_bg + i][this.int_bh] = objectMap[this.int_bg][this.int_bh];
-            objectMap[this.int_bg][this.int_bh] = -1;
-            this.refreshBackgroundTile(this.int_bg, this.int_bh);
-            this.int_bg += i;
-            objectState[this.int_bg][this.int_bh] = this.int_be | -2147483648;
-            this.byte_o = 18;
-            objectTimers[this.int_bg][this.int_bh] = this.byte_o;
+            objectMap[this.hookX + i][this.hookY] = objectMap[this.hookX][this.hookY];
+            objectMap[this.hookX][this.hookY] = -1;
+            this.refreshBackgroundTile(this.hookX, this.hookY);
+            this.hookX += i;
+            objectState[this.hookX][this.hookY] = this.hookedObjectState | -2147483648;
+            this.hookPullDelay = 18;
+            objectTimers[this.hookX][this.hookY] = this.hookPullDelay;
          } else {
-            if (objectMap[this.int_bg][this.int_bh] == 48) {
-               int k = objectState[this.int_bg][this.int_bh];
-               k = this.int_bh + ((k & 8) == 0 ? -1 : 1);
-               objectTimers[this.int_bg][k] = 0;
+            if (objectMap[this.hookX][this.hookY] == 48) {
+               int k = objectState[this.hookX][this.hookY];
+               k = this.hookY + ((k & 8) == 0 ? -1 : 1);
+               objectTimers[this.hookX][k] = 0;
             } else {
-               objectState[this.int_bg][this.int_bh] = this.int_bf;
+               objectState[this.hookX][this.hookY] = this.hookRestoreState;
             }
 
-            objectTimers[this.int_bg][this.int_bh] = 0;
-            this.int_bf = -1;
-            this.redrawTile(this.int_bg, this.int_bh);
+            objectTimers[this.hookX][this.hookY] = 0;
+            this.hookRestoreState = -1;
+            this.redrawTile(this.hookX, this.hookY);
          }
 
-         markAreaDirty(this.int_bg - i, this.int_bh);
+         markAreaDirty(this.hookX - i, this.hookY);
       } else {
-         this.byte_o = (byte)(this.byte_o - 6);
-         objectTimers[this.int_bg][this.int_bh] = this.byte_o;
-         if ((this.int_bi == 1 || this.int_bi == -1) && this.byte_o <= 6 && (this.playerFlags & 112) == 0) {
+         this.hookPullDelay = (byte)(this.hookPullDelay - 6);
+         objectTimers[this.hookX][this.hookY] = this.hookPullDelay;
+         if ((this.hookPullSteps == 1 || this.hookPullSteps == -1) && this.hookPullDelay <= 6 && (this.playerFlags & 112) == 0) {
             this.setPlayerAnim((this.playerFlags & 7) == 4 ? 23 : 21);
          }
       }
    }
 
    private void updateCompass() {
-      int i = byteArr_k[this.int_aC << 1] - this.playerX;
-      int j = byteArr_k[(this.int_aC << 1) + 1] - this.playerY;
-      if (this.stageKind == 2 && this.int_aC == 2) {
+      int i = compassTargets[this.nextCompassTarget << 1] - this.playerX;
+      int j = compassTargets[(this.nextCompassTarget << 1) + 1] - this.playerY;
+      if (this.stageKind == 2 && this.nextCompassTarget == 2) {
          i = 10;
          j = -8;
       }
@@ -12371,7 +12411,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          j -= b0;
          k -= b0;
          int i1 = spriteInstances[0].y;
-         if (spriteInstances[0].y > j && i1 < k && !this.bool_j) {
+         if (spriteInstances[0].y > j && i1 < k && !this.bossSlamHitPlayer) {
             this.hurtPlayer(1, 48, this.playerX == i ? 4 : 2);
          }
       }
@@ -12410,8 +12450,8 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private int bossColumn() {
-      int i = this.int_ar > 0 ? 1 : 0;
-      return 10 + this.int_ar * (i + 2);
+      int i = this.bossPosition > 0 ? 1 : 0;
+      return 10 + this.bossPosition * (i + 2);
    }
 
    private int bossRow() {
@@ -12444,15 +12484,15 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void restoreArenaWalls() {
-      this.int_bj = 30;
-      if (objectMap[this.int_P][this.int_R] == -1) {
-         objectMap[this.int_P][this.int_O] = 0;
-         markAreaDirty(this.int_P, this.int_O);
+      this.screenShakeTicks = 30;
+      if (objectMap[this.arenaWallX1][this.arenaWallRow2] == -1) {
+         objectMap[this.arenaWallX1][this.arenaWallRow] = 0;
+         markAreaDirty(this.arenaWallX1, this.arenaWallRow);
       }
 
-      if (objectMap[this.int_Q][this.int_R] == -1) {
-         objectMap[this.int_Q][this.int_O] = 0;
-         markAreaDirty(this.int_Q, this.int_O);
+      if (objectMap[this.arenaWallX2][this.arenaWallRow2] == -1) {
+         objectMap[this.arenaWallX2][this.arenaWallRow] = 0;
+         markAreaDirty(this.arenaWallX2, this.arenaWallRow);
       }
    }
 
@@ -12569,8 +12609,8 @@ public final class GameCanvas extends Canvas implements Runnable {
       int k = this.playerX;
       int l = this.playerY;
       byte b0 = this.queuedAction;
-      boolean flag = this.bool_x;
-      int i1 = this.int_aX;
+      boolean flag = this.cheatSkipWalking;
+      int i1 = this.moveSpeed;
       int j1 = this.moveProgress;
       int k1 = this.deathTimer;
       int j4;
@@ -12605,8 +12645,8 @@ public final class GameCanvas extends Canvas implements Runnable {
             switch ((byte)tileMap[l1][i2]) {
                case 1:
                   if (!var3) {
-                     this.int_bj = 120;
-                     this.int_am++;
+                     this.screenShakeTicks = 120;
+                     this.floodSwitchPresses++;
                      this.clearTileRegion(l1, i2, (byte)1);
                   }
                   break label334;
@@ -12623,7 +12663,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         switch (tileMap[l1][i2] >> 8) {
                            case 0:
                               if (saveData[9] >= 1) {
-                                 this.int_aD = 7;
+                                 this.hintIconSet = 7;
                                  gamecanvas2 = this;
                                  b6 = (byte)0;
                                  break label329;
@@ -12647,12 +12687,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                         b6 = (byte)13;
                      }
 
-                     gamecanvas1.int_aD = b6;
+                     gamecanvas1.hintIconSet = b6;
                      gamecanvas2 = this;
                      b6 = (byte)1;
                   }
 
-                  gamecanvas2.int_aE = b6;
+                  gamecanvas2.hintIconFrame = b6;
                   break label334;
                case 3:
                   if (tileMap[l1][i2] >> 8 < 3) {
@@ -12665,17 +12705,17 @@ public final class GameCanvas extends Canvas implements Runnable {
                   break;
                case 4:
                   int i3;
-                  if (!var3 && (i3 = (tileMap[l1][i2] & -256) >> 8) >= this.int_aC) {
-                     this.bool_w = true;
-                     this.int_aC = i3 + 1;
-                     this.int_ak = stateTicks + 13;
+                  if (!var3 && (i3 = (tileMap[l1][i2] & -256) >> 8) >= this.nextCompassTarget) {
+                     this.checkpointReached = true;
+                     this.nextCompassTarget = i3 + 1;
+                     this.checkpointBannerUntil = stateTicks + 13;
                   }
                   break label334;
                case 5:
                   flag1 = true;
                   if (!var3) {
                      flag = true;
-                     this.bool_at = true;
+                     this.cheatSkipExitA = true;
                   }
                case 6:
                case 8:
@@ -12723,13 +12763,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                   }
 
                   this.hasEnemies = true;
-                  this.bool_al = false;
+                  this.enemyRemovalPending = false;
                   if (tileSlots == null) {
                      tileSlots = new int[this.mapWidth][this.mapHeight];
                   }
 
                   this.spawnEnemy((byte)objectState[j2][k2], (byte)j2, (byte)k2, (byte)0);
-                  this.n_void(j2, k2);
+                  this.killEnemyAt(j2, k2);
 
                   while (true) {
                      if ((tileMap[l1][++k2] & 0xFF) != 19) {
@@ -12741,7 +12781,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                case 28:
                   if (!var3) {
                      flag = true;
-                     this.bool_at = false;
+                     this.cheatSkipExitA = false;
                   }
                   break label334;
             }
@@ -12758,12 +12798,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (l1 != 0 && i2 != 0 && l1 != this.mapWidth - 1 && i2 != this.mapHeight - 1) {
                         if ((
                               var1 != 0 && objectMap[l1][l + 1] == 0 && (objectState[l1][l + 1] & 7) == 3
-                                 || this.int_aN >= 24
+                                 || this.trapLengthA >= 24
                                     && (
                                        objectMap[l1][i2 - 1] == 28 && (objectState[l1][i2 - 1] & 8) == 0
                                           || objectMap[l1][i2 + 1] == 28 && (objectState[l1][i2 + 1] & 8) == 0
                                     )
-                                 || this.int_aP >= 24 && (objectMap[l1][i2 - 1] == 28 || objectMap[l1][i2 + 1] == 28)
+                                 || this.trapLengthB >= 24 && (objectMap[l1][i2 - 1] == 28 || objectMap[l1][i2 + 1] == 28)
                            )
                            && !var3) {
                            b0 = 0;
@@ -12897,7 +12937,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   }
                   break;
                case 10:
-                  if (this.byte_x == 3) {
+                  if (this.enemyPhase == 3) {
                      if (!var3 && objectState[l1][i2] <= 0) {
                         objectState[l1][i2] = 1;
                      }
@@ -12963,7 +13003,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       if (!var3 && flag1 && !flag2) {
-         this.int_aD = -1;
+         this.hintIconSet = -1;
       }
 
       if (flag1 && k1 == 0) {
@@ -12986,8 +13026,8 @@ public final class GameCanvas extends Canvas implements Runnable {
          this.playerX = k;
          this.playerY = l;
          this.queuedAction = b0;
-         this.bool_x = flag;
-         this.int_aX = i1;
+         this.cheatSkipWalking = flag;
+         this.moveSpeed = i1;
          this.moveProgress = j1;
          this.deathTimer = k1;
       }
@@ -13001,7 +13041,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void openPauseMenu() {
       gameState = 2;
-      bool_V = true;
+      menuNeedsRedraw = true;
       this.openMenu(1);
       this.hudDirty = true;
       if (sprites[18] == null) {
@@ -13035,8 +13075,8 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    public final void resumeGame() {
       this.paused = false;
-      bool_V = true;
-      bool_W = true;
+      menuNeedsRedraw = true;
+      pauseBackgroundStale = true;
       this.keyReleased = true;
       keysDown = 0;
       this.menuAnimFrame = -1;
@@ -13057,7 +13097,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.screen.setColor(0);
             this.screen.fillRect(0, 0, 320, 240);
             this.hudDirty = true;
-            if (bool_a) {
+            if (pickupAnimStarting) {
                this.hudDirty = true;
                this.paintHud();
                return;
@@ -13067,11 +13107,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                return;
             }
 
-            if (this.int_ay != 0) {
+            if (this.entryWalkSteps != 0) {
                return;
             }
 
-            if (this.bool_x) {
+            if (this.cheatSkipWalking) {
                return;
             }
 
@@ -13083,7 +13123,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                return;
             }
 
-            if (this.bool_E) {
+            if (this.cameraPanToCheckpoint) {
                return;
             }
 
@@ -13091,7 +13131,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             return;
          case 2:
             mapPreview = null;
-            if (bool_a) {
+            if (pickupAnimStarting) {
                this.hudDirty = true;
                this.paintHud();
             }
@@ -13115,7 +13155,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          default:
             return;
          case 5:
-            this.bool_R = true;
+            this.tipVisible = true;
             return;
          case 7:
             this.menuSelection = 1;
@@ -13134,8 +13174,8 @@ public final class GameCanvas extends Canvas implements Runnable {
          case 16:
             this.lives = 0;
             this.stageRedDiamonds = 0;
-            this.bool_p = false;
-            this.int_ag = 0;
+            this.hasCompass = false;
+            this.tipIndex = 0;
             this.creatingNewGame = true;
             return;
          case 17:
@@ -13156,10 +13196,10 @@ public final class GameCanvas extends Canvas implements Runnable {
             return;
          case 27:
             this.fullRedraw = true;
-            this.bool_g = true;
+            this.sealDirty = true;
             return;
          case 31:
-            this.bool_Q = true;
+            this.blackScreenPending = true;
             return;
          case 33:
             gamecanvas = this;
@@ -13181,8 +13221,8 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void j_void(int var1, int var2) {
-      this.long_c |= 4194304L;
+   private void placeItemChest(int var1, int var2) {
+      this.neededGenSprites |= 4194304L;
       tileMap[var1][var2] = tileMap[var1][var2] & -256;
       tileMap[var1][var2] = tileMap[var1][var2] | 14;
    }
@@ -13302,7 +13342,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       if (flag && flag1) {
          this.cameraTargetX = this.cameraX;
          this.cameraTargetY = this.cameraY;
-         this.int_ax = 70;
+         this.idleAnimDelay = 70;
          return true;
       } else {
          return false;
@@ -13315,42 +13355,42 @@ public final class GameCanvas extends Canvas implements Runnable {
             this.cameraPanSpeed = 8;
             if (this.panCameraToTarget()) {
                this.switchRevealPhase = 2;
-               this.int_dl = 40;
+               this.switchRevealTimer = 40;
                return;
             }
             break;
          case 2:
-            this.int_dl--;
-            if (this.int_dl == 30) {
+            this.switchRevealTimer--;
+            if (this.switchRevealTimer == 30) {
                if ((tileMap[this.switchTargetX][this.switchTargetY] >> 8 & 240) != 0) {
                   this.closeGateAt(this.switchTargetX, this.switchTargetY);
                   return;
                }
-            } else if (this.int_dl == 0) {
+            } else if (this.switchRevealTimer == 0) {
                this.switchRevealPhase = 3;
                this.cameraPanX = this.playerX * 24 - 148;
                this.cameraPanY = this.playerY * 24 - 77;
                this.cameraPanSpeed = 5;
-               this.hintText = strings[byteArr_l[activeSwitchId]];
+               this.hintText = strings[switchTargetObjects[activeSwitchId]];
                fontMedium.getTextHeight(this.hintText);
-               this.int_di = 80;
+               this.hintTextTicks = 80;
                return;
             }
             break;
          case 3:
             if (this.panCameraToTarget()) {
-               this.int_dl = 20;
+               this.switchRevealTimer = 20;
                this.switchRevealPhase = 4;
-               this.int_ax = 0;
+               this.idleAnimDelay = 0;
                return;
             }
             break;
          case 4:
-            this.int_dl--;
-            if (this.int_dl == 0) {
-               this.int_ax = 0;
+            this.switchRevealTimer--;
+            if (this.switchRevealTimer == 0) {
+               this.idleAnimDelay = 0;
                this.switchRevealPhase = 0;
-               bool_ak = true;
+               cameraHeldAfterReveal = true;
             }
       }
    }
@@ -13402,7 +13442,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                break;
             }
 
-            int i3 = this.int_bi != 0 && this.scanX == this.int_bg && this.scanY == this.int_bh ? 1 : 0;
+            int i3 = this.hookPullSteps != 0 && this.scanX == this.hookX && this.scanY == this.hookY ? 1 : 0;
             label768:
             if (tileRedrawTimers[this.scanX][this.scanY] > 0 && i3 == 0) {
                label1156: {
@@ -13445,7 +13485,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  && objectMap[this.scanX + 1][this.scanY] != 30
                                  && objectMap[this.scanX][this.scanY - 1] != 30
                                  && objectMap[this.scanX][this.scanY + 1] != 30) {
-                                 this.int_aD = -1;
+                                 this.hintIconSet = -1;
                                  this.clearTileRegion(this.scanX, this.scanY, (byte)2);
                               }
                            default:
@@ -13557,7 +13597,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         gamecanvas22 = this;
                         break;
                      case 14:
-                        this.n_void(14);
+                        this.updateItemChest(14);
                         break label1156;
                      case 26:
                         GameCanvas gamecanvas3 = this;
@@ -13653,11 +13693,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                         tileRedrawTimers[gamecanvas2.scanX][gamecanvas2.scanY] = 24;
                         break label1156;
                      case 33:
-                        this.n_void(33);
+                        this.updateItemChest(33);
                         break label1156;
                      case 35:
                      case 37:
-                        if (this.scanX != this.int_bg || this.scanY != this.int_bh || this.int_bi == 0) {
+                        if (this.scanX != this.hookX || this.scanY != this.hookY || this.hookPullSteps == 0) {
                            GameCanvas gamecanvas1 = this;
                            i3 = this.scanX;
                            int j3 = gamecanvas1.scanY;
@@ -13785,8 +13825,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                            b23 = 25;
                         }
 
-                        gamecanvas22.int_aF = b23;
-                        gamecanvas4.int_aG = 0;
+                        gamecanvas22.pickupIconSet = b23;
+                        gamecanvas4.pickupIconFrame = 0;
                      }
                   }
                }
@@ -13826,7 +13866,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      this.updateObjectAtScan();
                      break label768;
                   case 2:
-                     this.l_void(2);
+                     this.updatePickup(2);
                   case 3:
                   case 12:
                   case 13:
@@ -13845,16 +13885,16 @@ public final class GameCanvas extends Canvas implements Runnable {
                   default:
                      break label768;
                   case 4:
-                     this.l_void(4);
+                     this.updatePickup(4);
                      break label768;
                   case 5:
-                     this.l_void(5);
+                     this.updatePickup(5);
                      break label768;
                   case 6:
-                     this.l_void(6);
+                     this.updatePickup(6);
                      break label768;
                   case 7:
-                     this.l_void(7);
+                     this.updatePickup(7);
                      break label768;
                   case 8:
                      this.updateObjectAtScan();
@@ -13904,12 +13944,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                         objectMap[i3][j7] = -1;
                         tileMap[i3][j7] = 32;
                         markAreaDirty(i3, j7);
-                        gamecanvas20.m_void(i3, j7);
+                        gamecanvas20.alertCreatures(i3, j7);
                         tileRedrawTimers[i3][j7] = 24;
                      }
                      break label768;
                   case 11:
-                     this.ao_void();
+                     this.updateObject11();
                      break label768;
                   case 14:
                      GameCanvas gamecanvas19 = this;
@@ -14045,7 +14085,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break label768;
                   case 19:
-                     this.e_void((byte)19);
+                     this.updateRoller((byte)19);
                      break label768;
                   case 21:
                      GameCanvas gamecanvas17 = this;
@@ -14174,10 +14214,10 @@ public final class GameCanvas extends Canvas implements Runnable {
                   case 28:
                      GameCanvas gamecanvas15 = this;
                      int j6 = ((i3 = objectState[gamecanvas15.scanX][gamecanvas15.scanY]) & 7) == 3 ? 1 : -1;
-                     int i10 = (i3 & 8) == 0 ? gamecanvas15.int_aO : gamecanvas15.int_aQ;
+                     int i10 = (i3 & 8) == 0 ? gamecanvas15.trapReachA : gamecanvas15.trapReachB;
                      int i15 = gamecanvas15.scanY + (i10 - 1) * j6;
                      if (gamecanvas15.isPlayerAt(gamecanvas15.scanX, i15)) {
-                        gamecanvas15.hurtPlayer(2, 48, byteArr_h[gamecanvas15.playerFlags & 7]);
+                        gamecanvas15.hurtPlayer(2, 48, oppositeDirection[gamecanvas15.playerFlags & 7]);
                      }
 
                      switch (objectMap[gamecanvas15.scanX][i15]) {
@@ -14218,7 +14258,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      tileRedrawTimers[i6][l9] = 24;
                      break label768;
                   case 32:
-                     this.ap_void();
+                     this.updateHook();
                      break label768;
                   case 36:
                      GameCanvas gamecanvas13 = this;
@@ -14227,7 +14267,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (objectState[i3][l5] == 0) {
                         if (objectMap[i3][l5 - 1] == 11) {
                            objectState[i3][l5] = 1;
-                           gamecanvas13.an_void();
+                           gamecanvas13.pressActiveSwitch();
                         }
                      } else if (gamecanvas13.isPlayerAt(i3, l5 - 1)) {
                         gamecanvas13.hurtPlayer(1, 64, 0);
@@ -14240,7 +14280,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      int k9;
                      if ((k9 = objectState[i3][k5]) > 0) {
                         if (k9 >= 8) {
-                           gamecanvas12.m_void(i3, k5);
+                           gamecanvas12.alertCreatures(i3, k5);
                            objectMap[i3][k5] = -1;
                            markAreaDirty(i3, k5);
                         }
@@ -14250,19 +14290,19 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                      break label768;
                   case 40:
-                     this.l_void(40);
+                     this.updatePickup(40);
                      break label768;
                   case 41:
-                     this.l_void(41);
+                     this.updatePickup(41);
                      break label768;
                   case 42:
-                     this.l_void(42);
+                     this.updatePickup(42);
                      break label768;
                   case 43:
-                     this.e_void((byte)43);
+                     this.updateRoller((byte)43);
                      break label768;
                   case 44:
-                     this.am_void();
+                     this.updateStalactite();
                      break label768;
                   case 45:
                      GameCanvas gamecanvas11 = this;
@@ -14318,7 +14358,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     b19 = 4;
                                     break;
                                  default:
-                                    b19 = byteArr_h[gamecanvas11.playerFlags & 7];
+                                    b19 = oppositeDirection[gamecanvas11.playerFlags & 7];
                               }
 
                               byte b15 = b19;
@@ -14334,7 +14374,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                         if (i18 >= k14) {
                            markAreaDirty(i3, j5);
-                           i18 = gamecanvas11.a_int(i3, j5, gamecanvas11.playerX, gamecanvas11.playerY, true);
+                           i18 = gamecanvas11.directionToward(i3, j5, gamecanvas11.playerX, gamecanvas11.playerY, true);
                            int l14 = 0;
                            switch (i12) {
                               case 0:
@@ -14466,7 +14506,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
                      }
 
-                     gamecanvas11.hurtPlayer(1, 48, byteArr_h[gamecanvas11.playerFlags & 7]);
+                     gamecanvas11.hurtPlayer(1, 48, oppositeDirection[gamecanvas11.playerFlags & 7]);
                      break label768;
                   case 46:
                      GameCanvas gamecanvas10 = this;
@@ -14599,7 +14639,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               if (l11 > j14) {
                                  l11 = 0;
                                  int l21;
-                                 switch (gamecanvas10.a_int(i3, i5, gamecanvas10.playerX, gamecanvas10.playerY, false)) {
+                                 switch (gamecanvas10.directionToward(i3, i5, gamecanvas10.playerX, gamecanvas10.playerY, false)) {
                                     case 1:
                                        if (gamecanvas10.playerX == i3 && i9 != 6 && i9 != 7 && i5 * 24 <= gamecanvas10.cameraY + 240 - 62) {
                                           i9 = i9 == 2 ? 6 : 7;
@@ -14675,27 +14715,27 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label768;
                   case 48:
                      if ((objectState[this.scanX][this.scanY] & 8) == 0) {
-                        this.d_void((byte)48);
+                        this.updateFallingBlock((byte)48);
                      } else {
-                        this.ak_void();
+                        this.trackCollapsingRow();
                      }
                      break label768;
                   case 49:
-                     this.e_void((byte)49);
+                     this.updateRoller((byte)49);
                      break label768;
                   case 50:
-                     if (this.moveProgress < 12 && this.isPlayerAt(this.scanX, this.scanY) && !this.bool_j) {
-                        this.hurtPlayer(1, 48, byteArr_h[this.playerFlags & 7]);
+                     if (this.moveProgress < 12 && this.isPlayerAt(this.scanX, this.scanY) && !this.bossSlamHitPlayer) {
+                        this.hurtPlayer(1, 48, oppositeDirection[this.playerFlags & 7]);
                      }
                      break label768;
                   case 51:
-                     this.l_void(51);
+                     this.updatePickup(51);
                      break label768;
                   case 52:
-                     this.l_void(52);
+                     this.updatePickup(52);
                      break label768;
                   case 53:
-                     this.l_void(53);
+                     this.updatePickup(53);
                      break label768;
                   case 54:
                      GameCanvas gamecanvas9 = this;
@@ -14732,7 +14772,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        b26 = 0;
                                        break;
                                     case 10:
-                                       if (gamecanvas9.byte_x != 3) {
+                                       if (gamecanvas9.enemyPhase != 3) {
                                           break label781;
                                        }
                                     case 30:
@@ -14791,7 +14831,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void ak_void() {
+   private void trackCollapsingRow() {
       int i;
       int i1;
       int k;
@@ -14837,7 +14877,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       abyte[j1] = b0;
    }
 
-   private void d_void(byte var1) {
+   private void updateFallingBlock(byte var1) {
       int x = this.scanX;   // the byte parameter is unused; its slot held scanX
       int i = this.scanY;
       if (objectTimers[x][i] == 6 && (tileMap[x][i] & 0xFF) == 6) {
@@ -14880,7 +14920,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             tileRedrawTimers[x][j] = 48;
             tileRedrawTimers[x + 1][j] = 48;
             markAreaDirty(x, i);
-            this.ak_void();
+            this.trackCollapsingRow();
          }
       } else {
          objectTimers[x][i] = (byte)(objectTimers[x][i] - 6);
@@ -14933,7 +14973,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       return i;
    }
 
-   private void am_void() {
+   private void updateStalactite() {
       int i = this.scanX;
       int j = this.scanY;
       tileRedrawTimers[i][j] = 24;
@@ -14943,7 +14983,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       switch ((objectState[i][j] & 56) >> 3) {
          case 0:
             if ((this.playerX != i || (j + 1) * 24 <= this.cameraY || this.stageKind == 3)
-               && (this.stageKind != 3 || this.long_k == 0L || stateTicks < this.long_k + (21 - i))) {
+               && (this.stageKind != 3 || this.icicleDropTime == 0L || stateTicks < this.icicleDropTime + (21 - i))) {
                return;
             }
 
@@ -14997,7 +15037,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         flag1 = false;
                         break;
                      case 18:
-                        this.d_bool();
+                        this.tryStartFloorToggle();
                         break;
                      case 19:
                      case 43:
@@ -15052,29 +15092,29 @@ public final class GameCanvas extends Canvas implements Runnable {
       markAreaDirty(i, j);
    }
 
-   private void l_void(int var1) {
+   private void updatePickup(int var1) {
       int i = this.scanX;
       int j = this.scanY;
       if (this.moveProgress <= 0 && this.isPlayerAt(i, j)) {
          int k;
          if ((k = tileMap[i][j] & 0xFF) != 14 && k != 33 || tileMap[i][j] >> 8 != 255) {
             label37: {
-               this.int_aI = var1;
+               this.pickupObject = var1;
                GameCanvas gamecanvas;
                byte b0;
                switch (var1) {
                   case 2:
-                     this.int_aF = 3;
+                     this.pickupIconSet = 3;
                      gamecanvas = this;
                      b0 = 0;
                      break;
                   case 4:
-                     this.int_aF = 24;
+                     this.pickupIconSet = 24;
                      gamecanvas = this;
                      b0 = 0;
                      break;
                   case 5:
-                     this.int_aF = 25;
+                     this.pickupIconSet = 25;
                      gamecanvas = this;
                      b0 = 0;
                      break;
@@ -15082,11 +15122,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                      if (this.lives >= 99) {
                         objectMap[i][j] = 7;
                         objectState[i][j] = 0;
-                        this.l_void(7);
+                        this.updatePickup(7);
                         break label37;
                      }
 
-                     this.int_aF = 5;
+                     this.pickupIconSet = 5;
                      gamecanvas = this;
                      b0 = 0;
                      break;
@@ -15095,43 +15135,43 @@ public final class GameCanvas extends Canvas implements Runnable {
                         objectMap[i][j] = 41;
                         objectState[i][j] = 10;
                         this.stageDiamondTotal += 10;
-                        this.l_void(41);
+                        this.updatePickup(41);
                         break label37;
                      }
 
-                     this.int_aF = 5;
+                     this.pickupIconSet = 5;
                      gamecanvas = this;
                      b0 = 1;
                      break;
                   case 40:
-                     this.int_aF = 19;
-                     this.int_aG = 0;
+                     this.pickupIconSet = 19;
+                     this.pickupIconFrame = 0;
                      objectMap[this.scanX][this.scanY] = -1;
-                     this.int_aI = 40;
+                     this.pickupObject = 40;
                      saveData[10] = 1;
                      break label37;
                   case 41:
-                     this.int_aF = 2;
-                     this.int_aG = 0;
-                     this.int_aH = objectState[this.scanX][this.scanY];
+                     this.pickupIconSet = 2;
+                     this.pickupIconFrame = 0;
+                     this.pickupValue = objectState[this.scanX][this.scanY];
                      break label37;
                   case 42:
-                     this.int_aF = 29;
+                     this.pickupIconSet = 29;
                      gamecanvas = this;
                      b0 = 0;
                      break;
                   case 51:
-                     this.int_aF = 30;
+                     this.pickupIconSet = 30;
                      gamecanvas = this;
                      b0 = 0;
                      break;
                   case 52:
-                     this.int_aF = 31;
+                     this.pickupIconSet = 31;
                      gamecanvas = this;
                      b0 = 0;
                      break;
                   case 53:
-                     this.int_aF = 32;
+                     this.pickupIconSet = 32;
                      gamecanvas = this;
                      b0 = 0;
                      break;
@@ -15139,7 +15179,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label37;
                }
 
-               gamecanvas.int_aG = b0;
+               gamecanvas.pickupIconFrame = b0;
             }
 
             objectMap[i][j] = -1;
@@ -15148,17 +15188,17 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private boolean g_bool(int var1, int var2) {
+   private boolean isTrapBlocking(int var1, int var2) {
       return objectMap[var1][var2] == 28
-         || this.int_aN >= 24
+         || this.trapLengthA >= 24
             && (
                objectMap[var1][var2 - 1] == 28 && (objectState[var1][var2 - 1] & 8) == 0
                   || objectMap[var1][var2 + 1] == 28 && (objectState[var1][var2 + 1] & 8) == 0
             )
-         || this.int_aP >= 24 && (objectMap[var1][var2 - 1] == 28 || objectMap[var1][var2 + 1] == 28);
+         || this.trapLengthB >= 24 && (objectMap[var1][var2 - 1] == 28 || objectMap[var1][var2 + 1] == 28);
    }
 
-   private int a_int(int var1, int var2, int var3, int var4, boolean var5) {
+   private int directionToward(int var1, int var2, int var3, int var4, boolean var5) {
       var3 = var1 - var3;
       var4 = var2 - var4;
       int i = var3 > 0 ? var3 : -var3;
@@ -15180,7 +15220,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             b0 = b3;
          }
 
-         if (b0 != 0 && (!isFreeTile(var1 - directionOffsets[b0], var2) || this.g_bool(var1 - directionOffsets[b0], var2))) {
+         if (b0 != 0 && (!isFreeTile(var1 - directionOffsets[b0], var2) || this.isTrapBlocking(var1 - directionOffsets[b0], var2))) {
             b0 = 0;
          }
       }
@@ -15202,7 +15242,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          var4 = var2 - directionOffsets[b0 + 8];
-         if (var5 && b0 != 0 && (!isFreeTile(var1, var4) || this.hasEnemies && tileSlots[var1][var4] != 0 || this.g_bool(var1, var4))) {
+         if (var5 && b0 != 0 && (!isFreeTile(var1, var4) || this.hasEnemies && tileSlots[var1][var4] != 0 || this.isTrapBlocking(var1, var4))) {
             label50: {
                b0 = 0;
                byte b2;
@@ -15228,7 +15268,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       return b0;
    }
 
-   private void e_void(byte var1) {
+   private void updateRoller(byte var1) {
       int i = this.scanX;
       int j = this.scanY;
       int k = objectState[i][j];
@@ -15252,7 +15292,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                   markAreaDirty(i, j);
                   if (flag) {
                      b0 = 18;
-                     j1 = this.a_int(i, j, this.playerX, this.playerY, true);
+                     j1 = this.directionToward(i, j, this.playerX, this.playerY, true);
                      k = k & -8 | j1;
                      k1 = j1;
                      l = -directionOffsets[j1];
@@ -15277,7 +15317,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                            }
 
                            b0 = 21;
-                           j1 = this.a_int(i, j, j1, k1, true);
+                           j1 = this.directionToward(i, j, j1, k1, true);
                            k = k & -8 | j1;
                            l = -directionOffsets[j1];
                            i1 = -directionOffsets[j1 + 8];
@@ -15397,7 +15437,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void an_void() {
+   private void pressActiveSwitch() {
       if (this.stageKind != 3 && this.stageKind != 4 && this.stageKind != 5 || this.bossHealth <= 0) {
          if (activeSwitchId >= 0) {
             switchStates[activeSwitchId]--;
@@ -15445,8 +15485,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                switch (var1) {
                   case 24:
                      saveData[9] = 1;
-                     this.int_aF = 7;
-                     this.int_aG = 0;
+                     this.pickupIconSet = 7;
+                     this.pickupIconFrame = 0;
                      gamecanvas = this;
                      b0 = 24;
                      break;
@@ -15455,20 +15495,20 @@ public final class GameCanvas extends Canvas implements Runnable {
                      break label22;
                   case 26:
                      saveData[9] = 8;
-                     this.int_aF = 7;
-                     this.int_aG = 2;
+                     this.pickupIconSet = 7;
+                     this.pickupIconFrame = 2;
                      gamecanvas = this;
                      b0 = 26;
                      break;
                   case 27:
                      saveData[9] = 2;
-                     this.int_aF = 7;
-                     this.int_aG = 1;
+                     this.pickupIconSet = 7;
+                     this.pickupIconFrame = 1;
                      gamecanvas = this;
                      b0 = 27;
                }
 
-               gamecanvas.int_aI = b0;
+               gamecanvas.pickupObject = b0;
             }
 
             this.markTreasureTaken(this.world, this.stage, this.scanX, this.scanY);
@@ -15476,7 +15516,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void ao_void() {
+   private void updateObject11() {
       int i = this.scanX;
       int j = this.scanY;
       int k;
@@ -15625,7 +15665,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void ap_void() {
+   private void updateHook() {
       int i = this.scanX;
       int j = this.scanY;
       tileRedrawTimers[i][j] = 24;
@@ -15673,11 +15713,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                   case 48:
                   case 49:
                      this.playSound(12);
-                     this.byte_o = 0;
-                     this.int_bi = this.playerX - (i + l) + i1;
-                     this.int_bg = i + l;
-                     this.int_bh = j;
-                     if (this.int_bf == -1) {
+                     this.hookPullDelay = 0;
+                     this.hookPullSteps = this.playerX - (i + l) + i1;
+                     this.hookX = i + l;
+                     this.hookY = j;
+                     if (this.hookRestoreState == -1) {
                         switch (b0) {
                            case 0:
                            case 8:
@@ -15685,14 +15725,14 @@ public final class GameCanvas extends Canvas implements Runnable {
                            case 47:
                               k = k & -28673 & -513;
                            default:
-                              this.int_bf = k;
+                              this.hookRestoreState = k;
                         }
                      }
 
-                     if (this.int_bi < 0) {
-                        this.int_be = k & -8 | 4;
+                     if (this.hookPullSteps < 0) {
+                        this.hookedObjectState = k & -8 | 4;
                      } else {
-                        this.int_be = k & -8 | 2;
+                        this.hookedObjectState = k & -8 | 2;
                      }
                      break;
                   case 3:
@@ -15761,10 +15801,10 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void triggerTile(int var1, int var2) {
       tileMap[var1][var2] = tileMap[var1][var2] & 268435455 | 268435456;
-      this.an_void();
+      this.pressActiveSwitch();
    }
 
-   private void n_void(int var1) {
+   private void updateItemChest(int var1) {
       int i = this.scanX;
       int j = this.scanY;
       int k = tileMap[i][j] >> 8;
@@ -15776,7 +15816,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                tileMap[i][j] = 256 | var1;
                GameCanvas gamecanvas;
                byte b0;
-               if (Math.abs(this.long_i - System.currentTimeMillis()) >= 5000L) {
+               if (Math.abs(this.lastPickupTime - System.currentTimeMillis()) >= 5000L) {
                   gamecanvas = this;
                   b0 = 40;
                } else {
@@ -15848,21 +15888,21 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void saveCheckpoint() {
       this.checkpointHasPotion = saveData[10];
-      this.int_ch = this.int_cf;
-      this.int_cg = this.int_ce;
-      this.int_af = this.padlockGemsRemaining;
-      this.int_bZ = this.int_aC;
+      this.checkpointToggleDirection = this.toggleDirection;
+      this.checkpointTogglePhase = this.togglePhase;
+      this.checkpointPadlockGems = this.padlockGemsRemaining;
+      this.checkpointNextCompassTarget = this.nextCompassTarget;
       this.checkpointDiamonds = this.stageDiamonds;
       this.checkpointRedDiamonds = this.stageRedDiamonds;
       this.checkpointX = this.playerX;
       this.checkpointY = this.playerY;
-      this.int_bU = this.goldKeys;
-      this.int_bV = this.silverKeys;
-      this.int_bW = this.int_ay;
+      this.checkpointGoldKeys = this.goldKeys;
+      this.checkpointSilverKeys = this.silverKeys;
+      this.checkpointEntryWalkSteps = this.entryWalkSteps;
       this.checkpointTreasureCount = this.takenTreasureCount;
-      this.int_ca = this.int_am;
-      this.int_cb = this.int_al;
-      int_cn = activeSwitchId;
+      this.checkpointFloodSwitchPresses = this.floodSwitchPresses;
+      this.checkpointFloodHeight = this.floodHeight;
+      checkpointActiveSwitchId = activeSwitchId;
       if (switchStates != null) {
          System.arraycopy(switchStates, 0, checkpointSwitchStates, 0, switchStates.length);
       }
@@ -15893,48 +15933,48 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          System.arraycopy(enemies, 0, checkpointEnemies, 0, enemies.length);
-         this.byte_y = this.byte_x;
-         this.int_dA = this.int_dq;
-         this.int_dB = this.int_dr;
-         this.int_dC = this.int_ds;
-         this.byte_z = this.byte_v;
-         this.int_dD = this.int_dv;
-         this.int_dE = this.int_dw;
-         this.int_dF = this.int_dx;
-         this.byte_A = this.byte_w;
-         this.int_dG = this.int_dy;
-         this.int_dH = this.int_dz;
-         bool_am = this.bool_al;
-         this.int_dI = this.int_dt;
-         this.int_dJ = this.enemyCount;
+         this.checkpointEnemyPhase = this.enemyPhase;
+         this.checkpointEnemyChaseTicks = this.enemyChaseTicks;
+         this.checkpointEnemyChaseSteps = this.enemyChaseSteps;
+         this.checkpointEnemyUnusedS = this.enemyUnusedS;
+         this.checkpointEnemyChaseDirection = this.enemyChaseDirection;
+         this.checkpointEnemyTriggerX = this.enemyTriggerX;
+         this.checkpointEnemyTriggerY = this.enemyTriggerY;
+         this.checkpointEnemyTriggerSide = this.enemyTriggerSide;
+         this.checkpointEnemyActorSlot = this.enemyActorSlot;
+         this.checkpointEnemyTargetRow = this.enemyTargetRow;
+         this.checkpointEnemyStepTimer = this.enemyStepTimer;
+         checkpointEnemyRemovalPending = this.enemyRemovalPending;
+         this.checkpointEnemyRemovalIndex = this.enemyRemovalIndex;
+         this.checkpointEnemyCount = this.enemyCount;
       }
    }
 
    private void restoreCheckpoint() {
       label111: {
-         int_cE = -1;
-         this.int_aF = this.int_aG = this.int_aH = -1;
-         this.int_bg = 0;
-         this.int_bh = 0;
-         this.bool_E = true;
+         bufferedLeft = -1;
+         this.pickupIconSet = this.pickupIconFrame = this.pickupValue = -1;
+         this.hookX = 0;
+         this.hookY = 0;
+         this.cameraPanToCheckpoint = true;
          this.cameraPanX = this.checkpointX * 24 - 160;
          this.cameraPanY = this.checkpointY * 24 - 120 + 31;
-         this.int_bl = 0;
+         this.fadeHeight = 0;
          int[] aint;
          byte b1;
-         if (this.bool_q) {
+         if (this.prologueSaw13) {
             this.pendingHint = 15;
-            this.bool_q = false;
+            this.prologueSaw13 = false;
             checkpointTileMap[37][7] = -1;
             aint = checkpointTileMap[39];
             b1 = 5;
          } else {
-            if (!this.bool_r) {
+            if (!this.prologueSaw16) {
                break label111;
             }
 
             this.pendingHint = 17;
-            this.bool_r = false;
+            this.prologueSaw16 = false;
             checkpointTileMap[46][7] = -1;
             aint = checkpointTileMap[50];
             b1 = 7;
@@ -15943,27 +15983,27 @@ public final class GameCanvas extends Canvas implements Runnable {
          aint[b1] = -1;
       }
 
-      this.bool_t = false;
-      this.int_ax = 70;
+      this.prologueMarkerHint = false;
+      this.idleAnimDelay = 70;
       saveData[10] = this.checkpointHasPotion;
-      this.padlockGemsRemaining = this.int_af;
-      this.int_cf = this.int_ch;
-      this.int_ce = this.int_cg;
-      this.int_aC = this.int_bZ;
+      this.padlockGemsRemaining = this.checkpointPadlockGems;
+      this.toggleDirection = this.checkpointToggleDirection;
+      this.togglePhase = this.checkpointTogglePhase;
+      this.nextCompassTarget = this.checkpointNextCompassTarget;
       this.stageRedDiamonds = this.checkpointRedDiamonds;
       this.stageDiamonds = this.checkpointDiamonds;
       spriteInstances[0].setAnim(2);
       this.playerFlags = 2;
-      this.int_bj = 0;
+      this.screenShakeTicks = 0;
       this.playerX = this.checkpointX;
       this.playerY = this.checkpointY;
-      this.goldKeys = this.int_bU;
-      this.silverKeys = this.int_bV;
+      this.goldKeys = this.checkpointGoldKeys;
+      this.silverKeys = this.checkpointSilverKeys;
       this.takenTreasureCount = this.checkpointTreasureCount;
       switch (this.stageKind) {
          case 1:
-            this.int_al = this.int_cb;
-            this.int_am = this.int_ca;
+            this.floodHeight = this.checkpointFloodHeight;
+            this.floodSwitchPresses = this.checkpointFloodSwitchPresses;
          case 2:
          default:
             break;
@@ -15972,15 +16012,15 @@ public final class GameCanvas extends Canvas implements Runnable {
             break;
          case 4:
             this.bossAnim = 0;
-            this.int_ar = 0;
+            this.bossPosition = 0;
             this.bossHealth = 3;
-            this.bool_k = false;
+            this.bossSlamVisible = false;
             break;
          case 5:
             this.initBossFight();
       }
 
-      activeSwitchId = int_cn;
+      activeSwitchId = checkpointActiveSwitchId;
       if (switchStates != null) {
          System.arraycopy(checkpointSwitchStates, 0, switchStates, 0, switchStates.length);
       }
@@ -16011,13 +16051,13 @@ public final class GameCanvas extends Canvas implements Runnable {
          objectMap[18][63] = -1;
       }
 
-      this.int_ay = this.int_bW;
+      this.entryWalkSteps = this.checkpointEntryWalkSteps;
       this.hudDirty = true;
       if (this.hasEnemies) {
          GameCanvas gamecanvas = this;
-         this.bool_al = bool_am;
-         gamecanvas.int_dt = gamecanvas.int_dI;
-         gamecanvas.enemyCount = gamecanvas.int_dJ;
+         this.enemyRemovalPending = checkpointEnemyRemovalPending;
+         gamecanvas.enemyRemovalIndex = gamecanvas.checkpointEnemyRemovalIndex;
+         gamecanvas.enemyCount = gamecanvas.checkpointEnemyCount;
 
          for (int k1 = 0; k1 < gamecanvas.mapWidth; k1++) {
             System.arraycopy(checkpointTileSlots[k1], 0, tileSlots[k1], 0, gamecanvas.mapHeight);
@@ -16025,17 +16065,17 @@ public final class GameCanvas extends Canvas implements Runnable {
 
          System.arraycopy(checkpointActors, 0, actors, 0, actors.length);
          System.arraycopy(checkpointEnemies, 0, enemies, 0, enemies.length);
-         gamecanvas.byte_x = gamecanvas.byte_y;
-         gamecanvas.int_dq = gamecanvas.int_dA;
-         gamecanvas.int_dr = gamecanvas.int_dB;
-         gamecanvas.int_ds = gamecanvas.int_dC;
-         gamecanvas.byte_v = gamecanvas.byte_z;
-         gamecanvas.int_dv = gamecanvas.int_dD;
-         gamecanvas.int_dw = gamecanvas.int_dE;
-         gamecanvas.int_dx = gamecanvas.int_dF;
-         gamecanvas.byte_w = gamecanvas.byte_A;
-         gamecanvas.int_dy = gamecanvas.int_dG;
-         gamecanvas.int_dz = gamecanvas.int_dH;
+         gamecanvas.enemyPhase = gamecanvas.checkpointEnemyPhase;
+         gamecanvas.enemyChaseTicks = gamecanvas.checkpointEnemyChaseTicks;
+         gamecanvas.enemyChaseSteps = gamecanvas.checkpointEnemyChaseSteps;
+         gamecanvas.enemyUnusedS = gamecanvas.checkpointEnemyUnusedS;
+         gamecanvas.enemyChaseDirection = gamecanvas.checkpointEnemyChaseDirection;
+         gamecanvas.enemyTriggerX = gamecanvas.checkpointEnemyTriggerX;
+         gamecanvas.enemyTriggerY = gamecanvas.checkpointEnemyTriggerY;
+         gamecanvas.enemyTriggerSide = gamecanvas.checkpointEnemyTriggerSide;
+         gamecanvas.enemyActorSlot = gamecanvas.checkpointEnemyActorSlot;
+         gamecanvas.enemyTargetRow = gamecanvas.checkpointEnemyTargetRow;
+         gamecanvas.enemyStepTimer = gamecanvas.checkpointEnemyStepTimer;
       }
 
       if (collapsingRows != null) {
@@ -16045,9 +16085,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                   this.scanX = i2;
                   this.scanY = l1;
                   if ((objectState[i2][l1] & 8) == 0) {
-                     this.d_void((byte)48);
+                     this.updateFallingBlock((byte)48);
                   } else {
-                     this.ak_void();
+                     this.trackCollapsingRow();
                   }
                }
             }
@@ -16065,16 +16105,16 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private static boolean actorsTouch(int var0, int var1, int var2, int var3, int var4, int var5, int var6, int var7) {
-      int_dn = 0;
-      int_dm = 0;
-      int_dp = 100;
-      int_do = 100;
+      actorAY = 0;
+      actorAX = 0;
+      actorBY = 100;
+      actorBX = 100;
       if (Math.abs(var0 - var4) <= 1 && Math.abs(var1 - var5) <= 1) {
-         int_dm = var0 * 24 + directionOffsets[var2] * var3;
-         int_dn = var1 * 24 + directionOffsets[var2 + 8] * var3;
-         int_do = var4 * 24 + directionOffsets[var6] * var7;
-         int_dp = var5 * 24 + directionOffsets[var6 + 8] * var7;
-         return within24(int_dm, int_dn, int_do, int_dp);
+         actorAX = var0 * 24 + directionOffsets[var2] * var3;
+         actorAY = var1 * 24 + directionOffsets[var2 + 8] * var3;
+         actorBX = var4 * 24 + directionOffsets[var6] * var7;
+         actorBY = var5 * 24 + directionOffsets[var6 + 8] * var7;
+         return within24(actorAX, actorAY, actorBX, actorBY);
       } else {
          return false;
       }
@@ -16112,7 +16152,7 @@ public final class GameCanvas extends Canvas implements Runnable {
          gamecanvas.stageDiamonds++;
          objectMap[i][j] = -1;
          gamecanvas.padlockGemsRemaining--;
-         gamecanvas.int_bi = 0;
+         gamecanvas.hookPullSteps = 0;
          if (gamecanvas.padlockGemsRemaining == 0) {
             objectMap[gamecanvas.padlockX][gamecanvas.padlockY] = -1;
          }
@@ -16170,7 +16210,7 @@ public final class GameCanvas extends Canvas implements Runnable {
             } else if ((isEmptyFloor(i, i1) || objectMap[i][i1] == 21)
                && (!this.isPlayerAt(i, j) || this.escapePressesLeft > 0)
                && (
-                  !this.isPlayerAt(i, i1) && !within24(int_dm, int_dn, int_do, int_dp - 1)
+                  !this.isPlayerAt(i, i1) && !within24(actorAX, actorAY, actorBX, actorBY - 1)
                      || this.escapePressesLeft > 0
                      || this.deathTimer != 0
                      || b0 != 0 && j1 == b2
@@ -16287,7 +16327,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         if ((b0 == 0 || b0 == 9) && b1 > 0 && !isEmptyFloor(i, j + 1)) {
                            vibrate(200);
                            this.playSound(14);
-                           this.int_bj = 10;
+                           this.screenShakeTicks = 10;
                            if (b0 == 9 && this.escapePressesLeft > 0 && this.isPlayerAt(i, j)) {
                               this.hurtPlayer(1, 0, 0);
                               this.hudDirty = true;
@@ -16411,8 +16451,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                  (isEmptyFloor(i - 1, j) || isEmptyFloor(i + 1, j))
                                        && isHeavyObject(i, j + 1)
                                        && (objectState[i][j + 1] & 7) == 0
-                                       && i != this.int_bg
-                                       && j != this.int_bh
+                                       && i != this.hookX
+                                       && j != this.hookY
                                     ? 6
                                     : 0
                               )
@@ -16686,19 +16726,19 @@ public final class GameCanvas extends Canvas implements Runnable {
          checkpointActors = new long[15];
          enemies = new long[15];
          checkpointEnemies = new long[15];
-         this.byte_x = 3;
-         this.bool_al = true;
-         this.int_dq = -1;
-         this.int_dr = 0;
-         this.int_ds = 0;
-         this.byte_v = 0;
-         this.int_dv = 0;
-         this.int_dw = 0;
-         this.int_dx = 0;
-         this.byte_w = 0;
-         this.int_dy = 0;
-         this.int_dz = -1;
-         this.int_dt = 0;
+         this.enemyPhase = 3;
+         this.enemyRemovalPending = true;
+         this.enemyChaseTicks = -1;
+         this.enemyChaseSteps = 0;
+         this.enemyUnusedS = 0;
+         this.enemyChaseDirection = 0;
+         this.enemyTriggerX = 0;
+         this.enemyTriggerY = 0;
+         this.enemyTriggerSide = 0;
+         this.enemyActorSlot = 0;
+         this.enemyTargetRow = 0;
+         this.enemyStepTimer = -1;
+         this.enemyRemovalIndex = 0;
          this.enemyCount = 0;
       }
    }
@@ -16792,26 +16832,26 @@ public final class GameCanvas extends Canvas implements Runnable {
    private void updateEnemies() {
       if (this.hasEnemies) {
          label728:
-         if (this.int_dq >= 0 && this.int_dz >= 0) {
+         if (this.enemyChaseTicks >= 0 && this.enemyStepTimer >= 0) {
             byte b37;
             byte b48;
             byte b49;
             byte b50;
-            this.int_dq++;
+            this.enemyChaseTicks++;
             GameCanvas gamecanvas = this;
-            int i = actorBits(this.byte_w, (byte)14, (byte)6);
-            int j = actorBits(gamecanvas.byte_w, (byte)20, (byte)6);
+            int i = actorBits(this.enemyActorSlot, (byte)14, (byte)6);
+            int j = actorBits(gamecanvas.enemyActorSlot, (byte)20, (byte)6);
             label724:
-            switch (actorBits(gamecanvas.byte_w, (byte)47, (byte)2)) {
+            switch (actorBits(gamecanvas.enemyActorSlot, (byte)47, (byte)2)) {
                case 0:
-                  setActorBits(gamecanvas.byte_w, (byte)1, (byte)47, (byte)2);
-                  byte b11 = (byte)actorBits(gamecanvas.byte_w, (byte)49, (byte)5);
-                  byte b13 = (byte)actorBits(gamecanvas.byte_w, (byte)45, (byte)2);
+                  setActorBits(gamecanvas.enemyActorSlot, (byte)1, (byte)47, (byte)2);
+                  byte b11 = (byte)actorBits(gamecanvas.enemyActorSlot, (byte)49, (byte)5);
+                  byte b13 = (byte)actorBits(gamecanvas.enemyActorSlot, (byte)45, (byte)2);
                   int l5 = 0;
                   if (b13 != 0) {
                      if (b13 == 2) {
                         while (
-                           i >= gamecanvas.int_dv
+                           i >= gamecanvas.enemyTriggerX
                               && (byte)(objectMap[i + 1][j] - 80) < 0
                               && objectMap[i + 1][j] != 10
                               && objectMap[i + 1][j] != 37
@@ -16822,7 +16862,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
                      } else {
                         while (
-                           i <= gamecanvas.int_dv
+                           i <= gamecanvas.enemyTriggerX
                               && (byte)(objectMap[i + 1][j] - 80) < 0
                               && objectMap[i + 1][j] != 10
                               && objectMap[i + 1][j] != 37
@@ -16861,7 +16901,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                   }
 
-                  if (gamecanvas.int_dx != 2 && i <= gamecanvas.int_dv) {
+                  if (gamecanvas.enemyTriggerSide != 2 && i <= gamecanvas.enemyTriggerX) {
                      while (
                         (byte)(objectMap[i + 1][j] - 80) < 0
                            && objectMap[i + 1][j] != 10
@@ -16873,7 +16913,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                      }
                   }
 
-                  setActorBits(gamecanvas.byte_w, (byte)i, (byte)14, (byte)6);
+                  setActorBits(gamecanvas.enemyActorSlot, (byte)i, (byte)14, (byte)6);
                   b37 = 1;
 
                   while (true) {
@@ -16883,7 +16923,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         || objectMap[i - b18][j] == 37
                         || objectMap[i - b18][j] == 34
                         || objectMap[i - b18][j] == 35) {
-                        b37 = gamecanvas.byte_w;
+                        b37 = gamecanvas.enemyActorSlot;
                         b48 = b18;
                         b49 = 49;
                         b50 = 5;
@@ -16893,32 +16933,32 @@ public final class GameCanvas extends Canvas implements Runnable {
                      b37 = (byte)(b18 + 1);
                   }
                case 1:
-                  if (j == gamecanvas.int_dy) {
-                     gamecanvas.int_dq = -1;
-                     gamecanvas.int_dz = -1;
-                     clearActorSlot(gamecanvas.byte_w);
-                     gamecanvas.byte_x = 4;
+                  if (j == gamecanvas.enemyTargetRow) {
+                     gamecanvas.enemyChaseTicks = -1;
+                     gamecanvas.enemyStepTimer = -1;
+                     clearActorSlot(gamecanvas.enemyActorSlot);
+                     gamecanvas.enemyPhase = 4;
                   } else {
-                     byte b1 = (byte)actorBits(gamecanvas.byte_w, (byte)49, (byte)5);
-                     if (gamecanvas.int_dq != 0 && gamecanvas.int_dq % b1 == 0) {
-                        gamecanvas.int_dq = 0;
+                     byte b1 = (byte)actorBits(gamecanvas.enemyActorSlot, (byte)49, (byte)5);
+                     if (gamecanvas.enemyChaseTicks != 0 && gamecanvas.enemyChaseTicks % b1 == 0) {
+                        gamecanvas.enemyChaseTicks = 0;
                         byte b2;
-                        if ((b2 = (byte)actorBits(gamecanvas.byte_w, (byte)26, (byte)2)) >= 0) {
+                        if ((b2 = (byte)actorBits(gamecanvas.enemyActorSlot, (byte)26, (byte)2)) >= 0) {
                            b37 = 0;
 
                            while (true) {
                               byte b3 = b37;
                               if (b37 >= b1) {
                                  if (b2 == 2) {
-                                    setActorBits(gamecanvas.byte_w, (byte)0, (byte)47, (byte)2);
-                                    setActorBits(gamecanvas.byte_w, (byte)0, (byte)26, (byte)2);
+                                    setActorBits(gamecanvas.enemyActorSlot, (byte)0, (byte)47, (byte)2);
+                                    setActorBits(gamecanvas.enemyActorSlot, (byte)0, (byte)26, (byte)2);
                                     j++;
-                                    b37 = gamecanvas.byte_w;
+                                    b37 = gamecanvas.enemyActorSlot;
                                     b48 = (byte)j;
                                     b49 = 20;
                                     b50 = 6;
                                  } else {
-                                    b37 = gamecanvas.byte_w;
+                                    b37 = gamecanvas.enemyActorSlot;
                                     b48 = (byte)(b2 + 1);
                                     b49 = 26;
                                     b50 = 2;
@@ -16935,7 +16975,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
 
                               int i1 = slotBits(tileSlots[i - b3][l], b4, (byte)3, (byte)4);
-                              if (l == gamecanvas.int_dy && b2 == 2 ? i1 != 0 && i1 != 3 : i1 != 12 && i1 != 9) {
+                              if (l == gamecanvas.enemyTargetRow && b2 == 2 ? i1 != 0 && i1 != 3 : i1 != 12 && i1 != 9) {
                                  setSlotBits(i - b3, l, b4, (byte)7, (byte)3, (byte)4);
                               }
 
@@ -16951,9 +16991,9 @@ public final class GameCanvas extends Canvas implements Runnable {
             setActorBits(b37, b48, b49, b50);
          }
 
-         switch (this.byte_x) {
+         switch (this.enemyPhase) {
             case 1:
-               this.byte_x = 2;
+               this.enemyPhase = 2;
                return;
             case 2:
                int l9 = 1;
@@ -16991,18 +17031,18 @@ public final class GameCanvas extends Canvas implements Runnable {
                            }
 
                            if (slotBits(tileSlots[k3][k7], b24, (byte)3, (byte)4) == 7) {
-                              gamecanvas5.int_dr = 1;
+                              gamecanvas5.enemyChaseSteps = 1;
                               if (flag2) {
                                  clearActorSlot(b9);
-                                 gamecanvas5.byte_x = 3;
-                                 gamecanvas5.bool_al = true;
+                                 gamecanvas5.enemyPhase = 3;
+                                 gamecanvas5.enemyRemovalPending = true;
                               } else {
                                  int l7;
                                  if ((l7 = b24 - 1) < 0) {
                                     l7 = 2;
                                  }
 
-                                 gamecanvas5.int_dz = 0;
+                                 gamecanvas5.enemyStepTimer = 0;
                                  byte b10 = (byte)slotBits(tileSlots[k3][k7], b24, (byte)0, (byte)3);
                                  byte b31 = (byte)actorBits(b9, (byte)54, (byte)3);
                                  setActorBits(b10, b31, (byte)54, (byte)3);
@@ -17044,13 +17084,13 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        setSlotBits(k3, j4, b12, (byte)15, (byte)3, (byte)4);
                                     }
 
-                                    if ((b22 = gamecanvas5.a_byte(b9, k3, j4, b17, b12, (byte)1, flag2)) >= 0) {
+                                    if ((b22 = gamecanvas5.stepActor(b9, k3, j4, b17, b12, (byte)1, flag2)) >= 0) {
                                        if ((byte)(objectMap[k3 + -1][j4] - 80) < 0
                                           && objectMap[k3 + -1][j4] != 10
                                           && objectMap[k3 + -1][j4] != 37
                                           && objectMap[k3 + -1][j4] != 34
                                           && objectMap[k3 + -1][j4] != 35) {
-                                          gamecanvas5.a_byte(k3 - 1, j4, (byte)(flag2 ? 7 : 5), (byte)-1, (byte)2, (byte)actorBits(b9, (byte)54, (byte)3));
+                                          gamecanvas5.spawnActor(k3 - 1, j4, (byte)(flag2 ? 7 : 5), (byte)-1, (byte)2, (byte)actorBits(b9, (byte)54, (byte)3));
                                        }
                                        break label582;
                                     }
@@ -17072,7 +17112,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     b53 = b17;
                                  }
 
-                                 b22 = gamecanvas7.a_byte(b39, l10, i11, b46, b47, b53, flag2);
+                                 b22 = gamecanvas7.stepActor(b39, l10, i11, b46, b47, b53, flag2);
                               }
 
                               if (b22 == -2) {
@@ -17141,8 +17181,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        }
 
                                        if (flag5) {
-                                          gamecanvas5.int_dr = 0;
-                                          gamecanvas5.int_dz = 0;
+                                          gamecanvas5.enemyChaseSteps = 0;
+                                          gamecanvas5.enemyStepTimer = 0;
                                           setActorBits(b9, (byte)2, (byte)28, (byte)3);
                                           setActorBits(b9, byteBits(j7, (byte)0, (byte)6), (byte)0, (byte)7);
                                           setActorBits(b9, (byte)2, (byte)26, (byte)2);
@@ -17221,11 +17261,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
                         break;
                      case 2:
-                        if (this.int_dz < 0) {
+                        if (this.enemyStepTimer < 0) {
                            break;
                         }
 
-                        this.int_dz++;
+                        this.enemyStepTimer++;
                         byte b8 = b0;
                         GameCanvas gamecanvas4 = this;
                         int j3 = actorBits(b8, (byte)14, (byte)6);
@@ -17278,7 +17318,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                     setActorBits(b8, b26, (byte)49, (byte)5);
                                     b20 = (byte)(b20 - b26);
                                     byte b28 = 0;
-                                    gamecanvas4.byte_v = 0;
+                                    gamecanvas4.enemyChaseDirection = 0;
                                     if (b20 < 0) {
                                        i4 = -b20 * 3;
                                        byte b30 = 0;
@@ -17288,9 +17328,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        }
 
                                        i4 /= b26;
-                                       gamecanvas4.byte_v = (byte)i4;
-                                       gamecanvas4.byte_v += b30;
-                                       if (gamecanvas4.byte_v > 2) {
+                                       gamecanvas4.enemyChaseDirection = (byte)i4;
+                                       gamecanvas4.enemyChaseDirection += b30;
+                                       if (gamecanvas4.enemyChaseDirection > 2) {
                                           setActorBits(b8, (byte)1, (byte)57, (byte)1);
                                        }
 
@@ -17313,8 +17353,8 @@ public final class GameCanvas extends Canvas implements Runnable {
                               }
                            case 1:
                               byte b21 = (byte)actorBits(b8, (byte)49, (byte)5);
-                              if (gamecanvas4.int_dz != 0 && gamecanvas4.int_dz % b21 == 0) {
-                                 gamecanvas4.int_dz = 0;
+                              if (gamecanvas4.enemyStepTimer != 0 && gamecanvas4.enemyStepTimer % b21 == 0) {
+                                 gamecanvas4.enemyStepTimer = 0;
                                  byte b23 = (byte)actorBits(b8, (byte)26, (byte)2);
                                  byte b25 = (byte)actorBits(b8, (byte)57, (byte)1);
                                  if (b23 >= 0) {
@@ -17324,7 +17364,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        while (true) {
                                           byte b27 = (byte)l9;   // l9 only holds (byte) values here
                                           if (l9 >= b21) {
-                                             if (gamecanvas4.int_dr > 0) {
+                                             if (gamecanvas4.enemyChaseSteps > 0) {
                                                 i4 = i4;
                                                 if ((b27 = (byte)(b23 + 1)) > 2) {
                                                    b27 = 0;
@@ -17351,7 +17391,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                                 }
                                              }
 
-                                             gamecanvas4.int_dr++;
+                                             gamecanvas4.enemyChaseSteps++;
                                              break;
                                           }
 
@@ -17362,7 +17402,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        }
                                     }
 
-                                    if (b25 == 1 || (k5 >= i5 || b20 == 0) && b23 == gamecanvas4.byte_v) {
+                                    if (b25 == 1 || (k5 >= i5 || b20 == 0) && b23 == gamecanvas4.enemyChaseDirection) {
                                        if (b25 == 1) {
                                           setActorBits(b8, (byte)0, (byte)57, (byte)1);
                                        }
@@ -17371,9 +17411,9 @@ public final class GameCanvas extends Canvas implements Runnable {
                                        if (b20 == 0) {
                                           setEnemyBits(b19, (byte)3, (byte)0, (byte)4);
                                           setActorBits(b8, (byte)5, (byte)28, (byte)3);
-                                          if (gamecanvas4.int_dq == -1) {
-                                             gamecanvas4.int_dz = -1;
-                                             gamecanvas4.byte_x = 4;
+                                          if (gamecanvas4.enemyChaseTicks == -1) {
+                                             gamecanvas4.enemyStepTimer = -1;
+                                             gamecanvas4.enemyPhase = 4;
                                           }
                                           break label595;
                                        }
@@ -17408,7 +17448,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                while (true) {
                   byte b7 = b38;
                   if (b38 >= 15) {
-                     this.byte_x = 2;
+                     this.enemyPhase = 2;
                      return;
                   }
 
@@ -17450,23 +17490,23 @@ public final class GameCanvas extends Canvas implements Runnable {
                         b16 = b38;
                      }
 
-                     gamecanvas3.a_byte(i3, l3, (byte)7, b14, b16, findEnemyAt(i3, l3));
+                     gamecanvas3.spawnActor(i3, l3, (byte)7, b14, b16, findEnemyAt(i3, l3));
                   }
 
                   b38 = (byte)(b7 + 1);
                }
             case 5:
-               int l2 = this.int_dw;
-               int k2 = this.int_dv;
+               int l2 = this.enemyTriggerY;
+               int k2 = this.enemyTriggerX;
                GameCanvas gamecanvas2 = this;
-               this.int_dq = 0;
+               this.enemyChaseTicks = 0;
                int[] aint;
                int i10;
-               if (gamecanvas2.int_dx > 1) {
+               if (gamecanvas2.enemyTriggerSide > 1) {
                   aint = tileSlots[k2];
                   i10 = l2 - 1;
                } else {
-                  aint = tileSlots[k2 + gamecanvas2.int_dx];
+                  aint = tileSlots[k2 + gamecanvas2.enemyTriggerSide];
                   i10 = l2;
                }
 
@@ -17477,26 +17517,26 @@ public final class GameCanvas extends Canvas implements Runnable {
                int i7;
                label746: {
                   int k = aint[i10];
-                  gamecanvas2.byte_w = (byte)slotBits(k, (byte)2, (byte)0, (byte)3);
-                  setActorBits(gamecanvas2.byte_w, (byte)0, (byte)47, (byte)2);
-                  int k4 = actorBits(gamecanvas2.byte_w, (byte)7, (byte)7);
+                  gamecanvas2.enemyActorSlot = (byte)slotBits(k, (byte)2, (byte)0, (byte)3);
+                  setActorBits(gamecanvas2.enemyActorSlot, (byte)0, (byte)47, (byte)2);
+                  int k4 = actorBits(gamecanvas2.enemyActorSlot, (byte)7, (byte)7);
                   GameCanvas gamecanvas1;
                   int j1;
                   byte b6;
                   boolean flag;
                   int l1;
                   int i2;
-                  switch (gamecanvas2.int_dx) {
+                  switch (gamecanvas2.enemyTriggerSide) {
                      case 2:
                         j5 = 0;
                         i6 = k2;
                         k6 = l2;
                         l6 = k4;
                         i7 = l2 - 1;
-                        gamecanvas2.int_dv = gamecanvas2.int_dw = -1;
+                        gamecanvas2.enemyTriggerX = gamecanvas2.enemyTriggerY = -1;
                         break label746;
                      default:
-                        j5 = gamecanvas2.int_dx;
+                        j5 = gamecanvas2.enemyTriggerSide;
                         i6 = k2 + j5;
                         j5 = j5 < 0 ? 1 : 2;
                         k6 = l2 + 1;
@@ -17505,7 +17545,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         gamecanvas1 = gamecanvas2;
                         b6 = 0;
                         flag = true;
-                        l1 = gamecanvas1.int_dx;
+                        l1 = gamecanvas1.enemyTriggerSide;
                         i2 = 0;
                   }
 
@@ -17545,8 +17585,8 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                                  l6 = k4 - i2;
                                  i7 = l2;
-                                 gamecanvas2.int_dv = k2;
-                                 gamecanvas2.int_dw = l2;
+                                 gamecanvas2.enemyTriggerX = k2;
+                                 gamecanvas2.enemyTriggerY = l2;
                                  break label434;
                               }
 
@@ -17557,7 +17597,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
                         if (flag) {
                            flag = false;
-                           setActorBits(b6 = gamecanvas1.a_byte(j1, k, (byte)8, (byte)-2, (byte)2, (byte)0), (byte)5, (byte)28, (byte)3);
+                           setActorBits(b6 = gamecanvas1.spawnActor(j1, k, (byte)8, (byte)-2, (byte)2, (byte)0), (byte)5, (byte)28, (byte)3);
                            setActorBits(b6, (byte)j1, (byte)14, (byte)6);
                            setActorBits(b6, (byte)k, (byte)20, (byte)6);
                         }
@@ -17576,12 +17616,12 @@ public final class GameCanvas extends Canvas implements Runnable {
                   byte b51;
                   byte b52;
                   label391: {
-                     setActorBits(gamecanvas2.byte_w, (byte)j5, (byte)45, (byte)2);
-                     gamecanvas2.int_dy = k6;
+                     setActorBits(gamecanvas2.enemyActorSlot, (byte)j5, (byte)45, (byte)2);
+                     gamecanvas2.enemyTargetRow = k6;
                      gamecanvas2.spawnEnemy((byte)l6, (byte)i6, (byte)i7, (byte)j5);
                      setEnemyBits(b5 = findEnemyAt(i6, i7), (byte)2, (byte)0, (byte)4);
-                     gamecanvas2.byte_x = 1;
-                     switch (gamecanvas2.int_dx) {
+                     gamecanvas2.enemyPhase = 1;
+                     switch (gamecanvas2.enemyTriggerSide) {
                         case -1:
                            gamecanvas6 = gamecanvas2;
                            i10 = i6 + 1;
@@ -17612,11 +17652,11 @@ public final class GameCanvas extends Canvas implements Runnable {
                      b52 = 2;
                   }
 
-                  b5 = gamecanvas6.a_byte(i10, k10, b43, b51, b52, b5);
+                  b5 = gamecanvas6.spawnActor(i10, k10, b43, b51, b52, b5);
                }
 
                setActorBits(b5, (byte)6, (byte)28, (byte)3);
-               gamecanvas2.int_dx = 0;
+               gamecanvas2.enemyTriggerSide = 0;
          }
       }
    }
@@ -17625,7 +17665,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       actors[var0 - 1] = 0L;
    }
 
-   private byte a_byte(byte var1, int var2, int var3, byte var4, byte var5, byte var6, boolean var7) {
+   private byte stepActor(byte var1, int var2, int var3, byte var4, byte var5, byte var6, boolean var7) {
       byte b0;
       if ((byte)(objectMap[var2 + var6][var3] - 80) < 0
          && objectMap[var2 + var6][var3] != 10
@@ -17647,10 +17687,10 @@ public final class GameCanvas extends Canvas implements Runnable {
             int i;
             int b2;
             if (var6 > 0) {
-               i = var1 == 6 && this.int_dv == var2 && this.int_dw == var3 ? 11 : 4;
+               i = var1 == 6 && this.enemyTriggerX == var2 && this.enemyTriggerY == var3 ? 11 : 4;
                b2 = 9;
             } else {
-               i = var1 == 6 && this.int_dv == var2 && this.int_dw == var3 ? 14 : 5;
+               i = var1 == 6 && this.enemyTriggerX == var2 && this.enemyTriggerY == var3 ? 14 : 5;
                b2 = 12;
             }
 
@@ -17696,7 +17736,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       tileRedrawTimers[var0][var1] = 24;
    }
 
-   private byte a_byte(int var1, int var2, byte var3, byte var4, byte var5, byte var6) {
+   private byte spawnActor(int var1, int var2, byte var3, byte var4, byte var5, byte var6) {
       byte b1 = 1;
 
       while (true) {
@@ -17728,23 +17768,23 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
    }
 
-   private void m_void(int var1, int var2) {
+   private void alertCreatures(int var1, int var2) {
       if (this.hasEnemies) {
-         this.int_dx = tileSlots[var1 - 1][var2] != 0 ? -1 : (tileSlots[var1 + 1][var2] != 0 ? 1 : 0);
-         if (this.int_dx == 0) {
-            this.int_dx = tileSlots[var1][var2 - 1] != 0 ? 2 : 0;
+         this.enemyTriggerSide = tileSlots[var1 - 1][var2] != 0 ? -1 : (tileSlots[var1 + 1][var2] != 0 ? 1 : 0);
+         if (this.enemyTriggerSide == 0) {
+            this.enemyTriggerSide = tileSlots[var1][var2 - 1] != 0 ? 2 : 0;
          }
 
-         if (this.int_dx != 0) {
-            this.byte_x = 5;
+         if (this.enemyTriggerSide != 0) {
+            this.enemyPhase = 5;
             this.playSound(13);
-            this.int_dv = var1;
-            this.int_dw = var2;
+            this.enemyTriggerX = var1;
+            this.enemyTriggerY = var2;
          }
       }
    }
 
-   private void n_void(int var1, int var2) {
+   private void killEnemyAt(int var1, int var2) {
       byte b0 = 2;
       int j = var2;
       int i = var1;
@@ -17761,8 +17801,8 @@ public final class GameCanvas extends Canvas implements Runnable {
          j = var2;
          i = var1;
          GameCanvas gamecanvas = this;
-         this.byte_x = 1;
-         gamecanvas.a_byte(i, j + 1, (byte)0, (byte)0, (byte)0, findEnemyAt(i, j));
+         this.enemyPhase = 1;
+         gamecanvas.spawnActor(i, j + 1, (byte)0, (byte)0, (byte)0, findEnemyAt(i, j));
       }
    }
 
@@ -17790,8 +17830,8 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintTip() {
-      this.bool_R = false;
-      loadTip(this.int_ag);
+      this.tipVisible = false;
+      loadTip(this.tipIndex);
       Graphics graphics = this.screen;
       this.screen.setColor(798521);
       graphics.fillRoundRect(40, 4, 240, 200, 8, 8);
@@ -17802,14 +17842,14 @@ public final class GameCanvas extends Canvas implements Runnable {
       String s = tipText;
       graphics = graphics;
       String[] astring = Cutscene.split(s, '\n');
-      int j = this.int_ag % 8;
+      int j = this.tipIndex % 8;
 
       for (int k = 0; k < astring.length; k++) {
          fontSmall.font.getHeight();
          int l;
          if ((l = j == 0 && (k == 1 || k == 4) || j > 0 && j < 4 && k == 1 ? (j == 0 && k == 1 ? 7 : (j == 0 && k == 4 ? 6 : 0)) : -1) >= 0) {
             if (tipSprite == null) {
-               tipSprite = loadSprite("/tips.f", this.int_ag);
+               tipSprite = loadSprite("/tips.f", this.tipIndex);
             }
 
             if (tipSprite != null) {
@@ -17844,7 +17884,7 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void unloadMapResources() {
-      this.bool_H = false;
+      this.unloadMapOnLoad = false;
       unloadSprite(sprites[23], true);
       sprites[23] = null;
       unloadSprite(sprites[24], true);
@@ -17855,7 +17895,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       sprites[26] = null;
       unloadSprite(sprites[17], true);
       sprites[17] = null;
-      this.intArr_c = null;
+      this.mapPathPoints = null;
       mapPreview = null;
       mapPreviewGraphics = null;
       System.gc();
@@ -17865,7 +17905,7 @@ public final class GameCanvas extends Canvas implements Runnable {
       this.resetStateTimer();
       this.mapPreviewStale = true;
       this.fullRedraw = true;
-      this.bool_an = true;
+      this.mapWalkStarting = true;
       gameState = 21;
       this.loadingStep = 0;
       this.loadingStepCount = 14;
@@ -17879,7 +17919,7 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void resetMapNodes() {
       mapNodes = new long[12][12];
-      this.intArr_c = new int[20];
+      this.mapPathPoints = new int[20];
    }
 
    private static int longBits(long var0, byte var2, byte var3) {
@@ -17897,29 +17937,29 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private boolean animateMapUnlock() {
       boolean flag = false;
-      int i = this.int_ei >> 1;
+      int i = this.mapPathLength >> 1;
       GameCanvas gamecanvas;
       int i2;
-      if (this.int_ek < 0) {
+      if (this.mapPathBlinkDelay < 0) {
          gamecanvas = this;
          i2 = 2;
       } else {
          gamecanvas = this;
-         i2 = this.int_ek - 1;
+         i2 = this.mapPathBlinkDelay - 1;
       }
 
-      gamecanvas.int_ek = i2;
+      gamecanvas.mapPathBlinkDelay = i2;
       if (this.mapTargetX == 0 && this.mapTargetY == 0) {
          this.mapTargetX = this.mapCursorX;
          this.mapTargetY = this.mapCursorY;
       }
 
-      if (this.int_ek == 0) {
+      if (this.mapPathBlinkDelay == 0) {
          boolean flag2;
-         if (this.int_ej == i) {
+         if (this.mapPathShown == i) {
             flag2 = true;
          } else {
-            this.int_ej++;
+            this.mapPathShown++;
             flag2 = false;
          }
 
@@ -17949,11 +17989,11 @@ public final class GameCanvas extends Canvas implements Runnable {
       }
 
       int l = 0;
-      int i1 = this.bool_as ? i - 1 : 0;
+      int i1 = this.mapPathReversed ? i - 1 : 0;
 
-      for (int j1 = this.bool_as ? -1 : 1; l < this.int_ej; i1 += j1) {
+      for (int j1 = this.mapPathReversed ? -1 : 1; l < this.mapPathShown; i1 += j1) {
          int k1 = i1 << 1;
-         sprites[17].paintFrame(this.screen, b0, this.intArr_c[k1], this.intArr_c[k1 + 1], 0, 0, 0);
+         sprites[17].paintFrame(this.screen, b0, this.mapPathPoints[k1], this.mapPathPoints[k1 + 1], 0, 0, 0);
          l++;
       }
 
@@ -17981,21 +18021,21 @@ public final class GameCanvas extends Canvas implements Runnable {
       j = this.mapCursorX * 13 + b0 + 77;
       i1 = this.mapCursorY * 13 + b0 + 33;
       sprites[17].paintFrame(this.screen, b1, j, i1, 0, 0, 0);
-      int l1 = this.bool_ao ? 7 : 6;
+      int l1 = this.mapWalkFacingLeft ? 7 : 6;
       sprites[17].paintFrame(this.screen, l1, j + 6, i1 + 6, 0, 0, 0);
       boolean flag1 = true;
       if (l == i) {
-         if (this.int_em < 0) {
+         if (this.mapWalkerBlinkDelay < 0) {
             gamecanvas = this;
             i2 = 2;
          } else {
             gamecanvas = this;
-            i2 = this.int_em - 1;
+            i2 = this.mapWalkerBlinkDelay - 1;
          }
 
-         gamecanvas.int_em = i2;
-         if (this.int_em == 0) {
-            this.int_em = 1;
+         gamecanvas.mapWalkerBlinkDelay = i2;
+         if (this.mapWalkerBlinkDelay == 0) {
+            this.mapWalkerBlinkDelay = 1;
             flag1 = false;
          }
       }
@@ -18042,20 +18082,20 @@ public final class GameCanvas extends Canvas implements Runnable {
       sprites[17].paintFrame(this.screen, b1, j, i1, 0, 0, 0);
       if (!flag1) {
          boolean flag3;
-         if (this.int_el == sprites[9].getAnimFrameCount(0)) {
-            this.int_el--;
-            this.bool_ar = true;
+         if (this.mapUnlockFrame == sprites[9].getAnimFrameCount(0)) {
+            this.mapUnlockFrame--;
+            this.mapUnlockAnimDone = true;
             flag3 = true;
          } else {
             flag3 = false;
          }
 
          flag = flag3;
-         if (!this.bool_P) {
-            sprites[9].paintFrame(this.screen, this.int_el, j, i1, 0, 0, 0);
+         if (!this.stageCompletedBefore) {
+            sprites[9].paintFrame(this.screen, this.mapUnlockFrame, j, i1, 0, 0, 0);
          }
 
-         this.int_el++;
+         this.mapUnlockFrame++;
       }
 
       return flag;
@@ -18063,14 +18103,14 @@ public final class GameCanvas extends Canvas implements Runnable {
 
    private void paintMapConnection(int var1, int var2) {
       GameCanvas gamecanvas;
-      if (!this.bool_at) {
-         int i = longBits(mapNodes[this.int_cx][this.int_cy], (byte)6, (byte)5);
+      if (!this.cheatSkipExitA) {
+         int i = longBits(mapNodes[this.unlockedNodeX][this.unlockedNodeY], (byte)6, (byte)5);
          if ((var2 != unlockedStage || var1 != i) && (var1 != unlockedStage || var2 != i)) {
             return;
          }
 
          if (var1 == unlockedStage && var2 == i) {
-            this.bool_as = true;
+            this.mapPathReversed = true;
          }
 
          gamecanvas = this;
@@ -18080,21 +18120,21 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          if (var1 == unlockedStage && var2 == unlockedStage - 1) {
-            this.bool_as = true;
+            this.mapPathReversed = true;
          }
 
          gamecanvas = this;
       }
 
-      gamecanvas.intArr_c[this.int_ei++] = this.int_ea;
-      this.intArr_c[this.int_ei++] = this.int_eb;
+      gamecanvas.mapPathPoints[this.mapPathLength++] = this.pathX;
+      this.mapPathPoints[this.mapPathLength++] = this.pathY;
    }
 
    private void paintMapNodes() {
-      this.int_dL = 0;
+      this.mapNodesDrawn = 0;
       if ((this.getStageFlags(this.world, this.stage + 1) & 2) != 0 && this.stage + 1 == unlockedStage || this.stage == unlockedStage) {
-         this.bool_aq = false;
-         this.bool_ar = true;
+         this.mapPathDotsVisible = false;
+         this.mapUnlockAnimDone = true;
       }
 
       for (int i = 0; i < 12; i++) {
@@ -18110,7 +18150,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                byte b1;
                i1 = longBits(k, (byte)3, (byte)3);
                j1 = longBits(k, (byte)6, (byte)5);
-               k1 = !this.bool_ar && j1 == unlockedStage && j1 != 0 ? 1 : longBits(k, (byte)0, (byte)3);
+               k1 = !this.mapUnlockAnimDone && j1 == unlockedStage && j1 != 0 ? 1 : longBits(k, (byte)0, (byte)3);
                l1 = -1;
                b0 = -1;
                b1 = -1;
@@ -18149,7 +18189,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                int l = i;
                GameCanvas gamecanvas = this;
                int j2 = longBits(i3, (byte)6, (byte)5);
-               gamecanvas.int_dL |= 1 << j2;
+               gamecanvas.mapNodesDrawn |= 1 << j2;
                int k2 = longBits(i3, (byte)11, (byte)3);
                int l2 = 14;
                int j3 = 0;
@@ -18165,31 +18205,31 @@ public final class GameCanvas extends Canvas implements Runnable {
                   long j5;
                   int k4 = longBits(j5 = mapNodes[i4][j4], (byte)6, (byte)5);
                   label150:
-                  if ((gamecanvas.int_dL & 1 << k4) <= 0) {
+                  if ((gamecanvas.mapNodesDrawn & 1 << k4) <= 0) {
                      i4 = 77 + i4 * 13;
                      j4 = 33 + j4 * 13;
                      k3 += 6;
                      l3 += 6;
                      i4 += 6;
                      j4 += 6;
-                     gamecanvas.int_ea = k3;
-                     gamecanvas.int_eb = l3;
-                     gamecanvas.int_ec = 0;
-                     gamecanvas.int_ed = i4 - k3;
-                     gamecanvas.int_ee = j4 - l3;
-                     gamecanvas.int_ef = 0;
-                     gamecanvas.int_eg = 0;
-                     gamecanvas.int_eh = 1;
+                     gamecanvas.pathX = k3;
+                     gamecanvas.pathY = l3;
+                     gamecanvas.pathError = 0;
+                     gamecanvas.pathDx = i4 - k3;
+                     gamecanvas.pathDy = j4 - l3;
+                     gamecanvas.pathErrorStepX = 0;
+                     gamecanvas.pathErrorStepY = 0;
+                     gamecanvas.pathSteps = 1;
                      byte b4 = 1;
                      byte b5 = 1;
-                     if (gamecanvas.int_ed < 0) {
+                     if (gamecanvas.pathDx < 0) {
                         b4 = -1;
-                        gamecanvas.int_ed = -gamecanvas.int_ed;
+                        gamecanvas.pathDx = -gamecanvas.pathDx;
                      }
 
-                     if (gamecanvas.int_ee < 0) {
+                     if (gamecanvas.pathDy < 0) {
                         b5 = -1;
-                        gamecanvas.int_ee = -gamecanvas.int_ee;
+                        gamecanvas.pathDy = -gamecanvas.pathDy;
                      }
 
                      byte b2 = 0;
@@ -18207,7 +18247,7 @@ public final class GameCanvas extends Canvas implements Runnable {
                         l4 = i2;
                      }
 
-                     if (!gamecanvas.bool_ar && k4 == unlockedStage) {
+                     if (!gamecanvas.mapUnlockAnimDone && k4 == unlockedStage) {
                         l4 = 1;
                      }
 
@@ -18244,55 +18284,55 @@ public final class GameCanvas extends Canvas implements Runnable {
                         }
                      }
 
-                     if (gamecanvas.int_ee <= gamecanvas.int_ed) {
-                        gamecanvas.int_ef = gamecanvas.int_ed << 1;
-                        gamecanvas.int_eg = gamecanvas.int_ee << 1;
+                     if (gamecanvas.pathDy <= gamecanvas.pathDx) {
+                        gamecanvas.pathErrorStepX = gamecanvas.pathDx << 1;
+                        gamecanvas.pathErrorStepY = gamecanvas.pathDy << 1;
 
                         while (true) {
-                           if (gamecanvas.int_eh % 8 == 0) {
-                              sprites[17].paintFrame(mapPreviewGraphics, b2, gamecanvas.int_ea - 60, gamecanvas.int_eb - 51, 0, 0, 0);
-                              if (gamecanvas.bool_aq) {
+                           if (gamecanvas.pathSteps % 8 == 0) {
+                              sprites[17].paintFrame(mapPreviewGraphics, b2, gamecanvas.pathX - 60, gamecanvas.pathY - 51, 0, 0, 0);
+                              if (gamecanvas.mapPathDotsVisible) {
                                  gamecanvas.paintMapConnection(j2, k4);
                               }
                            }
 
-                           if (gamecanvas.int_ea == i4) {
+                           if (gamecanvas.pathX == i4) {
                               break;
                            }
 
-                           gamecanvas.int_ea += b4;
-                           gamecanvas.int_ec = gamecanvas.int_ec + gamecanvas.int_eg;
-                           if (gamecanvas.int_ec > gamecanvas.int_ed) {
-                              gamecanvas.int_eb += b5;
-                              gamecanvas.int_ec = gamecanvas.int_ec - gamecanvas.int_ef;
+                           gamecanvas.pathX += b4;
+                           gamecanvas.pathError = gamecanvas.pathError + gamecanvas.pathErrorStepY;
+                           if (gamecanvas.pathError > gamecanvas.pathDx) {
+                              gamecanvas.pathY += b5;
+                              gamecanvas.pathError = gamecanvas.pathError - gamecanvas.pathErrorStepX;
                            }
 
-                           gamecanvas.int_eh++;
+                           gamecanvas.pathSteps++;
                         }
                      } else {
-                        gamecanvas.int_ef = 2 * gamecanvas.int_ee;
-                        gamecanvas.int_eg = 2 * gamecanvas.int_ed;
+                        gamecanvas.pathErrorStepX = 2 * gamecanvas.pathDy;
+                        gamecanvas.pathErrorStepY = 2 * gamecanvas.pathDx;
 
                         while (true) {
-                           if (gamecanvas.int_eh % 8 == 0) {
-                              sprites[17].paintFrame(mapPreviewGraphics, b2, gamecanvas.int_ea - 60, gamecanvas.int_eb - 51, 0, 0, 0);
-                              if (gamecanvas.bool_aq) {
+                           if (gamecanvas.pathSteps % 8 == 0) {
+                              sprites[17].paintFrame(mapPreviewGraphics, b2, gamecanvas.pathX - 60, gamecanvas.pathY - 51, 0, 0, 0);
+                              if (gamecanvas.mapPathDotsVisible) {
                                  gamecanvas.paintMapConnection(j2, k4);
                               }
                            }
 
-                           if (gamecanvas.int_eb == j4) {
+                           if (gamecanvas.pathY == j4) {
                               break;
                            }
 
-                           gamecanvas.int_eb += b5;
-                           gamecanvas.int_ec = gamecanvas.int_ec + gamecanvas.int_eg;
-                           if (gamecanvas.int_ec > gamecanvas.int_ee) {
-                              gamecanvas.int_ea += b4;
-                              gamecanvas.int_ec = gamecanvas.int_ec - gamecanvas.int_ef;
+                           gamecanvas.pathY += b5;
+                           gamecanvas.pathError = gamecanvas.pathError + gamecanvas.pathErrorStepY;
+                           if (gamecanvas.pathError > gamecanvas.pathDy) {
+                              gamecanvas.pathX += b4;
+                              gamecanvas.pathError = gamecanvas.pathError - gamecanvas.pathErrorStepX;
                            }
 
-                           gamecanvas.int_eh++;
+                           gamecanvas.pathSteps++;
                         }
                      }
                   }
@@ -18346,28 +18386,28 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
       }
 
-      this.bool_aq = false;
+      this.mapPathDotsVisible = false;
    }
 
    private void loadMapFile(String var1) throws IOException {
       InputStream inputstream;
       int i = ((byte)(inputstream = this.getClass().getResourceAsStream(var1)).read() & 255) + (((byte)inputstream.read() & 255) << 8);
       int j = inputstream.read();
-      byteArr_f = new byte[i];
-      inputstream.read(byteArr_f);
+      mapFileData = new byte[i];
+      inputstream.read(mapFileData);
       inputstream.close();
       int k = 0;
 
       for (int l = 0; l < j; l++) {
-         byte b0 = byteArr_f[k++];
-         byte b1 = byteArr_f[k++];
-         byte b2 = byteArr_f[k++];
-         byte b3 = byteArr_f[k++];
+         byte b0 = mapFileData[k++];
+         byte b1 = mapFileData[k++];
+         byte b2 = mapFileData[k++];
+         byte b3 = mapFileData[k++];
          if (b2 == 1 && b3 < this.firstSecretStage) {
             this.firstSecretStage = b3;
          }
 
-         byte b4 = byteArr_f[k++];
+         byte b4 = mapFileData[k++];
          setMapNodeBits(b0, b1, 1, (byte)0, (byte)3);
          setMapNodeBits(b0, b1, b2, (byte)3, (byte)3);
          setMapNodeBits(b0, b1, b3, (byte)6, (byte)5);
@@ -18375,16 +18415,16 @@ public final class GameCanvas extends Canvas implements Runnable {
          b2 = 14;
 
          for (int i1 = 0; i1 < b4; i1++) {
-            byte b5 = byteArr_f[k++];
+            byte b5 = mapFileData[k++];
             setMapNodeBits(b0, b1, b5, b2, (byte)4);
             b2 = (byte)(b2 + 4);
-            b5 = byteArr_f[k++];
+            b5 = mapFileData[k++];
             setMapNodeBits(b0, b1, b5, b2, (byte)4);
             b2 = (byte)(b2 + 4);
          }
       }
 
-      byteArr_f = null;
+      mapFileData = null;
       System.gc();
    }
 
@@ -18436,8 +18476,8 @@ public final class GameCanvas extends Canvas implements Runnable {
    }
 
    private void paintShop() {
-      if (this.armorLevel != this.int_en || this.fullRedraw) {
-         if (this.armorLevel != this.int_en) {
+      if (this.armorLevel != this.shownArmorLevel || this.fullRedraw) {
+         if (this.armorLevel != this.shownArmorLevel) {
             this.fullRedraw = true;
          }
 
@@ -18451,23 +18491,23 @@ public final class GameCanvas extends Canvas implements Runnable {
             fontMedium.drawString(this.screen, strings[63], 160, 9, 17);
             drawFramedBox(this.screen, 10, 15, 300, 82, 4273165, 0);
             if (this.nextArmorThreshold != -1) {
-               fontSmall.drawLines(this.screen, insertLineBreaks(this.string_a, 280), 160, 223, 17);
+               fontSmall.drawLines(this.screen, insertLineBreaks(this.shopMessage, 280), 160, 223, 17);
             }
 
-            if (this.bool_aa) {
-               this.bool_aa = false;
-               fontSmall.drawString(this.screen, this.string_a, 160, 143, 1);
+            if (this.shopTextChanged) {
+               this.shopTextChanged = false;
+               fontSmall.drawString(this.screen, this.shopMessage, 160, 143, 1);
             }
 
-            fontSmall.drawLines(this.screen, this.string_g, 160, 208, 17);
+            fontSmall.drawLines(this.screen, this.shopDiamondsText, 160, 208, 17);
             this.drawSelectSoftKey();
             this.drawBackSoftKey();
             this.fullRedraw = false;
          }
 
-         if (this.armorLevel != this.int_en) {
+         if (this.armorLevel != this.shownArmorLevel) {
             this.screen.setColor(4273165);
-            this.screen.fillRect(20, 37 + (this.int_en >= 0 ? this.int_en : this.armorLevel) * 20 + 2, 7, 9);
+            this.screen.fillRect(20, 37 + (this.shownArmorLevel >= 0 ? this.shownArmorLevel : this.armorLevel) * 20 + 2, 7, 9);
          }
 
          sprites[17].paintFrame(this.screen, 14, 20, 37 + this.armorLevel * 20 + 2, 0, 0, 0);
@@ -18476,14 +18516,14 @@ public final class GameCanvas extends Canvas implements Runnable {
          Graphics graphics;
          String s1;
          if (this.nextArmorThreshold != -1) {
-            String s = strings[47] + " " + this.stringBuffer_d.toString() + "\n" + strings[27];
+            String s = strings[47] + " " + this.armorThresholdText.toString() + "\n" + strings[27];
             fontrenderer = fontSmall;
             graphics = this.screen;
             s1 = s;
          } else {
             fontrenderer = fontSmall;
             graphics = this.screen;
-            s1 = this.string_a;
+            s1 = this.shopMessage;
          }
 
          fontrenderer.drawLines(graphics, s1, 160, 162, 1);
@@ -18516,8 +18556,8 @@ public final class GameCanvas extends Canvas implements Runnable {
          }
 
          this.screen.drawImage(aimage[17], l1 + 140, 127, 0);
-         if (this.armorLevel != this.int_en) {
-            this.int_en = this.armorLevel;
+         if (this.armorLevel != this.shownArmorLevel) {
+            this.shownArmorLevel = this.armorLevel;
          }
       }
    }
@@ -18707,11 +18747,11 @@ public final class GameCanvas extends Canvas implements Runnable {
    private void showNotice(String var1, int var2, int var3, int var4, int var5, int var6) {
       this.inactivityClock = System.currentTimeMillis();
       noticeMillis = 5000;
-      this.int_er = -1;
-      this.int_es = -1;
+      this.noticeX = -1;
+      this.noticeY = -1;
       this.noticeText = insertLineBreaks(var1, 300);
       this.noticeColor = var5;
-      this.int_eu = 0;
+      this.noticeStyle = 0;
    }
 
    private void dismissNotice(boolean var1) {

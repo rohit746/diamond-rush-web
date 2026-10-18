@@ -262,7 +262,7 @@ public final class Cutscene {
             var1[var2 + 1] = 1;
             return;
          case 27:
-            if (!GameCanvas.bool_a) {
+            if (!GameCanvas.pickupAnimStarting) {
                String s = null;
 
                try {

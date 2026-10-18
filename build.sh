@@ -10,6 +10,7 @@
 # Requires JDK 17+ and network access on the first run (Maven Central).
 # Set DEBUG=1 for unminified output. By default the game code comes from the original JAR; SOURCE=1 builds
 # it from the recompilable source in game/src, DEOBF=1 from the renamed bytecode (see deobfuscate.sh).
+# SOURCE=1 ALLOW_NO_JAR=1 builds without Diamondrush.jar (CI): dist/ then lacks the game's resources.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -33,6 +34,9 @@ if [ "${SOURCE:-0}" = "1" ]; then
     done
     (cd "$BUILD/game-src-classes" && jar cf "$BUILD/game-src.jar" *.class)
     GAME_JAR="$BUILD/game-src.jar"
+elif [ "$HAVE_JAR" != "1" ]; then
+    echo "Without Diamondrush.jar only SOURCE=1 builds are possible." >&2
+    exit 1
 elif [ "${DEOBF:-0}" = "1" ]; then
     # Build from the renamed classes instead; the game must behave identically.
     echo "==> Deobfuscating game classes"
@@ -71,7 +75,11 @@ java -Xss16m -cp "$TOOLCP" org.teavm.cli.TeaVMRunner \
 
 echo "==> Copying web assets"
 cp "$ROOT/web/"* "$DIST/"
-cp "$JAR" "$DIST/Diamondrush.jar"
-unzip -p "$JAR" icon.png > "$DIST/icon.png"
+if [ "$HAVE_JAR" = "1" ]; then
+    cp "$JAR" "$DIST/Diamondrush.jar"
+    unzip -p "$JAR" icon.png > "$DIST/icon.png"
+else
+    echo "    (no Diamondrush.jar: dist/ has no game resources and will not run)"
+fi
 
 echo "==> Done: $DIST (serve it over HTTP, e.g. ./serve.sh)"

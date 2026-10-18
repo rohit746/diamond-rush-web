@@ -229,11 +229,13 @@ field a i I         mapTitleTextY
 #    0 boot              6 Gameloft logo        8 load sounds/sprites   9 loading screen
 #   30 title             4 main menu            33 help                31 new-game confirmation
 #   16 new game          5 load stage           11 restart stage        1 playing
-#    2 pause menu        7 yes/no dialog        12 game over            17 stage complete tally
+#    2 pause menu       35 save stage results   12 game over            17 stage complete tally
 #   20 secret path msg   21 load world map      15 world map            28 load seal
 #   22 credits (cr.f)
 #   27 seal (world/shop) 18,25 shop             29 ending               3 quit
-#   24 cheat menu (type # 4 7 7 2 while playing or on the seal)        34 debug value editor
+#   24 cheat menu (type # 4 7 7 2 while playing or on the seal)
+# The switches also handle 7 (yes/no dialog), 34 (debug value editor) and 10, 13, 14, 19, 23, 26, 32,
+# but no code ever stores those values in gameState: they are unreachable. Yes/no questions are menu 7.
 #
 # Keys are a bitmask (keysDown) of: 1 up, 2 down, 4 left, 8 right, 16 fire, 32 left soft, 64 right
 # soft, 256 '*', 512 '#', 1024 '0', 2048..524288 '1'..'9'. Common masks: 4097 up|2, 262146 down|8,
@@ -583,8 +585,11 @@ field i by I              drawY
 field i l B               queuedAction
 
 # gameplay. Terrain types seen in tileMap (low byte): 2 crumbling floor, 3 spikes, 4 checkpoint (magic
-# circle), 6 pressure plate, 7 gate (data: switch count, bit 16 open), 14 water, 17 switch target, 26 switch
-# (activating one pans the camera to its target), 35 wind pod. Object types (objectMap): 0 rock, 1 diamond, 9 falling object, 28 hook target, ...
+# circle), 6 pressure plate, 7 gate (data: switch count, bit 16 open), 14/33 item chest (under items 4, 6, 27,
+# 40, 42; opens when the player stands on it), 17 switch target, 26 switch
+# (activating one pans the camera to its target), 35 wind pod. Object types (objectMap): 0 rock, 1 diamond,
+# 9 falling object, 28 extending spike trap, 32 hook, 44 stalactite, 48 falling block,
+# 51-53 world crystals (Bavaria, Siberia, Angkor; their images load with the boss stages), ...
 method i a (III)V         hurtPlayer              # (damage, anim, push direction)
 method i h (I)V           activateGate            # one switch press; opens the gate when its count runs out
 method i f (II)V          closeGateAt             # crushes whatever is under the gate
@@ -687,3 +692,331 @@ field i s [B              creditsText
 field i eo I              creditsScroll
 field i ep I              creditsFirstLine
 field i cm I              activeSwitchId
+
+# ---------------------------------------------------------------------------------------------
+# GameCanvas, second pass: the remaining fields and methods. Object behaviour is read from the code;
+# names such as updateObject11 mark objects whose on-screen identity has not been confirmed.
+
+# loading flags (what the next loading screen frees, reloads or saves)
+field i J Z                       freeStageOnLoad
+field i H Z                       unloadMapOnLoad
+field i K Z                       unloadCutscenesOnLoad
+field i L Z                       gcOnLoad
+field i M Z                       reloadLivesOnLoad
+field i N Z                       writeSaveOnLoad
+field i I Z                       saveResultOnLoad
+field i G Z                       mapSpritesLoaded            # sprites[17], the world-map node sprite
+field i F Z                       titleShownOnce              # first boot goes to state 30, later boots straight to the menu
+field i u Z                       resultsSkipped              # stage results: skip the count-up delays
+field i ag I                      tipIndex                    # loading-screen tip (tips.f)
+field i d [Ljava/lang/String;     stagePackFiles
+
+# stage pack loader (/genN.f sprite packs)
+field i bt I                      genPackNumber               # N of the /genN.f file being read
+field i cc I                      genPackEntryCount
+field i cd I                      genPackSkipBytes            # bytes to skip before the next wanted entry
+field i n [B                      genPackDirectory            # 8 bytes per entry, size at +4
+field i c J                       neededGenSprites            # bit i: load entry i of the /gen packs for this stage
+field i d J                       neededExtraSprites          # bit 0 and 1: two optional sprites (sprites[60], sprites[16])
+field i ag Z                      stageHasDoors9              # terrain 9 present: build its door images
+field i ah Z                      stageHasDoors8              # terrain 8 present: build the second palette
+field i ai Z                      stageHasWindPods            # object 35 present
+field i aw I                      collapsingRowCount
+field i k [B                      compassTargets              # x,y pairs: the magic circles in order, then the exit
+field i l [B                      switchTargetObjects         # object placed at each switch target (default 57)
+
+# stage scripts and special stages
+field i aC I                      nextCompassTarget           # index into compassTargets; advanced at each magic circle
+field i w Z                       checkpointReached
+field i ak I                      checkpointBannerUntil       # "Checkpoint" is shown until this tick
+field i r B                       checkpointBannerCount       # saveData[11]: counts the first three banners, never read otherwise
+field i bn I                      stageTitleUntil             # world and stage names slide in until this tick
+field i x Z                       cheatSkipWalking            # skip-stage cheat: the player walks out of the stage
+field i at Z                      cheatSkipExitA              # key 9 leaves by exit A (byte_p), key 7 by exit B (byte_q)
+field i C Z                       cheatSkipExitB
+field i p B                       exitDirectionA              # set by stage markers 5 and 6
+field i q B                       exitDirectionB
+field i h Z                       crystalExitPending          # a world crystal (object 51-53) was taken: go to the seal
+field i aj Z                      bossExitPending             # the boss stage's exit was reached
+field i ay I                      entryWalkSteps              # object 79: the player walks in from the left edge
+field i e Z                       playerVisible               # prologue stage: hidden once the player reaches the exit
+field i s Z                       prologueMarkerReached
+field i t Z                       prologueMarkerHint          # draws a hint over the player at (46, 7)
+field i q Z                       prologueSaw13               # prologue stage: stood on terrain data 13 / 16
+field i r Z                       prologueSaw16
+field i al I                      floodHeight                 # Angkor stage index 5 (stage kind 1): rising water, pixels from the map bottom
+field i am I                      floodSwitchPresses
+field i bj I                      screenShakeTicks
+field i bk I                      screenShakeOffset
+field i bl I                      fadeHeight                  # black bar drawn over the top of the screen
+field i ce I                      togglePhase                 # 0..9: terrain 15 is solid at 0, terrain 16 at 9
+field i cf I                      toggleDirection             # +1 / -1 while the toggle floors move, 0 at rest
+field i aN I                      trapLengthA                 # object 28 extending spikes, phase A (90-tick cycle), pixels
+field i aO I                      trapReachA                  # same in tiles
+field i aP I                      trapLengthB                 # phase B (44-tick cycle)
+field i aQ I                      trapReachB
+field i dl I                      switchRevealTimer
+
+# boss fights (stage kinds 3 Yeti, 4 Anaconda, 5 Teutonic Knight)
+field i ap I                      bossTimer
+field i ar I                      bossPosition                # Anaconda: which of the three holes
+field i S I                       bossPreviousAnim
+field i L I                       bossSlamTicks
+field i k Z                       bossSlamVisible
+field i j Z                       bossSlamHitPlayer
+field i M I                       bossHeldObjectX             # object pair filled while the boss is in a hole
+field i N I                       bossHeldObjectY
+field i O I                       arenaWallRow
+field i P I                       arenaWallX1
+field i Q I                       arenaWallX2
+field i R I                       arenaWallRow2
+field i Z Z                       arenaWallsRestored
+field i T I                       unusedBossValue             # written once, never read
+field i ad Z                      knightCharging
+field i ae Z                      knightTurning
+field i dh I                      knightChargeOffset
+field i as I                      yetiX
+field i j J                       yetiNextRoar                # stateTicks of the next roar
+field i k J                       icicleDropTime              # icicles fall one after another after this tick
+
+# player and pickups
+field i m I                       turnCooldown
+field i c Z                       underHeavyObject            # rock or block resting on the player
+field i l I                       crushTimer                  # full damage when it runs out
+field i y Z                       stuckWarning                # second check without a free neighbour plays the stuck animation
+field i n Z                       onSolidGround
+field i ax I                      idleAnimDelay
+field i ak Z                      cameraHeldAfterReveal       # after a switch reveal, until the player moves
+field i E Z                       cameraPanToCheckpoint
+field i di I                      hintTextTicks
+field i aD I                      hintIconSet                 # bubble icon over the player (missing weapon), imageSets index
+field i aE I                      hintIconFrame
+field i aF I                      pickupIconSet               # item held up during the pickup animation
+field i aG I                      pickupIconFrame
+field i aH I                      pickupValue                 # diamonds shown next to the item
+field i aI I                      pickupObject
+field i a Z                       pickupAnimStarting          # player anim 47 at frame 0
+field i i J                       lastPickupTime              # ms; the long pickup animation plays if 5 s have passed
+field i aX I                      moveSpeed                   # pixels per tick, 0 during cutscenes
+field i ad I                      drawnEffect                 # effects ring buffer: next to draw / update
+field i p Z                       hasCompass                  # object 42
+field i bf I                      hookRestoreState
+field i be I                      hookedObjectState
+field i bg I                      hookX                       # object caught by the hook
+field i bh I                      hookY
+field i bi I                      hookPullSteps               # the player cannot be hurt while being pulled
+field i o B                       hookPullDelay
+field i h [B                      oppositeDirection
+
+# enemies (updateEnemies)
+field i x B                       enemyPhase                  # 1 enemy removed, 2..4 chasing, 3 idle, 5 triggered by a tile slot
+field i dq I                      enemyChaseTicks
+field i dr I                      enemyChaseSteps
+field i ds I                      enemyUnusedS                # only reset and saved with the checkpoint
+field i v B                       enemyChaseDirection
+field i dv I                      enemyTriggerX
+field i dw I                      enemyTriggerY
+field i dx I                      enemyTriggerSide            # -1 left, 1 right, 2 above
+field i w B                       enemyActorSlot
+field i dy I                      enemyTargetRow
+field i dz I                      enemyStepTimer
+field i al Z                      enemyRemovalPending
+field i dt I                      enemyRemovalIndex
+field i dm I                      actorAX                     # actorsTouch scratch positions, pixels
+field i dn I                      actorAY
+field i do I                      actorBX
+field i dp I                      actorBY
+
+# checkpoint snapshot
+field i af I                      checkpointPadlockGems
+field i bU I                      checkpointGoldKeys
+field i bV I                      checkpointSilverKeys
+field i bW I                      checkpointEntryWalkSteps
+field i bZ I                      checkpointNextCompassTarget
+field i ca I                      checkpointFloodSwitchPresses
+field i cb I                      checkpointFloodHeight
+field i cg I                      checkpointTogglePhase
+field i ch I                      checkpointToggleDirection
+field i cn I                      checkpointActiveSwitchId
+field i y B                       checkpointEnemyPhase
+field i dA I                      checkpointEnemyChaseTicks
+field i dB I                      checkpointEnemyChaseSteps
+field i dC I                      checkpointEnemyUnusedS
+field i z B                       checkpointEnemyChaseDirection
+field i dD I                      checkpointEnemyTriggerX
+field i dE I                      checkpointEnemyTriggerY
+field i dF I                      checkpointEnemyTriggerSide
+field i A B                       checkpointEnemyActorSlot
+field i dG I                      checkpointEnemyTargetRow
+field i dH I                      checkpointEnemyStepTimer
+field i am Z                      checkpointEnemyRemovalPending
+field i dI I                      checkpointEnemyRemovalIndex
+field i dJ I                      checkpointEnemyCount
+
+# stage rendering (paintPlaying)
+field i cI I                      cameraTileX
+field i cJ I                      cameraTileY
+field i cK I                      cameraTileOffsetX
+field i cL I                      cameraTileOffsetY
+field i cE I                      bufferedLeft                # tile area already rendered into the background buffer
+field i cF I                      bufferedRight
+field i cG I                      bufferedTop
+field i cH I                      bufferedBottom
+field i bG I                      paintTileX
+field i bH I                      paintTileY
+field i bI I                      paintObject
+field i bJ I                      paintTerrain
+field i aJ I                      paintImageSet
+field i aK I                      paintFrame
+field i aL I                      paintOverlaySet
+field i aM I                      paintOverlayFrame
+field i bN I                      paintOffsetX
+field i bO I                      paintOffsetY
+field i bP I                      paintTransform
+field i bR I                      paintAnimPhase
+field i bQ I                      paintPlayerDirection
+field i b Lf;                     paintSprite
+field i bK I                      paintSpriteAnim
+field i bL I                      paintSpriteFrame
+field i c Lf;                     deferredSprite              # drawn on top after the tile pass
+field i ct I                      deferredAnim
+field i cs I                      deferredFrame
+field i cr I                      deferredX
+field i cq I                      deferredY
+field i A Z                       overlayPending              # sprites[13] module drawn over an object
+field i bB I                      overlayTileX
+field i bC I                      overlayTileY
+field i bz I                      overlayDx
+field i bA I                      overlayDy
+field i bD I                      overlayModule
+field i bv I                      playerScreenX
+field i bw I                      playerScreenY
+field i bM I                      unusedPaintValue            # written once, never read
+field i cu I                      armorPalette
+field i d Lf;                     slotSprite                  # creatures kept in tileSlots
+field i cB I                      slotFrameCycle
+field i U Z                       hudPanelVisible             # off while the stage is redrawn behind the pause menu
+
+# menus, notices and shop
+field i V Z                       menuNeedsRedraw
+field i W Z                       pauseBackgroundStale        # redraw the stage behind the pause menu
+field i X Z                       menuGameStarted             # cached hasStartedGame() for the menu layout
+field i Y Z                       menuGameStartedStale
+field i z Z                       menuItemChosen
+field i cW I                      menuTicks
+field i cZ I                      menuItemsRevealed
+field i da I                      menuRevealDelay
+field i O Z                       noSaveFound
+field i Q Z                       blackScreenPending          # state 31 clears the screen once
+field i R Z                       tipVisible
+field i er I                      noticeX
+field i es I                      noticeY
+field i eu I                      noticeStyle
+field i en I                      shownArmorLevel
+field i a Ljava/lang/String;      shopMessage
+field i g Ljava/lang/String;      shopDiamondsText
+field i d Ljava/lang/StringBuffer;  armorThresholdText
+field i aa Z                      shopTextChanged
+
+# world map
+field i an Z                      mapWalkStarting
+field i ao Z                      mapWalkFacingLeft
+field i ap Z                      mapUnlockDone
+field i aq Z                      mapPathDotsVisible
+field i ar Z                      mapUnlockAnimDone
+field i as Z                      mapPathReversed
+field i ac Z                      stageJustUnlocked
+field i cx I                      unlockedNodeX
+field i cy I                      unlockedNodeY
+field i c [I                      mapPathPoints               # x,y pairs of the path from the last stage
+field i ei I                      mapPathLength               # ints used in mapPathPoints
+field i ej I                      mapPathShown
+field i ek I                      mapPathBlinkDelay
+field i el I                      mapUnlockFrame
+field i em I                      mapWalkerBlinkDelay
+field i dL I                      mapNodesDrawn               # bit per node id
+field i ea I                      pathX                       # Bresenham walk along the new path
+field i eb I                      pathY
+field i ec I                      pathError
+field i ed I                      pathDx
+field i ee I                      pathDy
+field i ef I                      pathErrorStepX
+field i eg I                      pathErrorStepY
+field i eh I                      pathSteps
+field i P Z                       stageCompletedBefore
+
+# seal screen and ending
+field i q I                       sealCursorX
+field i r I                       sealCursorY
+field i s I                       sealCursorPrevX
+field i t I                       sealCursorPrevY
+field i v I                       sealCursorTargetX
+field i w I                       sealCursorTargetY
+field i c B                       sealCursorStep
+field i f Z                       sealCursorMoving
+field i u I                       sealInputDirection
+field i x I                       cursorAnimLength
+field i y I                       cursorAnimFrame
+field i z I                       sealX
+field i A I                       sealY
+field i g Z                       sealDirty
+field i b Ljava/lang/String;      sealCaption
+field i c Ljava/lang/String;      sealCaptionTarget
+field i B I                       crystalsPlaced
+field i C I                       crystalInsertTicks
+field i D I                       flyingCrystal               # world whose crystal flies to the seal, -1 none
+field i E I                       flyingCrystalX
+field i F I                       flyingCrystalY
+field i G I                       crystalHalfWidth
+field i H I                       crystalHalfHeight
+field i I I                       sealFlashStep
+field i J I                       crystalAnimLength
+field i K I                       crystalAnimFrame
+field i a [Z                      crystalInserted
+field i b [Z                      worldCrystalEarned
+field i i Z                       endingReached
+field i W I                       endingPhase
+field i X I                       endingFlashColor
+field i Y I                       endingShakeX
+field i Z I                       endingShakeY
+field i d B                       endingShakeDirY
+field i e B                       endingShakeDirX             # written, never read
+field i f B                       endingShakeLimitY
+field i g B                       endingShakeLimitX
+field i h B                       endingShakeSpeed
+
+# unused or write-only
+field i i B                       unusedByteI
+field i e Ljavax/microedition/lcdui/Image;  unusedImage
+field i cM I                      unusedIntCM
+field i cN I                      unusedIntCN
+field i cO I                      unusedIntCO
+field i h J                       unusedTimeH
+field i m J                       unusedTimeM
+field i a Ljava/lang/StringBuffer;  unusedBufferA
+field i b Ljava/lang/StringBuffer;  unusedBufferB
+
+# additions
+field i bu I                      rollerVariants              # bit 1 object 43, bit 2 object 19: palettes to build
+field i f [B                      mapFileData                 # map_<world>.out while it is parsed
+
+# methods
+method i d ()Z                    tryStartFloorToggle         # flips terrain 15/16 (togglePhase)
+method i b (III)V                 hitObject                   # weapon strike: (object, x, y)
+method i ab ()V                   updateHookPull              # pulls the object caught by the hook
+method i j (II)V                  placeItemChest
+method i ak ()V                   trackCollapsingRow
+method i d (B)V                   updateFallingBlock          # object 48
+method i am ()V                   updateStalactite            # object 44: falls when the player passes below
+method i l (I)V                   updatePickup                # objects 2, 4-7, 40-42, 51-53
+method i g (II)Z                  isTrapBlocking              # object 28 or its extended spikes cover (x, y)
+method i a (IIIIZ)I               directionToward             # (x, y, targetX, targetY, avoidCreatures)
+method i e (B)V                   updateRoller                # objects 19, 43 (homes on the player), 49
+method i an ()V                   pressActiveSwitch           # one press; opens the targets when the count runs out
+method i ao ()V                   updateObject11              # moves in its direction, breaks up when a creature reaches it
+method i ap ()V                   updateHook                  # object 32, thrown sideways by the hook action
+method i n (I)V                   updateItemChest             # terrain 14 / 33: a closed one starts the pickup animation
+method i a (BIIBBBZ)B             stepActor                   # (actor, x, y, dir, slot, dx, clearSlot) -> dx, -2 if blocked
+method i a (IIBBBB)B              spawnActor                  # first free actor slot
+method i m (II)V                  alertCreatures              # a creature next to (x, y) wakes up (enemyPhase 5)
+method i n (II)V                  killEnemyAt

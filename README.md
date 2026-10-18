@@ -36,6 +36,8 @@ Build options:
 - `SOURCE=1 ./build.sh` builds the game from the recompilable source in `game/src/`.
 - `DEOBF=1 ./build.sh` builds it from the renamed bytecode.
 - `DEBUG=1` gives unminified output.
+- `SOURCE=1 ALLOW_NO_JAR=1 ./build.sh` also works without the JAR, as in CI. `dist/` then has no game
+  resources and doesn't run.
 
 ### Controls
 
@@ -72,6 +74,7 @@ Build options:
 | `game/src/` | The decompilation, fixed so it compiles and behaves like the original (Gameloft's code) |
 | `tools/difftest/` | Differential tester: the original JAR against another build, frame by frame |
 | `test/smoke.mjs` | Browser smoke test |
+| `tools/ci.sh`, `.github/workflows/ci.yml` | Checks that run without the JAR, on every push |
 
 `build/`, `dist/`, `decompiled/` and the downloaded tools are generated and ignored by git.
 
@@ -126,7 +129,7 @@ method i   Z   ()V            loseLife
 
 | Class | Was | Named |
 | --- | --- | --- |
-| `GameCanvas` (game loop, states, stages, map, menus, saving) | `i` | 426 of 703 |
+| `GameCanvas` (game loop, states, stages, map, menus, saving) | `i` | all 703 |
 | `Sprite` (Gameloft ASprite format) | `f` | all 28 |
 | `SpriteInstance` (animated sprite on screen) | `b` | all 15 |
 | `Cutscene` (scripted tutorial and story scenes from `demo.f`) | `c` | all 39 |
@@ -135,10 +138,12 @@ method i   Z   ()V            loseLife
 | `Text` (string table and platform check) | `d` | all 8 |
 | `Constants`, `TreasureRain`, `Rand`, `PlatformRequestThread`, `GloftDIRU` | `a`, `g`, `e`, `k` | all |
 
-In total, 268 of 287 renamable methods and 305 of 582 fields have real names. Every other member gets a
-unique placeholder built from its type and original name, such as `int_bg` or `ab_void`, so nothing is
-ambiguous. The remaining gaps are mostly narrow counters for single mechanics inside `GameCanvas`, such
-as enemy chases and the hook drag.
+All 287 renamable methods and 582 fields have names. A member missing from the map would get a unique
+placeholder built from its type and original name, such as `int_bg` or `ab_void`; none are left.
+
+The names come from reading how each member is used. Some say only what the code does, not what the player
+sees: `updateObject11` moves object 11 and breaks it apart, but which object that is on screen hasn't been
+checked. The map's comments mark these, along with members that are written but never read.
 
 The tool rejects map lines that don't match a member, names mapped twice, name collisions, and attempts
 to rename platform callbacks such as `paint` and `run`.
@@ -172,7 +177,9 @@ The two checks under [Tests](#tests) catch this class of bug.
 ```sh
 npm install && npx playwright install chromium     # once
 ./build.sh && npm test                             # browser smoke test
-tools/difftest/difftest.sh build/game-src-classes 30000 1 2 3 4 5 6 7 8   # after SOURCE=1 ./build.sh
+SOURCE=1 ./build.sh && tools/difftest/difftest.sh build/game-src-classes 30000 \
+    1 2 3 4 5 6 7 8 anaconda knight yeti ending                    # differential test
+tools/ci.sh                                        # what CI runs; works without the JAR
 ```
 
 - **`npm test`** serves `dist/` and drives headless Chromium through the title screen, the menu and the
@@ -184,24 +191,47 @@ tools/difftest/difftest.sh build/game-src-classes 30000 1 2 3 4 5 6 7 8   # afte
     builds get the same seeded key presses.
   - *Comparison:* a fake MIDP layer hashes every drawing and platform call, and each tick logs the game
     state, world, stage and hash. The two logs must match line for line.
-  - *Coverage:* the scripted runs open the cheat menu, unlock everything, skip through stages and travel
+  - *Random runs:* numbered seeds open the cheat menu, unlock everything, skip through stages and travel
     to Bavaria and Siberia. Yes/no dialogs are always answered "No", so random input can't quit.
-  - *Results:* eight seeds of 30,000 ticks (about 3.3 hours of game time) are identical for the
-    recompiled source. Reintroducing the enemy bug makes the run diverge at tick 2965, in Siberia stage
-    13.
+  - *Scenarios:* named runs (`tools/difftest/src/difftest/Scenario.java`) press keys based on the game
+    state and change a few game fields at fixed ticks, the same in both builds.
+    - `anaconda`, `knight`, `yeti`: navigate to the world, put the map cursor on its boss stage and fight
+      with random input.
+    - `ending`: in the Angkor boss stage, mark the other two crystals as found and hand the player the
+      third, which leads to the seal, the ending and the credits.
+  - *Results:* all twelve runs above, 30,000 ticks each (about 5 hours of game time), are identical for
+    the recompiled source. They reach 22 game states, 27 stages and every boss stage, with 28,000 to
+    36,000 ticks per boss fight. Reintroducing the enemy bug makes a run diverge at tick 2965, in Siberia
+    stage 13.
 - **`tools/difftest/Narrowing.java`** lists every method whose recompiled bytecode narrows values
   (`i2b`/`i2s`/`i2c`) more often than the original. Each remaining case is a constant or a provably
   in-range value.
 
-**Not verified by any test:** the boss fights and the ending, which the scripted runs don't reach, and
-how the synthesizer sounds to a human ear.
+**Not verified by any test:** winning a boss fight (random input lost every fight in these runs, so the
+boss defeat sequences never ran), three reachable states the runs miss (2 pause menu, 18 shop, 20
+secret-path message), and how the synthesizer sounds to a human ear.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs `tools/ci.sh` on every push and pull request. The JAR isn't in the
+repository, so CI checks what can be done without it:
+
+- shell and JavaScript syntax;
+- the build from `game/src` (runtime and game compiled together, then TeaVM);
+- compiling the tools and the differential-test harness.
+
+The differential test and the browser smoke test need your JAR and run locally.
 
 ## Things found along the way
 
 - **Developer cheat menu.** Type `#` `4` `7` `7` `2` during play. It can add diamonds and red diamonds,
   set weapons, unlock all stages or the secret stages, and enable stage skipping (7 or 9 during play).
-- **One state machine.** `mappings/diamondrush.map` documents 28 of the game's states, from boot and the
-  Gameloft logo to the world map, the seal, the shop, the credits and the ending.
+- **One state machine.** `mappings/diamondrush.map` documents the 27 states the game can enter, from
+  boot and the Gameloft logo to the world map, the seal, the shop, the ending and the credits. The code
+  also handles nine states that nothing ever switches to, among them a yes/no dialog and a debug value
+  editor.
+- **World crystals.** Each world has a crystal (objects 51 to 53), whose image loads with that world's
+  boss stage. Collecting one flies it into the seal; the third starts the ending, then the credits.
 - **Save format.** The `DiamondRush` record holds lives, totals, armor level and weapons, then one record
   per world and per stage, including which hidden treasures were taken.
 - **Progression.** Armor unlocks at 150, 400, 1000 and 3000 total diamonds. Bavaria needs 10 red

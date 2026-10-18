@@ -5,7 +5,8 @@
 #
 # Both builds run headlessly on a virtual clock with the same seeded key presses. Every drawing and platform
 # call is hashed per tick; the logs must match line for line. Defaults: 20000 ticks (about 17 minutes of
-# play), seeds 1 2 3.
+# play), seeds 1 2 3. Besides numbers, a seed can name a scenario: anaconda, knight, yeti or ending
+# (see src/difftest/Scenario.java).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -61,13 +62,18 @@ for seed in "${SEEDS[@]}"; do
         diff "$a" "$b" | head -6 | sed 's/^/    /'
     fi
 done
-# Coverage of the original's runs: game states seen, and (world, stage) pairs actually played (state 1).
+# Coverage of the original's runs: game states seen, (world, stage) pairs actually played (state 1) and
+# ticks spent in each boss stage.
 cat "$WORK"/logs/original-*.log | awk '$1 ~ /^[0-9]+$/ {
         states[$2]++
         if ($2 == 1) stages[$3 "-" $4]++
     }
     END {
-        printf "states visited:"; for (s in states) printf " %s", s; print ""
-        printf "stages played (world-stage):"; for (s in stages) printf " %s", s; print ""
+        printf "states visited:"; for (s = 0; s < 64; s++) if (s in states) printf " %d", s; print ""
+        printf "stages played (world-stage):"
+        for (w = 0; w < 3; w++) for (s = 0; s < 32; s++) if ((w "-" s) in stages) printf " %d-%d", w, s
+        print ""
+        printf "boss stage ticks: Anaconda (0-8) %d, Teutonic Knight (1-9) %d, Yeti (2-10) %d\n", \
+            stages["0-8"], stages["1-9"], stages["2-10"]
     }'
 exit $status
